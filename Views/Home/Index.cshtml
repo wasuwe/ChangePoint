@@ -5,7 +5,6 @@
 @Styles.Render("~/Content/bootstrap-select.min.css")
 
 <style>
-/* ── Variables (overridden by get_colors AJAX) ── */
 :root {
     --color_man:  #22c55e;
     --color_mc:   #ef4444;
@@ -17,31 +16,12 @@
 #MainApp { display: none; }
 
 /* ── Toolbar ── */
-.cal-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-}
-.group-select { min-width: 180px; }
+.cal-toolbar { display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px; }
+.group-select { min-width:180px; }
 
 /* ── Stats ── */
-.stats-row {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-}
-.stat-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: .82rem;
-    font-weight: 600;
-}
+.stats-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px; }
+.stat-chip { display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:600; }
 .stat-chip .sd { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
 .chip-man  { background:color-mix(in srgb,var(--color_man)  12%,white); color:color-mix(in srgb,var(--color_man)  60%,#111); }
 .chip-mc   { background:color-mix(in srgb,var(--color_mc)   12%,white); color:color-mix(in srgb,var(--color_mc)   60%,#111); }
@@ -54,66 +34,27 @@
 .sd-met  { background:var(--color_met); }
 .sd-part { background:var(--color_part); }
 
-/* ── Calendar card ── */
-.cal-card { background:#fff; border-radius:16px; box-shadow:0 2px 16px rgba(0,0,0,.08); overflow:hidden; }
-
-.cal-head {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:16px 20px;
-    border-bottom:1px solid #e2e8f0;
-    background:#f8fafc;
-}
+/* ── Calendar ── */
+.cal-card { background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.08);overflow:hidden; }
+.cal-head { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc; }
 .cal-month-label { font-size:1.15rem;font-weight:700;color:#1e293b; }
 .cal-nav-btns { display:flex;align-items:center;gap:6px; }
-.cal-nav-btn {
-    width:34px;height:34px;border-radius:8px;border:1px solid #e2e8f0;
-    background:#fff;color:#475569;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    font-size:.9rem;transition:all .15s;
-}
+.cal-nav-btn { width:34px;height:34px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s; }
 .cal-nav-btn:hover { background:#3b82f6;color:#fff;border-color:#3b82f6; }
-.cal-today-btn {
-    padding:5px 14px;border-radius:8px;border:1px solid #e2e8f0;
-    background:#fff;color:#475569;cursor:pointer;
-    font-size:.8rem;font-weight:600;transition:all .15s;
-}
+.cal-today-btn { padding:5px 14px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#475569;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .15s; }
 .cal-today-btn:hover { background:#1e293b;color:#fff;border-color:#1e293b; }
-
 .cal-grid { display:grid;grid-template-columns:repeat(7,1fr); }
-
-.cal-dow {
-    text-align:center;padding:10px 4px;
-    font-size:.72rem;font-weight:700;
-    text-transform:uppercase;letter-spacing:.06em;
-    color:#94a3b8;background:#f8fafc;
-    border-bottom:1px solid #e2e8f0;
-}
-
-.cal-cell {
-    min-height:90px;padding:8px 6px 6px;
-    border-right:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9;
-    transition:background .12s;position:relative;
-}
+.cal-dow { text-align:center;padding:10px 4px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#f8fafc;border-bottom:1px solid #e2e8f0; }
+.cal-cell { min-height:90px;padding:8px 6px 6px;border-right:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9;transition:background .12s;position:relative; }
 .cal-cell:nth-child(7n) { border-right:none; }
 .cal-cell.clickable { cursor:pointer; }
 .cal-cell.clickable:hover { background:#f0f9ff; }
 .cal-cell.is-today .day-num { background:#3b82f6;color:#fff;border-radius:50%; }
 .cal-cell.out-month { background:#fafbfc; }
 .cal-cell.out-month .day-num { color:#cbd5e1; }
-
-.day-num {
-    display:inline-flex;align-items:center;justify-content:center;
-    width:26px;height:26px;
-    font-size:.82rem;font-weight:600;color:#475569;
-    border-radius:50%;margin-bottom:4px;
-}
-
+.day-num { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;font-size:.82rem;font-weight:600;color:#475569;border-radius:50%;margin-bottom:4px; }
 .day-events { display:flex;flex-wrap:wrap;gap:3px;margin-top:4px; }
-.ev-chip {
-    display:inline-flex;align-items:center;
-    padding:2px 7px;border-radius:5px;
-    font-size:.68rem;font-weight:700;color:#fff;line-height:1.4;
-}
+.ev-chip { display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:.68rem;font-weight:700;color:#fff;line-height:1.4; }
 .ev-man  { background:var(--color_man); }
 .ev-mc   { background:var(--color_mc); }
 .ev-mold { background:var(--color_mold); }
@@ -121,23 +62,41 @@
 .ev-part { background:var(--color_part); }
 
 /* ── Add CP button ── */
-.btn-add-cp {
-    display:flex;align-items:center;gap:7px;
-    padding:9px 18px;
-    background:#3b82f6;color:#fff;
-    border:none;border-radius:9px;
-    font-size:.88rem;font-weight:600;cursor:pointer;
-    transition:background .15s,transform .1s;
-    box-shadow:0 2px 8px rgba(59,130,246,.35);
-}
+.btn-add-cp { display:flex;align-items:center;gap:7px;padding:9px 18px;background:#3b82f6;color:#fff;border:none;border-radius:9px;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 2px 8px rgba(59,130,246,.35); }
 .btn-add-cp:hover { background:#2563eb;transform:translateY(-1px); }
 
-/* ── Modal styles ── */
-.modal-header-cp {
-    padding:16px 20px;
-    display:flex;align-items:center;gap:10px;
-    border-bottom:1px solid #e2e8f0;
+/* ── My CP tracking section ── */
+.my-cp-section {
+    margin-top:24px;
+    background:#fff;border-radius:16px;box-shadow:0 2px 14px rgba(0,0,0,.07);overflow:hidden;
 }
+.my-cp-header {
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc;
+}
+.my-cp-header-title { font-size:.95rem;font-weight:700;color:#1e293b;display:flex;align-items:center;gap:8px; }
+.my-cp-count { font-size:.78rem;background:#dbeafe;color:#1d4ed8;border-radius:20px;padding:3px 10px;font-weight:600; }
+.my-cp-list { padding:12px 16px;display:flex;flex-direction:column;gap:10px;max-height:400px;overflow-y:auto; }
+.my-cp-card {
+    display:flex;align-items:center;gap:14px;
+    padding:12px 16px;border-radius:10px;
+    border:1px solid #e2e8f0;cursor:pointer;
+    transition:box-shadow .15s,border-color .15s;
+}
+.my-cp-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.09);border-color:#93c5fd; }
+.my-cp-type-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
+.my-cp-info { flex:1;min-width:0; }
+.my-cp-date { font-size:.75rem;color:#94a3b8;font-weight:500; }
+.my-cp-title { font-size:.85rem;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.my-cp-subtitle { font-size:.75rem;color:#64748b;margin-top:1px; }
+.badge-approved { display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:600;white-space:nowrap; }
+.badge-pending  { display:inline-flex;align-items:center;gap:4px;background:#fef9c3;color:#a16207;border:1px solid #fde047;border-radius:20px;padding:3px 10px;font-size:.72rem;font-weight:600;white-space:nowrap; }
+.my-cp-empty { padding:32px;text-align:center;color:#94a3b8;font-size:.88rem; }
+
+/* ── Modal common ── */
+.modal-header-cp { padding:0;display:flex;align-items:stretch;border-bottom:1px solid #e2e8f0; }
+.mhcp-color-bar { width:6px;flex-shrink:0;border-radius:0; }
+.mhcp-content { flex:1;display:flex;align-items:center;gap:10px;padding:14px 18px; }
 .modal-type-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
 .form-label-cp { font-size:.8rem;font-weight:600;color:#475569;margin-bottom:4px;display:block; }
 .form-label-cp .th { font-weight:400;color:#94a3b8;font-size:.74rem;margin-left:4px; }
@@ -146,12 +105,42 @@
 .detail-wrap table { margin:0;font-size:.8rem; }
 .detail-wrap thead th { background:#f8fafc;font-weight:600;font-size:.75rem; }
 
-.inspector-chip {
-    display:inline-flex;align-items:center;gap:6px;
-    background:#f1f5f9;border:1px solid #e2e8f0;
-    border-radius:6px;padding:4px 10px;
-    font-size:.78rem;margin:3px 3px 3px 0;
+.inspector-chip { display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:.78rem;margin:3px 3px 3px 0; }
+
+/* ── View mode (text display) ── */
+.cp-view-banner {
+    padding:20px;
+    display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+    border-bottom:1px solid #e2e8f0;
 }
+.cp-vb-status { margin-left:auto; }
+.cp-vb-date { font-size:.8rem;color:#64748b;font-weight:500; }
+.cp-vb-creator { font-size:.78rem;color:#94a3b8; }
+
+.cp-vf-grid { display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:16px; }
+.cp-vf-grid .cp-vf { padding:11px 16px;border-bottom:1px solid #f1f5f9; }
+.cp-vf-grid .cp-vf:nth-last-child(-n+2) { border-bottom:none; }
+.cp-vf-grid .cp-vf.full { grid-column:1/-1; }
+.cp-vf-label { font-size:.72rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px; }
+.cp-vf-value { font-size:.88rem;font-weight:500;color:#1e293b; }
+.cp-vf-value.empty { color:#cbd5e1;font-style:italic; }
+
+.cp-view-details { margin-top:4px; }
+.cp-view-details table { font-size:.8rem; }
+.cp-view-detail-row td { padding:8px 12px;vertical-align:top; }
+.cp-view-detail-row td:first-child { font-weight:500;color:#1e293b;width:45%; }
+.cp-view-detail-row td:last-child { color:#ef4444;font-size:.78rem; }
+
+.cp-view-files { display:flex;flex-wrap:wrap;gap:10px;margin-top:4px; }
+.cp-file-thumb { text-align:center;width:80px; }
+.cp-file-thumb img { width:60px;height:45px;object-fit:contain;border-radius:6px;border:1px solid #e2e8f0; }
+.cp-file-thumb p { font-size:.65rem;color:#64748b;margin:3px 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:80px; }
+
+.cp-inspector-list { display:flex;flex-wrap:wrap;gap:8px;margin-top:4px; }
+.cp-inspector-group { background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px; }
+.cp-inspector-group-title { font-size:.72rem;font-weight:700;color:#475569;margin-bottom:4px; }
+.cp-inspector-members { display:flex;flex-wrap:wrap;gap:4px; }
+.cp-inspector-member { background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:2px 10px;font-size:.72rem;color:#475569; }
 
 .dp__main { width:100%; }
 img.image-upload { width:100%;height:50px;object-fit:contain; }
@@ -160,21 +149,16 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
 .upload-boxs { margin-top:16px; }
 .upload-boxs p { text-overflow:ellipsis;overflow:hidden;width:120px;height:1.2em;white-space:nowrap;font-size:.72rem; }
 
-#imgLightbox {
-    display:none;position:fixed;z-index:9999;top:0;left:0;
-    width:100%;height:100%;background:rgba(0,0,0,.85);
-    align-items:center;justify-content:center;
-}
+#imgLightbox { display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);align-items:center;justify-content:center; }
 #imgLightbox.open { display:flex; }
 #imgLightbox img { max-width:90vw;max-height:85vh;border-radius:8px; }
 #imgLightbox .lb-close { position:absolute;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer; }
-
 .modal-backdrop { z-index:0 !important; }
 </style>
 
 <div id="MainApp">
 
-    <!-- ── Toolbar ── -->
+    <!-- Toolbar -->
     <div class="cal-toolbar">
         <div class="group-select">
             <select class="selectpicker" data-live-search="true" id="slt_group"
@@ -201,7 +185,7 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
         }
     </div>
 
-    <!-- ── Stats ── -->
+    <!-- Stats -->
     <div class="stats-row">
         <span class="stat-chip chip-man"> <span class="sd sd-man"></span>  Man <b style="margin-left:4px;">{{monthStats.man}}</b></span>
         <span class="stat-chip chip-mc">  <span class="sd sd-mc"></span>   Machine <b style="margin-left:4px;">{{monthStats.mc}}</b></span>
@@ -210,7 +194,7 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
         <span class="stat-chip chip-part"><span class="sd sd-part"></span> Part/Mat'l <b style="margin-left:4px;">{{monthStats.part}}</b></span>
     </div>
 
-    <!-- ── Calendar ── -->
+    <!-- Calendar -->
     <div class="cal-card">
         <div class="cal-head">
             <span class="cal-month-label">{{monthName}} {{currentYear}}</span>
@@ -228,7 +212,6 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
             <div class="cal-dow">ศ</div>
             <div class="cal-dow" style="color:#ef4444;">ส</div>
             <div class="cal-dow" style="color:#3b82f6;">อา</div>
-
             <div v-for="(cell, idx) in calendarDays" :key="idx"
                  class="cal-cell"
                  :class="{ 'clickable': cell.day && cell.events.length>0, 'is-today': cell.isToday, 'out-month': !cell.day }"
@@ -241,117 +224,217 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
         </div>
     </div>
 
-    <!-- ── Change Point Modal ── -->
+    <!-- My Change Points (Member/Admin only) -->
+    @if (ViewBag.Data.ROLE == "M" || ViewBag.Data.ROLE == "A")
+    {
+        <div class="my-cp-section">
+            <div class="my-cp-header">
+                <div class="my-cp-header-title">
+                    <i class="fas fa-clipboard-list" style="color:#3b82f6;"></i>
+                    Change Points ที่ฉันแจ้ง
+                </div>
+                <span class="my-cp-count">{{myList.length}} รายการ</span>
+            </div>
+            <div class="my-cp-list" v-if="myList.length > 0">
+                <div v-for="item in myList" class="my-cp-card" v-on:click="Open_View_Modal(item)">
+                    <div class="my-cp-type-dot" :style="`background:${cpTypeColor(item.STATUS_TYPE)}`"></div>
+                    <div class="my-cp-info">
+                        <div class="my-cp-date">{{ cpDateDisplay(item.DATE_CHANGE) }}</div>
+                        <div class="my-cp-title">{{ cpTypeLabel(item.STATUS_TYPE) }} — {{ cpBrief(item) }}</div>
+                        <div class="my-cp-subtitle" v-if="item.CREATE_DATE">แจ้ง {{ item.CREATE_DATE }}</div>
+                    </div>
+                    <div>
+                        <span v-if="item.INFORMED=='Y'" class="badge-approved"><i class="fas fa-check-circle"></i> อนุมัติแล้ว</span>
+                        <span v-else class="badge-pending"><i class="fas fa-clock"></i> รออนุมัติ</span>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="my-cp-empty"><i class="fas fa-inbox" style="font-size:1.5rem;opacity:.4;display:block;margin-bottom:8px;"></i>ยังไม่มี Change Point ที่แจ้ง</div>
+        </div>
+    }
+
+    <!-- Change Point Modal -->
     <div class="modal fade modal-lg" id="change_point_modal"
          data-bs-backdrop="static" data-bs-keyboard="false"
          tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content" style="border-radius:14px;overflow:hidden;">
 
+                <!-- Modal Header -->
                 <div class="modal-header-cp">
-                    <span class="modal-type-dot" :style="'background:'+typeColor"></span>
-                    <h5 style="margin:0;font-size:1rem;font-weight:700;">Change Point — {{title_modal}}</h5>
-                    <div style="margin-left:auto;max-width:160px;">
-                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                        {
-                            <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
-                                        :monthChangeOnScroll="false" :format="dateFormat" auto-apply></Datepicker>
-                        }
-                        else
-                        {
-                            <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
-                                        :monthChangeOnScroll="false" :format="dateFormat" auto-apply disabled></Datepicker>
-                        }
+                    <div class="mhcp-color-bar" :style="`background:${typeColor}`"></div>
+                    <div class="mhcp-content">
+                        <span class="modal-type-dot" :style="`background:${typeColor}`"></span>
+                        <div>
+                            <div style="font-size:1rem;font-weight:700;color:#1e293b;">Change Point — {{title_modal}}</div>
+                            <div v-if="viewMode" style="font-size:.75rem;color:#64748b;margin-top:2px;">{{ view_date_display }}</div>
+                        </div>
+                        <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+                            <div v-if="viewMode">
+                                <span v-if="view_informed=='Y'" class="badge-approved"><i class="fas fa-check-circle"></i> อนุมัติแล้ว</span>
+                                <span v-else class="badge-pending"><i class="fas fa-clock"></i> รออนุมัติ</span>
+                            </div>
+                            <div v-if="!viewMode" style="max-width:160px;">
+                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                                {
+                                    <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
+                                                :monthChangeOnScroll="false" :format="dateFormat" auto-apply></Datepicker>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="modal-body" style="padding:20px;">
-                    <div class="row g-3">
+                <!-- Modal Body: VIEW mode (text display) -->
+                <div v-if="viewMode" class="modal-body" style="padding:0;">
 
-                        <div class="col-md-6">
-                            <label class="form-label-cp">Shift <span class="th">กะทำงาน</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" id="slt_shift" v-model="slt_shift" data-placeholder="เลือก Shift"><option value="1">Day</option><option value="2">Night</option></select>}
-                            else
-                            {<select class="selectpicker" id="slt_shift" v-model="slt_shift" disabled><option value="1">Day</option><option value="2">Night</option></select>}
+                    <div class="cp-view-banner" style="padding:16px 20px;">
+                        <div>
+                            <div style="font-size:.72rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">ผู้แจ้ง</div>
+                            <div style="font-size:.88rem;font-weight:500;color:#1e293b;">{{ view_creator }}</div>
+                        </div>
+                        <div v-if="slt_shift || slt_team">
+                            <div style="font-size:.72rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">Shift / Team</div>
+                            <div style="font-size:.88rem;font-weight:500;color:#1e293b;">{{ slt_shift=='1'?'Day':slt_shift=='2'?'Night':'-' }}{{ slt_team ? ' / Team '+slt_team : '' }}</div>
+                        </div>
+                    </div>
+
+                    <div style="padding:16px 20px;">
+
+                        <div class="cp-vf-grid">
+                            <div id="vb_from" class="cp-vf">
+                                <div class="cp-vf-label">คนประจำจุด</div>
+                                <div class="cp-vf-value" :class="!view_spot_name?'empty':''">{{ view_spot_name || '—' }}</div>
+                            </div>
+                            <div id="vb_to" class="cp-vf">
+                                <div class="cp-vf-label">คนแทนจุด</div>
+                                <div class="cp-vf-value" :class="!view_instead_name?'empty':''">{{ view_instead_name || '—' }}</div>
+                            </div>
+                            <div id="vb_mc" class="cp-vf">
+                                <div class="cp-vf-label">M/C NO.</div>
+                                <div class="cp-vf-value" :class="!slt_mc_no?'empty':''">{{ slt_mc_no || '—' }}</div>
+                            </div>
+                            <div id="vb_eidt" class="cp-vf">
+                                <div class="cp-vf-label">จุดที่แก้ไข</div>
+                                <div class="cp-vf-value" :class="!slt_edit?'empty':''">{{ slt_edit || '—' }}</div>
+                            </div>
+                            <div id="vb_part" class="cp-vf">
+                                <div class="cp-vf-label">Part NO.</div>
+                                <div class="cp-vf-value" :class="!slt_part_no?'empty':''">{{ slt_part_no || '—' }}</div>
+                            </div>
+                            <div id="vb_mold" class="cp-vf">
+                                <div class="cp-vf-label">Mold NO.</div>
+                                <div class="cp-vf-value" :class="!slt_mold_no?'empty':''">{{ slt_mold_no || '—' }}</div>
+                            </div>
+                            <div id="vb_change" class="cp-vf">
+                                <div class="cp-vf-label">หัวข้อการเปลี่ยนแปลง</div>
+                                <div class="cp-vf-value" :class="!slt_change?'empty':''">{{ slt_change || '—' }}</div>
+                            </div>
+                            <div id="vb_process" class="cp-vf">
+                                <div class="cp-vf-label">Process</div>
+                                <div class="cp-vf-value" :class="!slt_process?'empty':''">{{ slt_process || '—' }}</div>
+                            </div>
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label-cp">Team <span class="th">ทีม</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" id="slt_team" v-model="slt_team" data-placeholder="เลือก Team"><option value="A">A</option><option value="B">B</option></select>}
-                            else
-                            {<select class="selectpicker" id="slt_team" v-model="slt_team" disabled><option value="A">A</option><option value="B">B</option></select>}
+                        <div v-if="slt_action.length > 0" style="margin-bottom:16px;">
+                            <div style="font-size:.75rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">รายละเอียด / ข้อควรระวัง</div>
+                            <div class="detail-wrap">
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead><tr><th style="background:#f8fafc;font-size:.75rem;">รายละเอียด</th><th style="background:#f8fafc;font-size:.75rem;">ข้อควรระวัง</th></tr></thead>
+                                    <tbody>
+                                        <tr v-for="(act, idx) in slt_action" class="cp-view-detail-row">
+                                            <td>{{ act }}</td>
+                                            <td style="color:#dc2626;font-size:.78rem;">{{ slt_warning[idx] || '—' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
-                        <div id="b_from" class="col-md-6">
-                            <label id="lb_from" class="form-label-cp">Employee on leave <span class="th">คนประจำจุด</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" disabled data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
+                        <div v-if="slt_remark" style="margin-bottom:16px;">
+                            <div style="font-size:.75rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">More Detail</div>
+                            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:.85rem;color:#1e293b;white-space:pre-wrap;">{{ slt_remark }}</div>
                         </div>
 
-                        <div id="b_to" class="col-md-6">
-                            <label id="lb_to" class="form-label-cp">Replacement employee <span class="th">คนแทนจุด</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_instead" v-model="slt_instead" data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_instead" v-model="slt_instead" disabled data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
+                        <div v-if="fileList.length > 0" style="margin-bottom:16px;">
+                            <div style="font-size:.75rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">ไฟล์ / รูป</div>
+                            <div class="cp-view-files">
+                                <a v-for="f in fileList" :href="'/src/upload/'+f.name" target="_blank"
+                                   class="cp-file-thumb" :download="f.file_type!='image'">
+                                    <img v-if="f.file_type=='image'" :src="'/src/upload/'+f.name" :title="f.name" onclick="openLightbox(this);event.preventDefault();" style="cursor:zoom-in;" />
+                                    <img v-else :src="'/src/icons/'+(f.file_type=='pdf'?'pdf':f.file_type=='excel'?'xls':f.file_type=='powerpoint'?'ppt':f.file_type=='word'?'word':'text')+'.png'" />
+                                    <p :title="f.name">{{f.name}}</p>
+                                </a>
+                            </div>
                         </div>
 
-                        <div id="b_mc" class="col-md-6">
-                            <label id="lb_mc" class="form-label-cp">M/C NO. <span class="th">เครื่องจักร</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" data-placeholder="Select"><optgroup v-for="items in mcsList" :label="items.sizeTon"><option v-for="item in items.list">{{item}}</option></optgroup></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" disabled data-placeholder="Select"><optgroup v-for="items in mcsList" :label="items.sizeTon"><option v-for="item in items.list">{{item}}</option></optgroup></select>}
+                        <div v-if="recipient_list.length > 0" style="margin-bottom:8px;">
+                            <div style="font-size:.75rem;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">ผู้ตรวจสอบ</div>
+                            <div class="cp-inspector-list">
+                                <div v-for="grp in recipient_list" class="cp-inspector-group">
+                                    <div class="cp-inspector-group-title">{{ grp.ITEM_TITLE }}</div>
+                                    <div class="cp-inspector-members">
+                                        <span v-for="empId in grp.ITEM_MEMBER.split(',')" class="cp-inspector-member">
+                                            <i class="fas fa-user" style="font-size:.6rem;opacity:.5;margin-right:3px;"></i>{{ user_option[empId] || empId }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div id="b_eidt" class="col-md-6">
-                            <label id="lb_eidt" class="form-label-cp">Edit point <span class="th">จุดที่แก้ไข</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_edit" v-model="slt_edit" data-placeholder="Select"><option v-for="item in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_edit" v-model="slt_edit" disabled data-placeholder="Select"><option v-for="item in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                        </div>
+                    </div>
+                </div>
 
-                        <div id="b_part" class="col-md-6">
-                            <label id="lb_part" class="form-label-cp">Part NO.</label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_part_no" v-model="slt_part_no" data-placeholder="Select"><option v-for="item in partsList">{{item.ITEM_ID}}</option></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_part_no" v-model="slt_part_no" disabled data-placeholder="Select"><option v-for="item in partsList">{{item.ITEM_ID}}</option></select>}
-                        </div>
+                <!-- Modal Body: EDIT/ADD mode (form inputs) -->
+                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                {
+                    <div v-if="!viewMode" class="modal-body" style="padding:20px;">
+                        <div class="row g-3">
 
-                        <div id="b_mold" class="col-md-6">
-                            <label id="lb_mold" class="form-label-cp">Mold NO.</label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" data-placeholder="Select"><option v-for="item in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" disabled data-placeholder="Select"><option v-for="item in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                        </div>
+                            <div class="col-md-6">
+                                <label class="form-label-cp">Shift <span class="th">กะทำงาน</span></label>
+                                <select class="selectpicker" id="slt_shift" v-model="slt_shift" data-placeholder="เลือก Shift"><option value="1">Day</option><option value="2">Night</option></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-cp">Team <span class="th">ทีม</span></label>
+                                <select class="selectpicker" id="slt_team" v-model="slt_team" data-placeholder="เลือก Team"><option value="A">A</option><option value="B">B</option></select>
+                            </div>
 
-                        <div id="b_change" class="col-md-6">
-                            <label id="lb_change" class="form-label-cp">Change topic <span class="th">หัวข้อการเปลี่ยนแปลง</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_change" v-model="slt_change" data-placeholder="Select"><option v-for="item in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_change" v-model="slt_change" disabled data-placeholder="Select"><option v-for="item in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                        </div>
+                            <div id="b_from" class="col-md-6">
+                                <label id="lb_from" class="form-label-cp">Employee on leave <span class="th">คนประจำจุด</span></label>
+                                <select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>
+                            </div>
+                            <div id="b_to" class="col-md-6">
+                                <label id="lb_to" class="form-label-cp">Replacement employee <span class="th">คนแทนจุด</span></label>
+                                <select class="selectpicker" data-live-search="true" id="slt_instead" v-model="slt_instead" data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>
+                            </div>
+                            <div id="b_mc" class="col-md-6">
+                                <label id="lb_mc" class="form-label-cp">M/C NO. <span class="th">เครื่องจักร</span></label>
+                                <select class="selectpicker" data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" data-placeholder="Select"><optgroup v-for="items in mcsList" :label="items.sizeTon"><option v-for="item in items.list">{{item}}</option></optgroup></select>
+                            </div>
+                            <div id="b_eidt" class="col-md-6">
+                                <label id="lb_eidt" class="form-label-cp">Edit point <span class="th">จุดที่แก้ไข</span></label>
+                                <select class="selectpicker" data-live-search="true" id="slt_edit" v-model="slt_edit" data-placeholder="Select"><option v-for="item in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>
+                            </div>
+                            <div id="b_part" class="col-md-6">
+                                <label id="lb_part" class="form-label-cp">Part NO.</label>
+                                <select class="selectpicker" data-live-search="true" id="slt_part_no" v-model="slt_part_no" data-placeholder="Select"><option v-for="item in partsList">{{item.ITEM_ID}}</option></select>
+                            </div>
+                            <div id="b_mold" class="col-md-6">
+                                <label id="lb_mold" class="form-label-cp">Mold NO.</label>
+                                <select class="selectpicker" data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" data-placeholder="Select"><option v-for="item in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>
+                            </div>
+                            <div id="b_change" class="col-md-6">
+                                <label id="lb_change" class="form-label-cp">Change topic <span class="th">หัวข้อการเปลี่ยนแปลง</span></label>
+                                <select class="selectpicker" data-live-search="true" id="slt_change" v-model="slt_change" data-placeholder="Select"><option v-for="item in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>
+                            </div>
+                            <div id="b_process" class="col-md-6">
+                                <label id="lb_process" class="form-label-cp">Process</label>
+                                <select class="selectpicker" data-live-search="true" id="slt_process" v-model="slt_process" data-placeholder="Select"><option v-for="item in processList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>
+                            </div>
 
-                        <div id="b_process" class="col-md-6">
-                            <label id="lb_process" class="form-label-cp">Process</label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<select class="selectpicker" data-live-search="true" id="slt_process" v-model="slt_process" data-placeholder="Select"><option v-for="item in processList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                            else
-                            {<select class="selectpicker" data-live-search="true" id="slt_process" v-model="slt_process" disabled data-placeholder="Select"><option v-for="item in processList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label-cp">Detail <span class="th">รายละเอียด</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {
+                            <div class="col-12">
+                                <label class="form-label-cp">Detail <span class="th">รายละเอียด</span></label>
                                 <select class="selectpicker" id="txt_details" name="txt_details[]"
                                         data-placeholder="Select detail" v-model="slt_detail"
                                         multiple v-on:change="set_risk()">
@@ -359,114 +442,104 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
                                         <option v-for="item in items.list" :value="item.id">{{item.detail}}</option>
                                     </optgroup>
                                 </select>
-                            }
-                        </div>
-
-                        <div class="col-12" v-if="slt_detail.length > 0">
-                            <div class="detail-wrap">
-                                <table class="table table-sm table-bordered mb-0">
-                                    <thead><tr>
-                                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G") {<th style="width:32px;">#</th>}
-                                        <th>รายละเอียด</th><th>ข้อควรระวัง</th>
-                                    </tr></thead>
-                                    <tbody>
-                                        <tr v-for="(item, idx) in slt_detail">
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {<td class="text-center"><i class="fas fa-times-circle text-danger" style="cursor:pointer;" v-on:click="remove_select_detail(idx); set_risk()"></i></td>}
-                                            <td><small>{{slt_action[idx]}}</small></td>
-                                            <td><textarea class="form-control form-control-sm" v-model="slt_warning[idx]" disabled :rows="slt_warning[idx]?slt_warning[idx].split('\n').length+1:2"></textarea></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
-                        </div>
 
-                        <div class="col-12">
-                            <label class="form-label-cp">More Detail <span class="th">เพิ่มเติม</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<textarea class="form-control" rows="3" id="remark" v-model="slt_remark" placeholder="รายละเอียดเพิ่มเติม..."></textarea>}
-                            else
-                            {<textarea class="form-control" rows="3" id="remark" v-model="slt_remark" disabled></textarea>}
-                        </div>
+                            <div class="col-12" v-if="slt_detail.length > 0">
+                                <div class="detail-wrap">
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead><tr><th style="width:32px;">#</th><th>รายละเอียด</th><th>ข้อควรระวัง</th></tr></thead>
+                                        <tbody>
+                                            <tr v-for="(item, idx) in slt_detail">
+                                                <td class="text-center"><i class="fas fa-times-circle text-danger" style="cursor:pointer;" v-on:click="remove_select_detail(idx); set_risk()"></i></td>
+                                                <td><small>{{slt_action[idx]}}</small></td>
+                                                <td><textarea class="form-control form-control-sm" v-model="slt_warning[idx]" disabled :rows="slt_warning[idx]?slt_warning[idx].split('\n').length+1:2"></textarea></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
-                        <div id="b_file" class="col-12">
-                            <label id="lb_file" class="form-label-cp">รูป / เอกสาร (ถ้ามี)</label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {<input class="form-control form-control-sm" type="file" id="formFileMultiple" v-on:change="onFileChange" accept="image/*,.pdf,.xlsx,.docx,.pptx,.txt" multiple />}
-                            <div v-if="fileList.length>0" class="row mt-2">
-                                <div v-for="(f,fi) in fileList" class="col-4 upload-boxs">
-                                    <div class="upload-item">
-                                        <img v-if="f.file_type=='image'" class="image-upload" :src="'/src/upload/'+f.name" :title="f.name" onclick="openLightbox(this)" style="cursor:pointer;" />
-                                        <a v-else :href="'/src/upload/'+f.name" target="_blank" download>
-                                            <img class="image-upload" style="cursor:pointer;"
-                                                 :src="'/src/icons/'+(f.file_type=='pdf'?'pdf':f.file_type=='excel'?'xls':f.file_type=='powerpoint'?'ppt':f.file_type=='word'?'word':'text')+'.png'" />
-                                        </a>
-                                        <p :title="f.name">{{f.name}}</p>
-                                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                        {<button class="removeItem" onclick="return false;" v-on:click="removeImage(fi)"><i class="fas fa-times-circle"></i></button>}
+                            <div class="col-12">
+                                <label class="form-label-cp">More Detail <span class="th">เพิ่มเติม</span></label>
+                                <textarea class="form-control" rows="3" id="remark" v-model="slt_remark" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+                            </div>
+
+                            <div id="b_file" class="col-12">
+                                <label id="lb_file" class="form-label-cp">รูป / เอกสาร (ถ้ามี)</label>
+                                <input class="form-control form-control-sm" type="file" id="formFileMultiple" v-on:change="onFileChange" accept="image/*,.pdf,.xlsx,.docx,.pptx,.txt" multiple />
+                                <div v-if="fileList.length>0" class="row mt-2">
+                                    <div v-for="(f,fi) in fileList" class="col-4 upload-boxs">
+                                        <div class="upload-item">
+                                            <img v-if="f.file_type=='image'" class="image-upload" :src="'/src/upload/'+f.name" :title="f.name" onclick="openLightbox(this)" style="cursor:pointer;" />
+                                            <a v-else :href="'/src/upload/'+f.name" target="_blank" download>
+                                                <img class="image-upload" style="cursor:pointer;" :src="'/src/icons/'+(f.file_type=='pdf'?'pdf':f.file_type=='excel'?'xls':f.file_type=='powerpoint'?'ppt':f.file_type=='word'?'word':'text')+'.png'" />
+                                            </a>
+                                            <p :title="f.name">{{f.name}}</p>
+                                            <button class="removeItem" onclick="return false;" v-on:click="removeImage(fi)"><i class="fas fa-times-circle"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-12">
-                            <hr style="margin:4px 0 12px;" />
-                            <label class="form-label-cp">Inspector <span class="th">ผู้ตรวจสอบ</span></label>
-                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                            {
+                            <div class="col-12">
+                                <hr style="margin:4px 0 12px;" />
+                                <label class="form-label-cp">Inspector <span class="th">ผู้ตรวจสอบ</span></label>
                                 <select class="selectpicker" id="slt_recipient" data-placeholder="Select group"
                                         v-model="slt_recipient" multiple v-on:change="set_recipient()">
                                     <option v-for="item in recipient_option" :value="item.ITEM_ID">{{item.ITEM_TITLE}}</option>
                                 </select>
-                            }
-                        </div>
-
-                        <div class="col-12" v-if="recipient_list.length>0">
-                            <div class="detail-wrap">
-                                <table class="table table-sm table-bordered mb-0">
-                                    <thead><tr>
-                                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G") {<th style="width:32px;">#</th>}
-                                        <th>Group</th><th>Members</th>
-                                    </tr></thead>
-                                    <tbody>
-                                        <tr v-for="(item, ri) in recipient_list">
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {<td class="text-center"><i class="fas fa-times-circle text-danger" style="cursor:pointer;" v-on:click="remove_select_recipient(ri)"></i></td>}
-                                            <td><b>{{item.ITEM_TITLE}}</b></td>
-                                            <td>
-                                                <span v-for="empId in item.ITEM_MEMBER.split(',')" class="inspector-chip">
-                                                    <i class="fas fa-user" style="font-size:.65rem;opacity:.5;"></i>
-                                                    {{user_option[empId]}}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
+
+                            <div class="col-12" v-if="recipient_list.length>0">
+                                <div class="detail-wrap">
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead><tr><th style="width:32px;">#</th><th>Group</th><th>Members</th></tr></thead>
+                                        <tbody>
+                                            <tr v-for="(item, ri) in recipient_list">
+                                                <td class="text-center"><i class="fas fa-times-circle text-danger" style="cursor:pointer;" v-on:click="remove_select_recipient(ri)"></i></td>
+                                                <td><b>{{item.ITEM_TITLE}}</b></td>
+                                                <td>
+                                                    <span v-for="empId in item.ITEM_MEMBER.split(',')" class="inspector-chip">
+                                                        <i class="fas fa-user" style="font-size:.65rem;opacity:.5;"></i> {{user_option[empId]}}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
-
                     </div>
-                </div>
+                }
 
+                <!-- Modal Footer -->
                 <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:12px 20px;gap:8px;">
                     @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
                     {
-                        <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-cn" v-on:click="cancelAdd">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm" v-if="!IsAdd" id="btn-d" v-on:click="deleteItem">
-                            <i class="fas fa-trash"></i> ลบ
-                        </button>
-                        <button type="button" class="btn btn-primary btn-sm" id="btn-s" v-on:click="Save_Data()">
-                            <i class="fas fa-save"></i> บันทึก
-                        </button>
+                        <template v-if="!viewMode">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-cn" v-on:click="cancelAdd">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" v-if="!IsAdd" id="btn-d" v-on:click="deleteItem">
+                                <i class="fas fa-trash"></i> ลบ
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" id="btn-s" v-on:click="Save_Data()">
+                                <i class="fas fa-save"></i> บันทึก
+                            </button>
+                        </template>
+                        <template v-else>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal"><i class="fas fa-times"></i> ปิด</button>
+                        </template>
                     }
                     else
-                    {<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">ปิด</button>}
+                    {<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal"><i class="fas fa-times"></i> ปิด</button>}
                 </div>
+
             </div>
         </div>
     </div>
+
 </div>
 
 <div id="imgLightbox">
@@ -481,6 +554,8 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
     function openLightbox(img){ document.getElementById('lbImg').src=img.src; document.getElementById('imgLightbox').classList.add('open'); }
     function closeLightbox(){ document.getElementById('imgLightbox').classList.remove('open'); }
 
+    const IS_VIEWER = '@(ViewBag.Data.ROLE == "V" || ViewBag.Data.ROLE == "G" ? "true" : "false")' === 'true';
+
     const { createApp } = Vue;
     createApp({
         data() {
@@ -488,6 +563,7 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
                 currentYear:  new Date().getFullYear(),
                 currentMonth: new Date().getMonth(),
                 eventMap: {},
+                myList: [],
                 date_select: new Date(),
                 dateFormat: (d) => `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`,
                 changeType:'', fileList:[], images:[], tempID:[], fileSize:0,
@@ -500,6 +576,12 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
                 groupList:[], IsAdd:false, color_list:[], root:null,
                 details_list:[], details_option:[],
                 recipient_option:[], slt_recipient:[], recipient_list:[], user_option:[], file_ids:[],
+                viewMode: IS_VIEWER,
+                view_informed: '',
+                view_date_display: '',
+                view_creator: '',
+                view_spot_name: '',
+                view_instead_name: '',
             };
         },
         components: { Datepicker: VueDatePicker },
@@ -511,7 +593,7 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
             calendarDays() {
                 const y=this.currentYear, m=this.currentMonth;
                 let first = new Date(y,m,1).getDay();
-                first = (first+6)%7; // Mon=0
+                first = (first+6)%7;
                 const dim = new Date(y,m+1,0).getDate();
                 const today = new Date();
                 const cells = [];
@@ -545,6 +627,7 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
             await self.getMoldNO(); await self.getProcess(); await self.getEdit();
             await self.getChange(); await self.getPart(); await self.getMC(); await self.getUser();
             await self.deleteChangePointOver();
+            await self.getMyList();
             await $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process,#slt_recipient').selectpicker('destroy');
             await $('select').selectpicker('render');
             await $("#btn-change").css('opacity','1');
@@ -556,6 +639,21 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
             nextMonth(){ if(this.currentMonth===11){this.currentMonth=0;this.currentYear++;}else{this.currentMonth++;} },
             goToToday(){ const t=new Date(); this.currentYear=t.getFullYear(); this.currentMonth=t.getMonth(); },
             navigateToDetail(dateKey){ if(!dateKey) return; window.open('@Url.Action("detail","home",new{id="id_date"})'.replace("id_date",dateKey.replaceAll("/","")),'_self'); },
+
+            cpTypeColor(t){ return {'1':'var(--color_man)','2':'var(--color_mc)','3':'var(--color_mold)','4':'var(--color_met)','5':'var(--color_part)'}[t]||'#94a3b8'; },
+            cpTypeLabel(t){ return {'1':'Man','2':'Machine','3':'Mold/DIE','4':'Method','5':"Part/Mat'l"}[t]||''; },
+            cpBrief(item){
+                if(item.STATUS_TYPE==='1') return item.MAN_SPOT_NAME_THA||item.MAN_SPOT||'—';
+                if(item.STATUS_TYPE==='2') return item.MC_NO||'—';
+                if(item.STATUS_TYPE==='3') return item.MOLD_NO||item.PART_NO||'—';
+                if(item.STATUS_TYPE==='4') return item.MC_NO||item.PART_NO||'—';
+                if(item.STATUS_TYPE==='5') return item.PART_NO||item.MC_NO||'—';
+                return '—';
+            },
+            cpDateDisplay(dateStr){
+                if(!dateStr) return '';
+                try { const d=new Date(dateStr); return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; } catch(e){ return dateStr; }
+            },
 
             async getList() {
                 const self=this;
@@ -574,6 +672,12 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
                         });
                         self.eventMap=map;
                     }
+                });
+            },
+            async getMyList(){
+                const self=this;
+                await $.ajax({ url:"@Url.Action("ListItem_ChangePoint_My","lookup")", type:"POST", data:{},
+                    success(r){ if(r.success) self.myList=r.data||[]; }
                 });
             },
             async getProcess(){ const self=this; await $.ajax({ url:"@Url.Action("Option_Process","lookup")", type:"POST", data:{}, success(r){ if(r.success) self.processList=r.data; } }); },
@@ -617,9 +721,48 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
             async remove_select_detail(idx){ this.slt_detail.splice(idx,1); await $("#txt_details").selectpicker("val",this.slt_detail); },
             async remove_select_recipient(idx){ this.slt_recipient.splice(idx,1); await $("#slt_recipient").selectpicker("val",this.slt_recipient); await this.set_recipient(); },
 
+            _setViewFields(info){
+                const self=this;
+                self.modal_type=info.STATUS_TYPE;
+                self.title_modal=self.cpTypeLabel(info.STATUS_TYPE);
+                self.view_informed=info.INFORMED;
+                self.view_date_display=self.cpDateDisplay(info.DATE_CHANGE);
+                self.view_creator=`${info.GNAME_ENG_CREATE||''} ${info.FNAME_ENG_CREATE||''}`.trim()||info.CREATE_BY||'—';
+                self.view_spot_name=info.MAN_SPOT_NAME_THA||info.MAN_SPOT||'';
+                self.view_instead_name=info.MAN_INSTEAD_NAME_THA||info.MAN_INSTEAD||'';
+                self.slt_id=info.ID; self.slt_shift=info.SHIFT; self.slt_team=info.SHIFT_TEAM;
+                self.slt_spot=info.MAN_SPOT; self.slt_instead=info.MAN_INSTEAD;
+                self.slt_mc_no=info.MC_NO; self.slt_edit=info.EDIT_POINT;
+                self.slt_part_no=info.PART_NO; self.slt_mold_no=info.MOLD_NO;
+                self.slt_change=info.CHANGE; self.slt_process=info.PROCESS_POINT;
+                self.slt_remark=info.REMARK||'';
+                self.slt_action=info.ACTION?info.ACTION.split(','):[];
+                self.slt_warning=info.WARNINGS?info.WARNINGS.split(','):[];
+                self.slt_detail=info.DETAILS?info.DETAILS.split(','):[];
+                self.slt_recipient=info.RECIPIENT_ID?info.RECIPIENT_ID.split(','):[];
+            },
+
+            async Open_View_Modal(item){
+                const self=this;
+                self.viewMode=true;
+                self._setViewFields(item);
+                self.fileList=[];
+                await self.getFileList(item.ID);
+                await self.set_recipient();
+                const modal=bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal'));
+                modal.show();
+            },
+
             async Open_Modal(status,type,id){
-                const self=this; const modal=bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal'));
+                const self=this;
+                self.viewMode=IS_VIEWER;
+                const modal=bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal'));
                 self.changeType=type; self.modal_type=type;
+
+                if(IS_VIEWER){
+                    modal.show(); return;
+                }
+
                 $('[id^="lb_"],[id^="b_"]').hide();
                 await self.get_detail_risk(type);
                 switch(type){
@@ -637,7 +780,7 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
                 } else {
                     self.IsAdd=false;
                     const info=self.dataList.find(i=>i.ID===id); if(!info) return;
-                    Object.assign(self,{slt_id:info.ID,slt_shift:info.SHIFT,slt_team:info.SHIFT_TEAM,slt_spot:info.MAN_SPOT,slt_instead:info.MAN_INSTEAD,slt_edit:info.EDIT_POINT,slt_mc_no:info.MC_NO,slt_mold_no:info.MOLD_NO,slt_part_no:info.PART_NO,slt_process:info.PROCESS_POINT,slt_change:info.CHANGE,slt_remark:info.REMARK,slt_recipient:info.RECIPIENT_ID?info.RECIPIENT_ID.split(','):[],slt_detail:info.DETAILS?info.DETAILS.split(','):[],slt_action:info.ACTION?info.ACTION.split(','):[],slt_warning:info.WARNINGS?info.WARNINGS.split(','):[],fileList:[],images:[]});
+                    self._setViewFields(info);
                     $("#formFileMultiple").val(null);
                     await self.getFileList(self.slt_id); await self.set_recipient();
                     await $("#slt_mold_no").selectpicker("val",self.slt_mold_no); await $("#slt_part_no").selectpicker("val",self.slt_part_no);
@@ -687,12 +830,12 @@ img.image-upload { width:100%;height:50px;object-fit:contain; }
                 const p={dates:self.date_select,spot:self.slt_spot,instead:self.slt_instead,mc_no:self.slt_mc_no,edit:self.slt_edit,part_no:self.slt_part_no,mold_no:self.slt_mold_no,change:self.slt_change,process:self.slt_process,detail:self.slt_detail.toString(),action:self.slt_action.toString(),warning:self.slt_warning.toString(),type:self.changeType,spot_eng:se,spot_tha:st,instead_eng:ie,instead_tha:it,shift:self.slt_shift,team:self.slt_team,remark:self.slt_remark,recipient:self.slt_recipient.toString(),recipient_list:self.recipient_list};
                 if(!self.IsAdd) p.id=self.slt_id; if(self.IsAdd) p.file_ids=self.file_ids.map(d=>`'${d}'`).join();
                 const url=self.IsAdd?"@Url.Action("AddItem_ChangePoint","lookup")":"@Url.Action("editItem_ChangePoint","lookup")";
-                $.ajax({url,type:"POST",data:p, success(r2){ swal({title:'Alert',text:r2.Message,type:r2.success?'success':'warning',timer:1200,showCancelButton:false,showConfirmButton:false}); if(r2.success) setTimeout(()=>{ self.getList(); bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal')).hide(); },1100); }});
+                $.ajax({url,type:"POST",data:p, success(r2){ swal({title:'Alert',text:r2.Message,type:r2.success?'success':'warning',timer:1200,showCancelButton:false,showConfirmButton:false}); if(r2.success) setTimeout(async()=>{ await self.getList(); await self.getMyList(); bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal')).hide(); },1100); }});
                 $('#btn-cn').prop('disabled',false).html('<i class="fas fa-times"></i> Cancel'); $('#btn-s').prop('disabled',false).html('<i class="fas fa-save"></i> บันทึก');
             },
             deleteItem(){
                 const self=this;
-                alertBoxConfirm("Alert","ต้องการลบรายการนี้ใช่ไหม?","",function(ok){ if(!ok) return; $.ajax({url:"@Url.Action("DeleteItem_ChangePoint","lookup")",type:"POST",data:{item_id:self.slt_id},success(r){swal({title:'Alert',text:r.Message,type:r.success?'success':'warning',timer:1100,showCancelButton:false,showConfirmButton:false});if(r.success) setTimeout(()=>{ self.getList(); bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal')).hide(); },1000);}}); });
+                alertBoxConfirm("Alert","ต้องการลบรายการนี้ใช่ไหม?","",function(ok){ if(!ok) return; $.ajax({url:"@Url.Action("DeleteItem_ChangePoint","lookup")",type:"POST",data:{item_id:self.slt_id},success(r){swal({title:'Alert',text:r.Message,type:r.success?'success':'warning',timer:1100,showCancelButton:false,showConfirmButton:false});if(r.success) setTimeout(async()=>{ await self.getList(); await self.getMyList(); bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal')).hide(); },1000);}}); });
             },
             async deleteChangePointOver(){ await $.ajax({url:"@Url.Action("ListItem_ChangePoint_Over","lookup")",type:"POST",data:{},success(r){if(r.success&&r.data.length>0) r.data.forEach(item=>{const fd=new FormData();fd.append('item_id',item.ID);$.ajax({url:'@Url.Action("DeleteItem_ChangePoint","lookup")',type:'POST',data:fd,dataType:'json',contentType:false,processData:false,success(){}});});}}); },
         }

@@ -165,6 +165,11 @@ namespace Change_Point.Controllers
             public string MAN_SPOT_NAME_THA { get; set; }
             public string MAN_INSTEAD_NAME_ENG { get; set; }
             public string MAN_INSTEAD_NAME_THA { get; set; }
+            public string INFORMED { get; set; }
+            public string CREATE_BY { get; set; }
+            public string CREATE_DATE { get; set; }
+            public string GNAME_ENG_CREATE { get; set; }
+            public string FNAME_ENG_CREATE { get; set; }
 
         }
         public ActionResult Index()
@@ -1863,6 +1868,79 @@ namespace Change_Point.Controllers
                 conn.Close();
             }
 
+        }
+
+        public ActionResult ListItem_ChangePoint_My()
+        {
+            OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["htmfg2t"].ConnectionString);
+
+            try
+            {
+                List<CHANGE_POINT> result = new List<CHANGE_POINT>();
+
+                var gT = Session["GROUP_ID"].ToString();
+                var empNo = Session["EMP_NO"].ToString();
+
+                string command =
+                    "SELECT CP_CALENDAR.*, " +
+                    "e1.GNAME_ENG as GNAME_ENG_CREATE, e1.FNAME_ENG as FNAME_ENG_CREATE " +
+                    "FROM CP_CALENDAR " +
+                    "LEFT JOIN CENTER_TM_EMPLOYEE e1 ON CP_CALENDAR.CREATE_BY = e1.EMP_NO " +
+                    "WHERE CP_CALENDAR.STATUS_TYPE <> 'hide' " +
+                    "AND CP_CALENDAR.GROUP_ID = '" + gT + "' " +
+                    "AND CP_CALENDAR.CREATE_BY = '" + empNo + "' " +
+                    "ORDER BY CP_CALENDAR.DATE_CHANGE DESC";
+
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = conn;
+                cmd.CommandText = command;
+                cmd.CommandType = CommandType.Text;
+
+                conn.Open();
+
+                using (OracleDataReader dtreader = cmd.ExecuteReader())
+                {
+                    while (dtreader.Read())
+                    {
+                        var cp = new CHANGE_POINT
+                        {
+                            ID = dtreader["ID"].ToString(),
+                            DATE_CHANGE = dtreader["DATE_CHANGE"].ToString(),
+                            MAN_SPOT = dtreader["MAN_SPOT"].ToString(),
+                            MAN_INSTEAD = dtreader["MAN_INSTEAD"].ToString(),
+                            MC_NO = dtreader["MC_NO"].ToString(),
+                            EDIT_POINT = dtreader["EDIT_POINT"].ToString(),
+                            PART_NO = dtreader["PART_NO"].ToString(),
+                            MOLD_NO = dtreader["MOLD_NO"].ToString(),
+                            CHANGE = dtreader["CHANGE"].ToString(),
+                            PROCESS_POINT = dtreader["PROCESS_POINT"].ToString(),
+                            DETAILS = dtreader["DETAILS"].ToString(),
+                            WARNINGS = dtreader["WARNINGS"].ToString(),
+                            STATUS_TYPE = dtreader["STATUS_TYPE"].ToString(),
+                            MAN_SPOT_NAME_ENG = dtreader["MAN_SPOT_NAME_ENG"].ToString(),
+                            MAN_SPOT_NAME_THA = dtreader["MAN_SPOT_NAME_THA"].ToString(),
+                            MAN_INSTEAD_NAME_ENG = dtreader["MAN_INSTEAD_NAME_ENG"].ToString(),
+                            MAN_INSTEAD_NAME_THA = dtreader["MAN_INSTEAD_NAME_THA"].ToString(),
+                            INFORMED = dtreader["INFORMED"].ToString(),
+                            CREATE_BY = dtreader["CREATE_BY"].ToString(),
+                            CREATE_DATE = dtreader["CREATE_DATE"].ToString(),
+                            GNAME_ENG_CREATE = dtreader["GNAME_ENG_CREATE"].ToString(),
+                            FNAME_ENG_CREATE = dtreader["FNAME_ENG_CREATE"].ToString(),
+                        };
+                        result.Add(cp);
+                    }
+                    return Json(new { data = result, success = true }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = "Error Code " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Dispose();
+                conn.Close();
+            }
         }
 
         public ActionResult ListItem_ChangePoint_Over()
