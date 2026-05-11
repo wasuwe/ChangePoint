@@ -5,23 +5,84 @@
 @Styles.Render("~/Content/bootstrap-select.min.css")
 
 <style>
-    .sa-button-container {
-        margin-top: 20px;
+    .sa-button-container { margin-top: 20px; }
+    a.dashboard-link { position:absolute;top:10px;right:20px; }
+    .dropdown.bootstrap-select { width:100% !important; }
+    button.btn.dropdown-toggle.bs-placeholder.btn-light { border:1px solid #999 !important; }
+
+    /* ── Modern Login ── */
+    body { margin:0; background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 60%,#0f172a 100%); }
+
+    .LoginBox {
+        display:flex;justify-content:center;align-items:center;
+        min-height:100vh;
     }
 
-    a.dashboard-link {
-        position: absolute;
-        top: 10px;
-        right: 20px;
+    .loginForm {
+        width:380px;
+        background:#fff;
+        border-radius:20px;
+        padding:48px 40px 36px;
+        box-shadow:0 20px 60px rgba(0,0,0,.35);
+        position:relative;
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
     }
 
-    .dropdown.bootstrap-select {
-        width: 100% !important;
+    .btnSwitch-2, .btnSwitch-1 {
+        position:absolute;
+        right:20px; top:20px;
+        border-radius:50%; width:40px; height:40px;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; font-size:1.2rem;
+        box-shadow:0 2px 8px rgba(0,0,0,.15);
+        border: 2px solid;
+        background:#fff;
+    }
+    .btnSwitch-2 { color:#f59e0b; border-color:#f59e0b; }
+    .btnSwitch-1 { color:#1e293b; border-color:#1e293b; }
+
+    .loginForm > div:first-of-type { font-size:.75rem;font-weight:600;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px; }
+
+    .LoginTitle {
+        font-size:1.6rem; font-weight:800;
+        color:#1e293b; margin-bottom:28px;
+        display:flex; align-items:center;
+    }
+    .LoginMember, .LoginVisitor { overflow:hidden; white-space:nowrap; transition:all .35s; max-width:0; }
+    .LoginMember.active { max-width:160px; }
+    .LoginVisitor.active { max-width:180px; }
+    .LoginText { color:#3b82f6; }
+
+    .LoginInput {
+        display:flex; flex-direction:column; gap:4px;
+        margin-bottom:16px;
+    }
+    .LoginInput-Text { font-size:.8rem;font-weight:600;color:#475569; }
+    .LoginInput-Input input, .txtbox {
+        width:100%; padding:10px 14px;
+        border:1.5px solid #e2e8f0;
+        border-radius:9px; font-size:.9rem;
+        color:#1e293b;
+        transition:border-color .15s;
+        outline:none;
+    }
+    .LoginInput-Input input:focus, .txtbox:focus {
+        border-color:#3b82f6;
+        box-shadow:0 0 0 3px rgba(59,130,246,.12);
     }
 
-    button.btn.dropdown-toggle.bs-placeholder.btn-light {
-        border: 1px solid #999 !important;
-    }
+    .LoginButton { margin:8px 0 4px; }
+    .LoginButton button { width:100%;padding:11px;font-size:.95rem;font-weight:600;border-radius:10px; }
+
+    .LoginHR { display:flex;align-items:center;gap:10px;margin:12px 0; }
+    .LoginHR hr { flex:1;margin:0;border-color:#e2e8f0; }
+    .LoginHR label { font-size:.78rem;color:#94a3b8;white-space:nowrap; }
+
+    .ForgotPassowrd { font-size:.78rem;text-align:center; }
+    .ForgotPassowrd a { color:#94a3b8; }
+    .ForgotPassowrd a:hover { color:#3b82f6; }
 </style>
 
 <div id="MainApp" style="display: none;" >
