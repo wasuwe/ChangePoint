@@ -1,9 +1,7 @@
 ﻿@{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "รายการ Change Point";
 }
 
-<!-- Add the evo-calendar.css for styling -->
-@Styles.Render("~/Content/evo-calendar.min.css")
 @Styles.Render("~/Content/bootstrap-select.min.css")
 
 <style>
@@ -378,7 +376,30 @@
            display: none;
            }
        }
+
+    /* ── Modern overrides ── */
+    :root { --color_man:#22c55e; --color_mc:#ef4444; --color_mold:#a855f7; --color_met:#3b82f6; --color_part:#06b6d4; }
+    .title-box { border-radius:8px;border:none;box-shadow:none;padding:8px 16px;font-size:.82rem;letter-spacing:.08em;font-weight:700;color:#fff;margin-bottom:12px; }
+    .title-box.title-man  { background:var(--color_man); }
+    .title-box.title-mc   { background:var(--color_mc); }
+    .title-box.title-mold { background:var(--color_mold); }
+    .title-box.title-met  { background:var(--color_met); }
+    .title-box.title-part { background:var(--color_part); }
+    .table-box { margin-left:0;box-shadow:0 2px 12px rgba(0,0,0,.07);border-radius:10px;padding:12px;margin-bottom:24px; }
+    .btn-add { opacity:0 !important; }
+    .btn-add.active { opacity:1 !important;width:auto !important;background:#3b82f6 !important;border-color:#3b82f6 !important;color:#fff !important;border-radius:9px !important; }
+    .btn-add.active button { color:#fff !important; }
+    .modal-header { background:#1e293b !important;color:#fff !important;border-radius:0 !important; }
+    .modal-header .btn-close { filter:invert(1); }
+    .no-data-box { box-shadow:0 2px 12px rgba(0,0,0,.07);border-radius:10px;padding:40px 16px; }
+    .header { border-bottom:2px solid #e2e8f0 !important;margin-bottom:16px !important;padding-bottom:12px !important; }
+    #imgLightbox { display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);align-items:center;justify-content:center; }
+    #imgLightbox.open { display:flex; }
+    #imgLightbox img { max-width:90vw;max-height:85vh;border-radius:8px; }
+    #imgLightbox .lb-close { position:absolute;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer; }
 </style>
+
+<div id="imgLightbox"><span class="lb-close" onclick="document.getElementById('imgLightbox').classList.remove('open')">&times;</span><img id="lbImg" src="" alt="" /></div>
 
 <div class="container-fluid " id="MainApp">
     <!-- Add more images as needed -->
@@ -1139,7 +1160,6 @@
 </div>
 
 
-@Scripts.Render("~/Scripts/evo-calendar.min.js")
 @Scripts.Render("~/Scripts/bootstrap-select.min.js")
 
 
@@ -2142,7 +2162,7 @@
                     data: { item_group: self.slt_group },
                     success: function (result) {
                         if (result.success) {
-                            const url = '@Url.Action("detail", "home", new { id = "id_date"})'.replace("id_date", MM + dd + yyyy);
+                            const url = '@Url.Action("detail", "home_ver1", new { id = "id_date"})'.replace("id_date", MM + dd + yyyy);
                             window.open(url,'_self')
                         }
 
@@ -2237,7 +2257,7 @@
                     data: { item_group: gID},
                     success: function (result) {
                         if (result.success) {
-                            window.open("@Url.Action("index", "home")","_self")
+                            window.open("@Url.Action("index", "home_ver1")","_self")
                         }
 
                     }

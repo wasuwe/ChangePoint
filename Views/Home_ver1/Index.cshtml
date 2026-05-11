@@ -1,2082 +1,516 @@
-﻿@{
-    ViewBag.Title = "Home";
+@{
+    ViewBag.Title = "ปฏิทิน Change Point";
 }
 
-<!-- Add the evo-calendar.css for styling -->
-@Styles.Render("~/Content/evo-calendar.min.css")
 @Styles.Render("~/Content/bootstrap-select.min.css")
 
 <style>
-    /* scrollbar */
-    ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
-    }
-
-    ::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-        -webkit-border-radius: 10px;
-        border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        -webkit-border-radius: 10px;
-        border-radius: 10px;
-        background: #216583;
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
-    }
-
-        ::-webkit-scrollbar-thumb:window-inactive {
-            background: #216583;
-        }
-
-    .calendarbox {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 30px;
-        z-index: 1;
-    }
-
-    /*Man*/
-    .event-container > .event-icon > div.event-bullet-man,
-    .event-indicator > .type-bullet > div.type-man {
-        background-color: #9DE481 !important;
-    }
-
-    /*M/C*/
-    .event-container > .event-icon > div.event-bullet-mc,
-    .event-indicator > .type-bullet > div.type-mc {
-        background-color: #D81159 !important;
-    }
-
-    /*Mold/DIE*/
-    .event-container > .event-icon > div.event-bullet-mold,
-    .event-indicator > .type-bullet > div.type-mold {
-        background-color: #8A197F !important;
-    }
-
-    /*Method*/
-    .event-container > .event-icon > div.event-bullet-met,
-    .event-indicator > .type-bullet > div.type-met {
-        background-color: #91a6ff !important;
-    }
-
-    /*Part/Mat'l*/
-    .event-container > .event-icon > div.event-bullet-part,
-    .event-indicator > .type-bullet > div.type-part {
-        background-color: #73D2DE !important;
-    }
-
-    .event-indicator {
-        width: max-content;
-        bottom: -15px;
-    }
-
-    .royal-navy .calendar-sidebar > .month-list > .calendar-months {
-        padding: 0 15px 0 0;
-    }
-
-    .royal-navy .calendar-sidebar {
-        background-color: #216583;
-        -webkit-box-shadow: 5px 0 18px -3px #216583;
-        box-shadow: 5px 0 18px -3px #216583;
-    }
-
-        .royal-navy .calendar-sidebar > .month-list > .calendar-months > li.active-month {
-            background-color: rgba(0, 0, 0, .35) !important;
-        }
-
-        .royal-navy .calendar-sidebar > .month-list > .calendar-months > li:hover {
-            background-color: rgba(0, 0, 0, .2) !important;
-        }
-
-        .royal-navy .calendar-sidebar > .month-list > .calendar-months > li {
-            padding: 9px 30px;
-            border-radius: 0 25px 25px 0;
-        }
-
-        .royal-navy .calendar-sidebar > span#sidebarToggler {
-            width: 35px;
-            height: 35px;
-            top: 10px;
-            right: 0;
-            background-color: #f7be16;
-            border-radius: 50%;
-            padding: 8px;
-            -webkit-transform: translate(50%, 0);
-            -ms-transform: translate(50%, 0);
-            transform: translate(50%, 0);
-            -webkit-box-shadow: 0 5px 10px -3px #f7be16;
-            box-shadow: 0 5px 10px -3px #f7be16;
-            -webkit-transition: all .3s ease;
-            -o-transition: all .3s ease;
-            transition: all .3s ease;
-        }
-
-    .royal-navy button.icon-button > span.bars,
-    .royal-navy button.icon-button > span.bars::before,
-    .royal-navy button.icon-button > span.bars::after {
-        height: 3px;
-    }
-
-        .royal-navy button.icon-button > span.bars::before {
-            top: -6px;
-        }
-
-        .royal-navy button.icon-button > span.bars,
-        .royal-navy button.icon-button > span.bars::before,
-        .royal-navy button.icon-button > span.bars::after {
-            height: 3px;
-        }
-
-    .royal-navy th[colspan="7"] {
-        color: #216583;
-    }
-
-    .royal-navy tr.calendar-body .calendar-day .day.calendar-active,
-    .royal-navy tr.calendar-body .calendar-day .day.calendar-active:hover {
-        border-color: #164255;
-    }
-
-    .royal-navy tr.calendar-body .calendar-day .day:hover {
-        background-color: rgba(48, 152, 197, .25);
-        color: #164255;
-    }
-
-    .royal-navy .calendar-events {
-        padding-top: 50px;
-        padding-bottom: 40px;
-        background-color: #216583;
-        color: #fff;
-    }
-
-        .royal-navy .calendar-events > .event-header > p {
-            text-transform: uppercase;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #fff;
-            color: #fff;
-        }
-
-    .royal-navy .event-container:hover > .event-info > p {
-        color: #164255;
-    }
-
-    .royal-navy .event-container > .event-info > p {
-        color: #fff;
-    }
-
-    .royal-navy #eventListToggler {
-        width: 35px;
-        height: 35px;
-        top: 10px;
-        background-color: #f7be16;
-        border-radius: 50%;
-        padding: 6px;
-        -webkit-box-shadow: 0 5px 10px -3px #f7be16;
-        box-shadow: 0 5px 10px -3px #f7be16;
-        -webkit-transform: translateX(-10px);
-        -ms-transform: translateX(-10px);
-        transform: translateX(-10px);
-        -webkit-transition: all .3s ease;
-        -o-transition: all .3s ease;
-        transition: all .3s ease;
-    }
-
-
-    .royal-navy.sidebar-hide .calendar-sidebar > span#sidebarToggler {
-        -webkit-transform: translate(calc(100% + 10px), 0);
-        -ms-transform: translate(calc(100% + 10px), 0);
-        transform: translate(calc(100% + 10px), 0);
-        display: flex;
-    }
-
-    .royal-navy .calendar-sidebar > span#sidebarToggler {
-        width: 35px;
-        height: 35px;
-        top: 10px;
-        right: 0;
-        background-color: #f7be16;
-        border-radius: 50%;
-        padding: 8px;
-        -webkit-transform: translate(50%, 0);
-        -ms-transform: translate(50%, 0);
-        transform: translate(50%, 0);
-        -webkit-box-shadow: 0 5px 10px -3px #f7be16;
-        box-shadow: 0 5px 10px -3px #f7be16;
-        -webkit-transition: all .3s ease;
-        -o-transition: all .3s ease;
-        transition: all .3s ease;
-        display: flex;
-    }
-
-    .royal-navy.sidebar-hide .calendar-sidebar {
-        -webkit-box-shadow: none;
-        box-shadow: none;
-    }
-
-    .royal-navy .calendar-sidebar {
-        background-color: #216583;
-        -webkit-box-shadow: 5px 0 18px -3px #216583;
-        box-shadow: 5px 0 18px -3px #216583;
-    }
-
-    .royal-navy .event-list > .event-empty {
-        background-color: rgba(255, 255, 255, .15);
-        border: 1px solid #fff;
-    }
-
-        .royal-navy .event-list > .event-empty > p {
-            color: #fff;
-        }
-
-    .royal-navy .event-container > .event-info > p.event-title > span {
-        color: #fff;
-        border: 1px solid #164255;
-        border-radius: 15px;
-        background-color: rgb(22 66 85);
-    }
-
-    .btn-addbox {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        margin-top: 30px;
-    }
-
-
-    .col-form-label {
-        margin-bottom: 5px;
-    }
-
-    .col-form-label {
-        display: flex;
-        align-content: center;
-        align-items: flex-start;
-    }
-
-    .modal-header {
-        color: #ffffff;
-        background-color: #216583;
-    }
-
-    .dp__main {
-        width: 100%;
-    }
-
-    .dropdown.bootstrap-select {
-        width: 100% !important;
-        border: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: 7px;
-    }
-
-    button.btn.dropdown-toggle.btn-light {
-        background-color: var(--bs-body-bg);
-        background-clip: padding-box;
-    }
-
-    .header {
-        padding: 15px 0;
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        border-bottom: 5px solid #216583;
-    }
-
-    .select-group {
-        width: 250px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .hint-box {
-        display: flex;
-        gap: 10px;
-    }
-
-    .hint-item {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-    }
-
-    .btn-add {
-        /* position: absolute;
-            right: 20px;
-            top: 20px; */
-        z-index: 100;
-        background: beige;
-        padding: 7px 7px;
-        border-radius: 8px;
-    }
-
-    /* CSS */
-
-    .btn-add {
-        width: 0% !important;
-        opacity: 0;
-        align-items: center;
-        background-color: #fff;
-        border: 2px solid #000;
-        box-sizing: border-box;
-        color: #000;
-        cursor: pointer;
-        display: inline-flex;
-        fill: #000;
-        font-size: 16px;
-        font-weight: 600;
-        height: 40px;
-        justify-content: center;
-        letter-spacing: -.8px;
-        line-height: 24px;
-        outline: 0;
-        padding: 0 0;
-        text-align: center;
-        text-decoration: none;
-        transition: all .3s;
-        user-select: none;
-        -webkit-user-select: none;
-        touch-action: manipulation;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    }
-
-        .btn-add .dropdown-toggle {
-            overflow: hidden;
-        }
-
-        .btn-add.active {
-            width: 150px !important;
-            opacity: 1;
-            z-index: 2;
-        }
-
-
-        .btn-add button {
-            align-items: center;
-            background-color: unset !important;
-            border: unset !important;
-            color: #000;
-            cursor: pointer;
-            display: inline-flex;
-            fill: #000;
-            gap: 5px;
-        }
-
-        .btn-add:focus {
-            color: #171e29;
-        }
-
-        .btn-add:hover {
-            border-color: #06f;
-            color: #06f;
-            fill: #06f;
-        }
-
-        .btn-add:active {
-            border-color: #06f;
-            color: #06f;
-            fill: #06f;
-        }
-
-    #MainApp {
-        display: none;
-    }
-
-    .fileUploads-box {
-        position: relative;
-    }
-
-        .fileUploads-box .fileUploads {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-            .fileUploads-box .fileUploads input {
-                width: 100%;
-            }
-
-    .btn-add-file {
-        margin-left: 5px;
-        cursor: pointer;
-        font-size: 25px;
-        color: #3fb900;
-    }
-
-    .btn-remove-file {
-        margin-left: 5px;
-        cursor: pointer;
-        font-size: 25px;
-        color: #cb0000;
-    }
-
-
-
-    img.image-upload {
-        width: 100%;
-        height: 50px;
-        object-fit: contain;
-    }
-
-    .upload-item {
-        position: relative;
-        text-align: center;
-    }
-
-        .upload-item .removeItem {
-            border: none;
-            background: none;
-            color: red;
-            font-size: 20px;
-            position: absolute;
-            right: 0;
-            top: 0;
-        }
-
-    .upload-boxs {
-        margin-top: 25px;
-    }
-
-        .upload-boxs p {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            width: 135px;
-            height: 1.2em;
-            white-space: nowrap;
-        }
-
-    .image-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-        .image-gallery img {
-            width: 30%;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 999;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-    }
-
-    .modal-content {
-        max-width: 90%;
-        max-height: 90%;
-        display: block;
-        margin: 0 auto;
-        margin-top: 30px;
-        z-index: 2;
-        object-fit: cover;
-    }
-
-    .close {
-        color: #fff;
-        font-size: 40px;
-        position: absolute;
-        top: 10px;
-        right: 20px;
-        cursor: pointer;
-    }
-
-    .modal-backdrop {
-        z-index: 0 !important;
-    }
-
-    .dp__main {
-        width: 100%;
-    }
+:root {
+    --color_man:  #22c55e;
+    --color_mc:   #ef4444;
+    --color_mold: #a855f7;
+    --color_met:  #3b82f6;
+    --color_part: #06b6d4;
+}
+
+#MainApp { display: none; }
+
+.cal-toolbar { display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px; }
+.group-select { min-width:180px; }
+
+.stats-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px; }
+.stat-chip { display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:600; }
+.stat-chip .sd { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
+.chip-man  { background:color-mix(in srgb,var(--color_man)  12%,white); color:color-mix(in srgb,var(--color_man)  60%,#111); }
+.chip-mc   { background:color-mix(in srgb,var(--color_mc)   12%,white); color:color-mix(in srgb,var(--color_mc)   60%,#111); }
+.chip-mold { background:color-mix(in srgb,var(--color_mold) 12%,white); color:color-mix(in srgb,var(--color_mold) 60%,#111); }
+.chip-met  { background:color-mix(in srgb,var(--color_met)  12%,white); color:color-mix(in srgb,var(--color_met)  60%,#111); }
+.chip-part { background:color-mix(in srgb,var(--color_part) 12%,white); color:color-mix(in srgb,var(--color_part) 60%,#111); }
+.sd-man  { background:var(--color_man); }
+.sd-mc   { background:var(--color_mc); }
+.sd-mold { background:var(--color_mold); }
+.sd-met  { background:var(--color_met); }
+.sd-part { background:var(--color_part); }
+
+.cal-card { background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.08);overflow:hidden; }
+.cal-head { display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e2e8f0;background:#f8fafc; }
+.cal-month-label { font-size:1.15rem;font-weight:700;color:#1e293b; }
+.cal-nav-btns { display:flex;align-items:center;gap:6px; }
+.cal-nav-btn { width:34px;height:34px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s; }
+.cal-nav-btn:hover { background:#3b82f6;color:#fff;border-color:#3b82f6; }
+.cal-today-btn { padding:5px 14px;border-radius:8px;border:1px solid #e2e8f0;background:#fff;color:#475569;cursor:pointer;font-size:.8rem;font-weight:600;transition:all .15s; }
+.cal-today-btn:hover { background:#1e293b;color:#fff;border-color:#1e293b; }
+
+.cal-grid { display:grid;grid-template-columns:repeat(7,1fr); }
+.cal-dow { text-align:center;padding:10px 4px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;background:#f8fafc;border-bottom:1px solid #e2e8f0; }
+.cal-cell { min-height:90px;padding:8px 6px 6px;border-right:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9;transition:background .12s;position:relative; }
+.cal-cell:nth-child(7n) { border-right:none; }
+.cal-cell.clickable { cursor:pointer; }
+.cal-cell.clickable:hover { background:#f0f9ff; }
+.cal-cell.is-today .day-num { background:#3b82f6;color:#fff;border-radius:50%; }
+.cal-cell.out-month { background:#fafbfc; }
+.cal-cell.out-month .day-num { color:#cbd5e1; }
+.day-num { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;font-size:.82rem;font-weight:600;color:#475569;border-radius:50%;margin-bottom:4px; }
+.day-events { display:flex;flex-wrap:wrap;gap:3px;margin-top:4px; }
+.ev-chip { display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:.68rem;font-weight:700;color:#fff;line-height:1.4; }
+.ev-man  { background:var(--color_man); }
+.ev-mc   { background:var(--color_mc); }
+.ev-mold { background:var(--color_mold); }
+.ev-met  { background:var(--color_met); }
+.ev-part { background:var(--color_part); }
+
+.btn-add-cp { display:flex;align-items:center;gap:7px;padding:9px 18px;background:#3b82f6;color:#fff;border:none;border-radius:9px;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 2px 8px rgba(59,130,246,.35); }
+.btn-add-cp:hover { background:#2563eb;transform:translateY(-1px); }
+
+.modal-header-cp { padding:16px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e2e8f0; }
+.modal-type-dot { width:12px;height:12px;border-radius:50%;flex-shrink:0; }
+.form-label-cp { font-size:.8rem;font-weight:600;color:#475569;margin-bottom:4px;display:block; }
+.form-label-cp .th { font-weight:400;color:#94a3b8;font-size:.74rem;margin-left:4px; }
+
+img.image-upload { width:100%;height:50px;object-fit:contain; }
+.upload-item { position:relative;text-align:center; }
+.upload-item .removeItem { border:none;background:none;color:red;font-size:18px;position:absolute;right:0;top:0; }
+.upload-boxs { margin-top:16px; }
+.upload-boxs p { text-overflow:ellipsis;overflow:hidden;width:120px;height:1.2em;white-space:nowrap;font-size:.72rem; }
+
+#imgLightbox { display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);align-items:center;justify-content:center; }
+#imgLightbox.open { display:flex; }
+#imgLightbox img { max-width:90vw;max-height:85vh;border-radius:8px; }
+#imgLightbox .lb-close { position:absolute;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer; }
+
+.modal-backdrop { z-index:0 !important; }
+.dp__main { width:100%; }
+.fileUploads-box .fileUploads { margin-bottom:10px;display:flex;align-items:center;gap:10px; }
 </style>
 
 <div id="MainApp">
 
-    <div class="header">
-
-
-        <div class="select-group">
-            <select class="selectpicker" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
-                <option value="">เลือก Group</option>
-                <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
+    <!-- Toolbar -->
+    <div class="cal-toolbar">
+        <div class="group-select">
+            <select class="selectpicker" data-live-search="true" id="slt_group"
+                    v-model="slt_group" v-on:change="selectGroup(slt_group)"
+                    data-placeholder="เลือก Group">
+                <option v-for="item in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
             </select>
         </div>
-
-        <div class="hint-box">
-            <div class="hint-item">
-                <i style="color: #9DE481;" class="fas fa-circle"></i>
-                Man
-            </div>
-            <div class="hint-item">
-                <i style="color: #D81159;" class="fas fa-circle"></i>
-                Machine
-            </div>
-            <div class="hint-item">
-                <i style="color: #8A197F;" class="fas fa-circle"></i>
-                Mold/DIE
-            </div>
-            <div class="hint-item">
-                <i style="color: #91a6ff;" class="fas fa-circle"></i>
-                Method
-            </div>
-            <div class="hint-item">
-                <i style="color: #73D2DE;" class="fas fa-circle"></i>
-                Part/Mat'l
-            </div>
-        </div>
-
+        <div style="flex:1;"></div>
         @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
         {
-
-            <div class="btn-group btn-add" id="btn-change">
-                <button type="button" class=" dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-plus-circle"></i> Change Point
+            <div class="btn-group" id="btn-change" style="opacity:0;transition:opacity .4s;">
+                <button type="button" class="btn-add-cp dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-plus"></i> เพิ่ม Change Point
                 </button>
                 <ul class="dropdown-menu">
-                    <li id="menu_1">
-                        <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '1', '')">Man</a>
-                    </li>
-                    <li id="menu_2">
-                        <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '2', '')">Machine</a>
-                    </li>
-                    <li id="menu_3">
-                        <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '3', '')">Mold/DIE</a>
-                    </li>
-                    <li id="menu_4">
-                        <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '4', '')">Method</a>
-                    </li>
-                    <li id="menu_5">
-                        <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '5', '')">Part/Mat'l</a>
-                    </li>
+                    <li id="menu_1"><a class="dropdown-item" href="#" onclick="return false;" v-on:click="Open_Modal('add','1','')"><span style="color:var(--color_man);">●</span> Man</a></li>
+                    <li id="menu_2"><a class="dropdown-item" href="#" onclick="return false;" v-on:click="Open_Modal('add','2','')"><span style="color:var(--color_mc);">●</span> Machine</a></li>
+                    <li id="menu_3"><a class="dropdown-item" href="#" onclick="return false;" v-on:click="Open_Modal('add','3','')"><span style="color:var(--color_mold);">●</span> Mold/DIE</a></li>
+                    <li id="menu_4"><a class="dropdown-item" href="#" onclick="return false;" v-on:click="Open_Modal('add','4','')"><span style="color:var(--color_met);">●</span> Method</a></li>
+                    <li id="menu_5"><a class="dropdown-item" href="#" onclick="return false;" v-on:click="Open_Modal('add','5','')"><span style="color:var(--color_part);">●</span> Part/Mat'l</a></li>
                 </ul>
             </div>
         }
-
     </div>
 
+    <!-- Stats -->
+    <div class="stats-row">
+        <span class="stat-chip chip-man"> <span class="sd sd-man"></span>  Man <b style="margin-left:4px;">{{monthStats.man}}</b></span>
+        <span class="stat-chip chip-mc">  <span class="sd sd-mc"></span>   Machine <b style="margin-left:4px;">{{monthStats.mc}}</b></span>
+        <span class="stat-chip chip-mold"><span class="sd sd-mold"></span> Mold/DIE <b style="margin-left:4px;">{{monthStats.mold}}</b></span>
+        <span class="stat-chip chip-met"> <span class="sd sd-met"></span>  Method <b style="margin-left:4px;">{{monthStats.met}}</b></span>
+        <span class="stat-chip chip-part"><span class="sd sd-part"></span> Part/Mat'l <b style="margin-left:4px;">{{monthStats.part}}</b></span>
+    </div>
 
-    <!-- Modal -->
-    <div class="modal fade modal-lg" id="change_point_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-         aria-labelledby="change_point_modal_Label" aria-hidden="true" style="z-index: 2">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="change_point_modal_Label">Change {{title_modal}}</h5>
-                </div>
-                <div class="modal-body">
+    <!-- Calendar -->
+    <div class="cal-card">
+        <div class="cal-head">
+            <span class="cal-month-label">{{monthName}} {{currentYear}}</span>
+            <div class="cal-nav-btns">
+                <button class="cal-today-btn" v-on:click="goToToday">วันนี้</button>
+                <button class="cal-nav-btn" v-on:click="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                <button class="cal-nav-btn" v-on:click="nextMonth"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+        <div class="cal-grid">
+            <div class="cal-dow">จ</div>
+            <div class="cal-dow">อ</div>
+            <div class="cal-dow">พ</div>
+            <div class="cal-dow">พฤ</div>
+            <div class="cal-dow">ศ</div>
+            <div class="cal-dow" style="color:#ef4444;">ส</div>
+            <div class="cal-dow" style="color:#3b82f6;">อา</div>
 
-                    <section class="container">
-                        <form class="row">
-
-                            <label for="date" class="col-4 col-form-label"><b>วันที่</b></label>
-                            <div class="col-8 col-form-label">
-
-                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                {
-                                    <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
-                                                :monthChangeOnScroll="false" :format="dateFormat" auto-apply></Datepicker>
-                                }
-                                else
-                                {
-                                    <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
-                                                :monthChangeOnScroll="false" :format="dateFormat" auto-apply disabled></Datepicker>
-                                }
-
-                            </div>
-
-                            <label id="lb_from" for="befor" class="col-4 col-form-label"><b>คนประจำจุด </b></label>
-                            <div id="b_from" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot">
-                                            <option value="">เลือกรายการ</option>
-                                            <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
-                                                <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} </option>
-                                            </optgroup>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
-                                                <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} </option>
-                                            </optgroup>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-                            <label id="lb_to" for="after" class="col-4 col-form-label"><b>คนแทนจุด</b></label>
-                            <div id="b_to" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_instead" v-model="slt_instead">
-                                            <option value="">เลือกรายการ</option>
-                                            <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
-                                                <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option>
-                                            </optgroup>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_instead" v-model="slt_instead" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
-                                                <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option>
-                                            </optgroup>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-                            <label id="lb_mc" for="mc" class="col-4 col-form-label"><b>M/C NO. </b></label>
-                            <div id="b_mc" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_mc_no" v-model="slt_mc_no">
-                                            <option value="">เลือกรายการ</option>
-                                            <optgroup v-for="(items, index) in mcsList" :label="items.sizeTon">
-                                                <option v-for="(item) in items.list">{{item}} </option>
-                                            </optgroup>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <optgroup v-for="(items, index) in mcsList" :label="items.sizeTon">
-                                                <option v-for="(item) in items.list">{{item}} </option>
-                                            </optgroup>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-                            <label id="lb_eidt" for="eidt" class="col-4 col-form-label"><b>จุดที่แก้ไข </b></label>
-                            <div id="b_eidt" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_edit" v-model="slt_edit">
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_edit" v-model="slt_edit" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-                            <label id="lb_part" for="part" class="col-4 col-form-label"><b>Part NO.</b></label>
-                            <div id="b_part" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_part_no" v-model="slt_part_no">
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in partsList">{{item.ITEM_ID}} </option>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_part_no" v-model="slt_part_no" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in partsList">{{item.ITEM_ID}} </option>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-
-                            <label id="lb_mold" for="mold" class="col-4 col-form-label"><b>Mold NO.</b></label>
-                            <div id="b_mold" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_mold_no" v-model="slt_mold_no">
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-
-                            <label id="lb_change" for="mold" class="col-4 col-form-label"><b>หัวข้อการเปลี่ยนแปลง</b></label>
-                            <div id="b_change" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_change" v-model="slt_change">
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_change" v-model="slt_change" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-                            <label id="lb_process" for="process" class="col-4 col-form-label"><b>Process </b></label>
-                            <div id="b_process" class="col-8 col-form-label">
-                                <div class="input-group" id="">
-
-
-
-                                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_process" v-model="slt_process">
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in processList" :vlaue="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select class="selectpicker " data-live-search="true" id="slt_process" v-model="slt_process" disabled>
-                                            <option value="">เลือกรายการ</option>
-                                            <option v-for="(item) in processList" :vlaue="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
-                                        </select>
-                                    }
-
-                                </div>
-                            </div>
-
-                            <label for="detail" class="col-4 col-form-label"><b>รายละเอียด </b></label>
-                            <div class="col-8 col-form-label">
-                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                {
-                                    <textarea class="form-control" placeholder="" id="detail" v-model="slt_detail"></textarea>
-                                }
-                                else
-                                {
-                                    <textarea class="form-control" placeholder="" id="detail" v-model="slt_detail" disabled></textarea>
-                                }
-                            </div>
-
-                            <label for="warning" class="col-4 col-form-label"><b>ข้อควรระวัง </b></label>
-                            <div class="col-8 col-form-label">
-                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                {
-                                    <textarea class="form-control" placeholder="" id="warning" v-model="slt_warning"></textarea>
-                                }
-                                else
-                                {
-                                    <textarea class="form-control" placeholder="" id="warning" v-model="slt_warning" disabled></textarea>
-                                }
-                            </div>
-
-                            <label id="lb_file" for="upload" class="col-4 col-form-label">
-                                <b>รูป/เอกสาร (ถ้ามี)</b>
-                            </label>
-                            <div id="b_file" class="col-8 fileUploads-box">
-                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                {
-                                    <div>
-                                        <input class="form-control" type="file" id="formFileMultiple" v-on:change="onFileChange" accept="image/*,.pdf,.xlsx,.docx,.pptx,.txt" multiple>
-                                    </div>
-                                }
-
-                                <div v-if="fileList" class="row">
-                                    <div v-for="(image, index) in fileList" class="col-4 upload-boxs">
-
-                                        <div v-if="fileList[index].file_type=='image'" class="upload-item">
-                                            <img class="img-table image-upload" :src="'/src/upload/'+fileList[index].name" :alt="fileList.name"  style="cursor: pointer;" />
-                                            <p>{{fileList[index].name}}</p>
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {
-                                                <a href="#" class="removeItem" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
-                                            }
-                                        </div>
-
-                                        <div v-if="fileList[index].file_type=='pdf'" class="upload-item">
-                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" target="_blank">
-                                                <img src="~/src/icons/pdf.png" class="image-upload" style="cursor: pointer;" />
-                                            </a>
-                                            <p>{{fileList[index].name}}</p>
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {
-                                                <a href="#" class="removeItem" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
-                                            }
-                                        </div>
-
-                                        <div v-if="fileList[index].file_type=='word'" class="upload-item">
-                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" download>
-                                                <img src="~/src/icons/word.png" class="image-upload" style="cursor: pointer;" />
-                                            </a>
-                                            <p>{{fileList[index].name}}</p>
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {
-                                                <a href="#" class="removeItem" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
-                                            }
-                                        </div>
-
-                                        <div v-if="fileList[index].file_type=='excel'" class="upload-item">
-                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" download>
-                                                <img src="~/src/icons/xls.png" class="image-upload" style="cursor: pointer;" />
-                                            </a>
-                                            <p>{{fileList[index].name}}</p>
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {
-                                                <a href="#" class="removeItem" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
-                                            }
-                                        </div>
-
-                                        <div v-if="fileList[index].file_type=='powerpoint'" class="upload-item">
-                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" download>
-                                                <img src="~/src/icons/ppt.png" class="image-upload" style="cursor: pointer;" />
-                                            </a>
-                                            <p>{{fileList[index].name}}</p>
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {
-                                                <a href="#" class="removeItem" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
-                                            }
-                                        </div>
-
-                                        <div v-if="fileList[index].file_type=='text'" class="upload-item">
-                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" download>
-                                                <img src="~/src/icons/text.png" class="image-upload" style="cursor: pointer;" />
-                                            </a>
-                                            <p>{{fileList[index].name}}</p>
-                                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                            {
-                                                <a href="#" class="removeItem" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
-                                            }
-                                        </div>
-
-                                    </div>
-                                </div>
-
-
-                            </div>
-
-                        </form>
-                    </section>
-
-                </div>
-                <div class="modal-footer">
-
-                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                    {
-                        <button type="button" class="btn btn-secondary" v-on:click="cancelAdd" id="btn-cn">ยกเลิก</button>
-                        <button type="button" class="btn btn-danger" v-if="!IsAdd" v-on:click="deleteItem" id="btn-d">ลบ</button>
-                        <button type="button" class="btn btn-primary" v-on:click="Save_Data()" id="btn-s"> บันทึก </button>
-                    }
+            <div v-for="(cell, idx) in calendarDays" :key="idx"
+                 class="cal-cell"
+                 :class="{ 'clickable': cell.day && cell.events.length>0, 'is-today': cell.isToday, 'out-month': !cell.day }"
+                 v-on:click="cell.day && cell.events.length>0 ? navigateToDetail(cell.dateKey) : null">
+                <span class="day-num" v-if="cell.day">{{cell.day}}</span>
+                <div class="day-events" v-if="cell.day && cell.events.length>0">
+                    <span v-for="ev in cell.events" class="ev-chip" :class="'ev-'+ev.type">{{ev.count}}</span>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Change Point Modal -->
+    <div class="modal fade modal-lg" id="change_point_modal"
+         data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content" style="border-radius:14px;overflow:hidden;">
 
-    <div class="calendarbox">
-        <div id="evoCalendar"></div>
+                <div class="modal-header-cp">
+                    <span class="modal-type-dot" :style="'background:'+typeColor"></span>
+                    <h5 style="margin:0;font-size:1rem;font-weight:700;">Change Point — {{title_modal}}</h5>
+                    <div style="margin-left:auto;max-width:160px;">
+                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                        {
+                            <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
+                                        :monthChangeOnScroll="false" :format="dateFormat" auto-apply></Datepicker>
+                        }
+                        else
+                        {
+                            <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
+                                        :monthChangeOnScroll="false" :format="dateFormat" auto-apply disabled></Datepicker>
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-body" style="padding:20px;">
+                    <div class="row g-3">
+
+                        <div id="b_from" class="col-md-6">
+                            <label id="lb_from" class="form-label-cp">Employee on leave <span class="th">คนประจำจุด</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" disabled data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
+                        </div>
+
+                        <div id="b_to" class="col-md-6">
+                            <label id="lb_to" class="form-label-cp">Replacement employee <span class="th">คนแทนจุด</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_instead" v-model="slt_instead" data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_instead" v-model="slt_instead" disabled data-placeholder="Select"><optgroup v-for="items in userList" :label="items.wc_code+':'+items.wc_name"><option v-for="item in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option></optgroup></select>}
+                        </div>
+
+                        <div id="b_mc" class="col-md-6">
+                            <label id="lb_mc" class="form-label-cp">M/C NO. <span class="th">เครื่องจักร</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" data-placeholder="Select"><optgroup v-for="items in mcsList" :label="items.sizeTon"><option v-for="item in items.list">{{item}}</option></optgroup></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" disabled data-placeholder="Select"><optgroup v-for="items in mcsList" :label="items.sizeTon"><option v-for="item in items.list">{{item}}</option></optgroup></select>}
+                        </div>
+
+                        <div id="b_eidt" class="col-md-6">
+                            <label id="lb_eidt" class="form-label-cp">Edit point <span class="th">จุดที่แก้ไข</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_edit" v-model="slt_edit" data-placeholder="Select"><option v-for="item in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_edit" v-model="slt_edit" disabled data-placeholder="Select"><option v-for="item in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                        </div>
+
+                        <div id="b_part" class="col-md-6">
+                            <label id="lb_part" class="form-label-cp">Part NO.</label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_part_no" v-model="slt_part_no" data-placeholder="Select"><option v-for="item in partsList">{{item.ITEM_ID}}</option></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_part_no" v-model="slt_part_no" disabled data-placeholder="Select"><option v-for="item in partsList">{{item.ITEM_ID}}</option></select>}
+                        </div>
+
+                        <div id="b_mold" class="col-md-6">
+                            <label id="lb_mold" class="form-label-cp">Mold NO.</label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" data-placeholder="Select"><option v-for="item in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" disabled data-placeholder="Select"><option v-for="item in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                        </div>
+
+                        <div id="b_change" class="col-md-6">
+                            <label id="lb_change" class="form-label-cp">Change topic <span class="th">หัวข้อการเปลี่ยนแปลง</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_change" v-model="slt_change" data-placeholder="Select"><option v-for="item in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_change" v-model="slt_change" disabled data-placeholder="Select"><option v-for="item in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                        </div>
+
+                        <div id="b_process" class="col-md-6">
+                            <label id="lb_process" class="form-label-cp">Process</label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<select class="selectpicker" data-live-search="true" id="slt_process" v-model="slt_process" data-placeholder="Select"><option v-for="item in processList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                            else
+                            {<select class="selectpicker" data-live-search="true" id="slt_process" v-model="slt_process" disabled data-placeholder="Select"><option v-for="item in processList" :value="item.ITEM_NAME">{{item.ITEM_NAME}}</option></select>}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label-cp">Detail <span class="th">รายละเอียด</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<textarea class="form-control" rows="3" id="slt_detail" v-model="slt_detail" placeholder="รายละเอียด..."></textarea>}
+                            else
+                            {<textarea class="form-control" rows="3" id="slt_detail" v-model="slt_detail" disabled></textarea>}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label-cp">Warning <span class="th">ข้อควรระวัง</span></label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<textarea class="form-control" rows="3" id="slt_warning" v-model="slt_warning" placeholder="ข้อควรระวัง..."></textarea>}
+                            else
+                            {<textarea class="form-control" rows="3" id="slt_warning" v-model="slt_warning" disabled></textarea>}
+                        </div>
+
+                        <div id="b_file" class="col-12">
+                            <label id="lb_file" class="form-label-cp">รูป / เอกสาร (ถ้ามี)</label>
+                            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                            {<input class="form-control form-control-sm" type="file" id="formFileMultiple" v-on:change="onFileChange" accept="image/*,.pdf,.xlsx,.docx,.pptx,.txt" multiple />}
+                            <div v-if="fileList.length>0" class="row mt-2">
+                                <div v-for="(f,fi) in fileList" class="col-4 upload-boxs">
+                                    <div class="upload-item">
+                                        <img v-if="f.file_type=='image'" class="image-upload" :src="'/src/upload/'+f.name" :title="f.name" onclick="openLightbox(this)" style="cursor:pointer;" />
+                                        <a v-else :href="'/src/upload/'+f.name" target="_blank" download>
+                                            <img class="image-upload" style="cursor:pointer;"
+                                                 :src="'/src/icons/'+(f.file_type=='pdf'?'pdf':f.file_type=='excel'?'xls':f.file_type=='powerpoint'?'ppt':f.file_type=='word'?'word':'text')+'.png'" />
+                                        </a>
+                                        <p :title="f.name">{{f.name}}</p>
+                                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                                        {<button class="removeItem" onclick="return false;" v-on:click="removeImage(fi)"><i class="fas fa-times-circle"></i></button>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:12px 20px;gap:8px;">
+                    @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                    {
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-cn" v-on:click="cancelAdd">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" v-if="!IsAdd" id="btn-d" v-on:click="deleteItem">
+                            <i class="fas fa-trash"></i> ลบ
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" id="btn-s" v-on:click="Save_Data()">
+                            <i class="fas fa-save"></i> บันทึก
+                        </button>
+                    }
+                    else
+                    {<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">ปิด</button>}
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
 
+<div id="imgLightbox">
+    <span class="lb-close" onclick="closeLightbox()">&times;</span>
+    <img id="lbImg" src="" alt="" />
+</div>
 
-@Scripts.Render("~/Scripts/evo-calendar.min.js")
 @Scripts.Render("~/Scripts/bootstrap-select.min.js")
 
 <script>
+    $("#MainApp").delay(300).fadeIn(400);
+    function openLightbox(img){ document.getElementById('lbImg').src=img.src; document.getElementById('imgLightbox').classList.add('open'); }
+    function closeLightbox(){ document.getElementById('imgLightbox').classList.remove('open'); }
 
-    $("#MainApp").delay(500).fadeIn()  
-
-    // ------------------------------ VUE JS ------------------------------ //
-    const { createApp } = Vue
-
+    const { createApp } = Vue;
     createApp({
         data() {
             return {
+                currentYear:  new Date().getFullYear(),
+                currentMonth: new Date().getMonth(),
+                eventMap: {},
                 date_select: new Date(),
-                dateFormat: (date_select) => {
-                    const day = date_select.getDate();
-                    const month = date_select.getMonth() + 1;
-                    const year = date_select.getFullYear();
-                    // const hour = date_start.getHours();
-                    // const min = date_start.getMinutes();
-                    // return `${day}/${month}/${year} ${hour}:${min} `;
-                    return `${day}/${month}/${year}`;
-                },
-                changeType: '',
-
-                eventList: [],
-
-                fileList: [],
-
-                images: [],
-                tempID: [],
-                fileSize: 0,
-
-                userList: [],
-                mcsList: [],
-                partsList: [],
-                moldNOList: [],
-                editList: [],
-                changeList: [],
-                processList: [],
-
-                changePointList: [],
-
-                manList: [],
-                mcList: [],
-                moldList: [],
-                metList: [],
-                partList: [],
-                dataList: [],
-                dataNameList: [],
-
-                slt_id: '',
-                slt_spot: '',
-                slt_instead: '',
-                slt_mc_no: '',
-                slt_edit: '',
-                slt_part_no: '',
-                slt_mold_no: '',
-                slt_change: '',
-                slt_process: '',
-                slt_detail: '',
-                slt_warning: '',
-
-                slt_group: '',
-
-                slt_files: [],
-                modal_type: '',
-                title_modal: '',
-                date_page: '',
-                day_page: '',
-                month_page: '',
-                year_page: '',
-                date_calendar: [],
-
-                groupList: [],
-
-                IsAdd:false
-            }
+                dateFormat: (d) => `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`,
+                changeType:'', fileList:[], images:[], tempID:[], fileSize:0,
+                userList:[], mcsList:[], partsList:[], moldNOList:[], editList:[], changeList:[], processList:[],
+                dataList:[], dataNameList:[],
+                slt_id:'', slt_spot:'', slt_instead:'',
+                slt_mc_no:'', slt_edit:'', slt_part_no:'', slt_mold_no:'', slt_change:'',
+                slt_process:'', slt_detail:'', slt_warning:'', slt_group:'',
+                modal_type:'', title_modal:'',
+                groupList:[], IsAdd:false, color_list:[], root:null,
+            };
         },
         components: { Datepicker: VueDatePicker },
+        computed: {
+            monthName() {
+                return ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                        'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'][this.currentMonth];
+            },
+            calendarDays() {
+                const y=this.currentYear, m=this.currentMonth;
+                let first = new Date(y,m,1).getDay();
+                first = (first+6)%7;
+                const dim = new Date(y,m+1,0).getDate();
+                const today = new Date();
+                const cells = [];
+                for(let i=0;i<first;i++) cells.push({day:null,dateKey:null,events:[],isToday:false});
+                for(let d=1;d<=dim;d++){
+                    const mm=String(m+1).padStart(2,'0'), dd=String(d).padStart(2,'0');
+                    const dateKey=`${mm}/${dd}/${y}`;
+                    cells.push({ day:d, dateKey, events:this.eventMap[dateKey]||[],
+                        isToday:(y===today.getFullYear()&&m===today.getMonth()&&d===today.getDate()) });
+                }
+                return cells;
+            },
+            monthStats() {
+                const s={man:0,mc:0,mold:0,met:0,part:0};
+                const pre=`${String(this.currentMonth+1).padStart(2,'0')}/`, suf=`/${this.currentYear}`;
+                for(const [k,evs] of Object.entries(this.eventMap)){
+                    if(!k.startsWith(pre)||!k.endsWith(suf)) continue;
+                    evs.forEach(e=>{ if(s[e.type]!==undefined) s[e.type]+=e.count; });
+                }
+                return s;
+            },
+            typeColor() {
+                return {'1':'var(--color_man)','2':'var(--color_mc)','3':'var(--color_mold)','4':'var(--color_met)','5':'var(--color_part)'}[this.modal_type]||'#94a3b8';
+            },
+        },
         async created() {
-
-            const self = this;
-
-            await self.getGroup()
-            await self.getList()
-
-            @if(false)
-            {
-                //self.eventList = if
-                //    {
-                //        id: 'bHay68s', // Event's ID (required)
-                //        name: "Man (3)", // Event name (required)
-                //        date: "08/25/2023", // Event date (required)
-                //        type: "man", // Event type (required)
-                //        //description: 'Lorem ipsum dolor sit..',
-                //        everyYear: false // Same event every year (optional)
-                //    },
-                //     {
-                //         id: 'bHay68saa', // Event's ID (required),
-                //         name: "Vacation Leave",
-                //         badge: "08/13 - 08/15", // Event badge (optional)
-                //         date: ["08/13/2023", "08/15/2023"], // Date range
-                //         description: "Vacation leave for 3 days.", // Event description (optional)
-                //         type: "event",
-                //         color: "#63d867" // Event custom color (optional)
-                //     }
-                //]
-            }
-
-
-
-            await $("#evoCalendar").evoCalendar({
-            eventHeaderFormat: 'dd MM yyyy',
-                theme: 'Royal Navy',
-                calendarEvents: self.eventList
-            });
-
-            await $('#evoCalendar').on('selectEvent', function (activeEvent) {
-                // console.log(activeEvent)
-                //console.log(activeEvent.currentTarget.evoCalendar.$active.event_date)
-
-                const date_event = activeEvent.currentTarget.evoCalendar.$active.event_date
-
-                const url = '@Url.Action("detail", "home", new { id = "id_date"})'.replace("id_date", date_event.replaceAll("/", ""));
-
-                window.open(url, '_self')
-
-                @*window.open('@Url.Action("detail", "home")', '_self');*@
-            });
-
-
-
-            @*self.date_page = '@ViewBag.Data.param_date'
-
-            if (self.date_page) {
-                self.day_page = self.date_page.substring(2, 4)
-                self.month_page = self.date_page.substring(0, 2)
-                self.year_page = self.date_page.substring(4, 9)
-
-                self.date_calendar = new Date(+self.year_page, +self.month_page - 1, +self.day_page);
-
-                self.date_select = self.date_calendar
-            }*@
-
-            await self.getMoldNO()
-            await self.getProcess()
-            await self.getEdit()
-            await self.getChange()
-            await self.getPart()
-            await self.getMC()
-            await self.getUser()
-            await self.deleteChangePointOver()
-
-            await $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process,#slt_group').selectpicker('destroy');
-
+            const self=this;
+            await self.getGroup();
+            await self.getList();
+            await self.getMoldNO(); await self.getProcess(); await self.getEdit();
+            await self.getChange(); await self.getPart(); await self.getMC(); await self.getUser();
+            await self.deleteChangePointOver();
+            await $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process').selectpicker('destroy');
             await $('select').selectpicker('render');
-
-            await $("#btn-change").addClass('active');
-
+            await $("#btn-change").css('opacity','1');
+            await self.get_colors();
         },
-        async mounted() {
-
-        },
+        async mounted() { this.root=document.documentElement; },
         methods: {
-            onFileChange(e) {
+            prevMonth(){ if(this.currentMonth===0){this.currentMonth=11;this.currentYear--;}else{this.currentMonth--;} },
+            nextMonth(){ if(this.currentMonth===11){this.currentMonth=0;this.currentYear++;}else{this.currentMonth++;} },
+            goToToday(){ const t=new Date(); this.currentYear=t.getFullYear(); this.currentMonth=t.getMonth(); },
+            navigateToDetail(dateKey){ if(!dateKey) return; window.open('@Url.Action("detail","home_ver1",new{id="id_date"})'.replace("id_date",dateKey.replaceAll("/","")),'_self'); },
 
-                var files = e.target.files || e.dataTransfer.files;
-                if (!files.length) return;
-                this.createImage(files);
-            },
-           async createImage(files) {
-                var self = this;
-
-                let fd;
-               let file;
-
-               $("b_file").hide();
-               $("#btn-cn").html('<i class="fas fa-sync fa-spin"></i>');
-               $("#btn-s").html('<i class="fas fa-sync fa-spin"></i>');
-
-               $("#btn-cn").prop('disabled', true);
-               $("#btn-s").prop('disabled', true);
-
-                for (var index = 0; index < files.length; index++) {
-                    var reader = new FileReader();
-
-                    self.fileSize += parseFloat(files[index].size) > 0 ? (parseFloat(files[index].size) / (1024 * 1024)) : 0;
-
-                    if (parseFloat(self.fileSize) < 3) {
-                        //reader.onload = function (event) {
-                        //    const imageUrl = event.target.result;
-                        //    self.images.push(imageUrl);
-                        //}
-                        //reader.readAsDataURL(files[index]);
-
-
-                        self.fileList.push(files[index]);
-
-                        if ((files[index].type).split("/")[0] === "image") {
-                            files[index].file_type = 'image';
-                        }
-
-                        if ((files[index].type).split("/")[1] === "pdf") {
-                            files[index].file_type = 'pdf';
-                        }
-
-                        if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
-                            files[index].file_type = 'excel';
-                        }
-
-                        if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.presentationml.presentation") {
-                            files[index].file_type = 'powerpoint';
-                        }
-
-                        if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.wordprocessingml.document") {
-                            files[index].file_type = 'word';
-                        }
-
-                        if ((files[index].type).split("/")[0] === "text") {
-                            files[index].file_type = 'text';
-                        }
-
-                        fd = new FormData();
-                        file = $('#formFileMultiple')[0].files;
-
-                        fd.append('file', file[index]);
-                        fd.append('type', file[index].file_type);
-                        fd.append('size', ((file[index].size / 1024) / 1024).toFixed(4));
-                        fd.append('id', self.slt_id);
-
-                        await $.ajax({
-                            url: '@Url.Action("UploadFile", "lookup")',
-                            type: 'POST',
-                            data: fd,
-                            dataType: 'json',
-                            contentType: false,
-                            processData: false,
-                            success: function (response) {
-                                self.tempID.push(response.data[0]);
-                                self.getFileList(self.slt_id)
-                            }
+            async getList() {
+                const self=this;
+                await $.ajax({ url:"@Url.Action("ListItem_ChangePoint_All","lookup_ver1")", type:"POST", data:{},
+                    success(r){
+                        if(!r.success) return;
+                        const map={};
+                        r.data.forEach(item=>{
+                            const dates=new Date(item.DATE_CHANGE);
+                            const mm=String(dates.getMonth()+1).padStart(2,'0'), dd=String(dates.getDate()).padStart(2,'0');
+                            const dk=`${mm}/${dd}/${dates.getFullYear()}`;
+                            const type={'1':'man','2':'mc','3':'mold','4':'met','5':'part'}[item.STATUS_TYPE]||'unknown';
+                            if(!map[dk]) map[dk]=[];
+                            const ex=map[dk].find(e=>e.type===type);
+                            if(ex){ex.count++;}else{map[dk].push({type,count:1});}
                         });
-
-                    } else {
-                        self.fileSize -= parseFloat(files[index].size) > 0 ? (parseFloat(files[index].size) / (1024 * 1024)) : 0;
-
-                        swal({
-                            title: "แจ้งเตือน",
-                            text: 'ขนาดไฟล์รวมมีขนาดเกิน 3 MB',
-                            type: "warning",
-                            timer: 2000,
-                            showCancelButton: false,
-                            showConfirmButton: false
-                        })
+                        self.eventMap=map;
                     }
-
-                }
-
-               $("b_file").delay(1500).show();
-               $("#btn-cn").html('ยกเลิก');
-               $("#btn-s").html('บันทึก');
-
-               $("#btn-cn").prop('disabled', false);
-               $("#btn-s").prop('disabled', false);
-
-               $("#formFileMultiple").val(null);
-
-            },
-            removeImage(index) {
-                var self = this;
-
-                fd = new FormData();
-
-                if (self.IsAdd) {
-                    fd.append('item_id', self.tempID[index].ITEM_ID);
-                    fd.append('item_name', self.tempID[index].ITEM_NAME);
-                } else {
-                    fd.append('item_id', self.fileList[index].id);
-                    fd.append('item_name', self.fileList[index].name);
-                }
-
-                $.ajax({
-                url: '@Url.Action("deleteFile", "lookup")',
-                type: 'POST',
-                data: fd,
-                    dataType: 'json',
-                    contentType: false,
-                    processData: false,
-                    success: function (response) {}
                 });
-
-                this.images.splice(index, 1)
-                this.fileList.splice(index, 1)
-                this.tempID.splice(index, 1)
-
             },
-            async cancelAdd() {
-                var self = this;
-                let el = document.querySelector('#change_point_modal');
-                let modal = bootstrap.Modal.getOrCreateInstance(el);
+            async getProcess(){ const self=this; await $.ajax({ url:"@Url.Action("Option_Process","lookup")", type:"POST", data:{}, success(r){ if(r.success) self.processList=r.data; } }); },
+            async getMoldNO(){ const self=this; await $.ajax({ url:"@Url.Action("Option_Mold_NO","lookup")", type:"POST", data:{}, success(r){ if(r.success) self.moldNOList=r.data; } }); },
+            async getEdit(){ const self=this; await $.ajax({ url:"@Url.Action("Option_Edit","lookup")", type:"POST", data:{}, success(r){ if(r.success) self.editList=r.data; } }); },
+            async getChange(){ const self=this; await $.ajax({ url:"@Url.Action("Option_Change","lookup")", type:"POST", data:{}, success(r){ if(r.success) self.changeList=r.data; } }); },
+            async getPart(){ const self=this; await $.ajax({ url:"@Url.Action("ListItem_Part","lookup")", type:"POST", data:{}, success(r){ if(r.success) self.partsList=r.data; } }); },
+            async getMC(){
+                const self=this;
+                await $.ajax({ url:"@Url.Action("ListItem_MC","lookup")", type:"POST", data:{},
+                    success(r){ if(!r.success) return; const t={}; r.data.forEach(i=>{ if(t[i.ITEM_SIZETON]) t[i.ITEM_SIZETON].list.push(i.ITEM_NAME); else t[i.ITEM_SIZETON]={sizeTon:i.ITEM_SIZETON,list:[i.ITEM_NAME]}; }); self.mcsList=Object.values(t); }
+                });
+            },
+            async getUser(){
+                const self=this;
+                await $.ajax({ url:"@Url.Action("Option_EMP","lookup")", type:"POST", data:{},
+                    success(r){ if(!r.success) return; self.dataNameList=r.data; const t={}; r.data.forEach(i=>{ if(t[i.WC_CODE]) t[i.WC_CODE].list.push({itemId:i.EMP_NO,gname_tha:i.GNAME_TH,fname_tha:i.FNAME_TH,gname_eng:i.GNAME_ENG,fname_eng:i.FNAME_ENG}); else t[i.WC_CODE]={wc_code:i.WC_CODE,wc_name:i.WC_NAME,list:[{itemId:i.EMP_NO,gname_tha:i.GNAME_TH,fname_tha:i.FNAME_TH,gname_eng:i.GNAME_ENG,fname_eng:i.FNAME_ENG}]}; }); self.userList=Object.values(t); }
+                });
+            },
+            async getGroup(){
+                const self=this;
+                await $.ajax({ url:"@Url.Action("SelectItem_GROUP_WC_ByWC","lookup_ver1")", type:"POST", data:{},
+                    success(r){ if(!r.success) return; self.groupList=r.data; self.slt_group='@Session["GROUP_ID"].ToString()'; if(self.slt_group==='') self.slt_group=r.data[0].GROUP_ID; const idx=r.data.findIndex(o=>o.GROUP_ID===self.slt_group); if(idx<0) return; const s=r.data[idx]; if(s.MENU_1==='N') $('#menu_1').hide(); if(s.MENU_2==='N') $('#menu_2').hide(); if(s.MENU_3==='N') $('#menu_3').hide(); if(s.MENU_4==='N') $('#menu_4').hide(); if(s.MENU_5==='N') $('#menu_5').hide(); }
+                });
+                await $('#slt_group').selectpicker('destroy'); await $('#slt_group').selectpicker('render'); await $("#slt_group").selectpicker("val",this.slt_group);
+            },
+            async selectGroup(gID){ await $.ajax({ url:"@Url.Action("Select_GROUP","lookup_ver1")", type:"POST", data:{ item_group:gID }, success(r){ if(r.success) window.open("@Url.Action("index","home_ver1")","_self"); } }); },
+            async get_colors(){
+                const self=this;
+                await $.ajax({ url:"@Url.Action("SelectItem_Colors","lookup")", type:"POST", data:{}, success(r){ if(r.success&&r.data.length>0){ const c=r.data[0]; self.root.style.setProperty("--color_man",c.ITEM_COLORS_1); self.root.style.setProperty("--color_mc",c.ITEM_COLORS_2); self.root.style.setProperty("--color_mold",c.ITEM_COLORS_3); self.root.style.setProperty("--color_met",c.ITEM_COLORS_4); self.root.style.setProperty("--color_part",c.ITEM_COLORS_5); } } });
+            },
 
-                if (self.IsAdd) {
-
-                    for (let i = 0; i < self.fileList.length; i++) {
-
-                        fd = new FormData();
-                        fd.append('item_id', self.fileList[i].id);
-                        fd.append('item_name', self.fileList[i].name);
-
-                        await $.ajax({
-                        url: '@Url.Action("deleteFile", "lookup")',
-                        type: 'POST',
-                        data: fd,
-                            dataType: 'json',
-                            contentType: false,
-                            processData: false,
-                            success: function (response) {}
-                        });
-                    }
-
-
-                    fd = new FormData();
-                    fd.append('item_id', self.slt_id);
-
-                    await $.ajax({
-                        url: '@Url.Action("DeleteItem_ChangePoint", "lookup")',
-                        type: 'POST',
-                        data: fd,
-                            dataType: 'json',
-                            contentType: false,
-                            processData: false,
-                            success: function (response) {}
-                        });
+            async Open_Modal(status,type,id){
+                const self=this; const modal=bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal'));
+                self.changeType=type; self.modal_type=type;
+                $('[id^="lb_"],[id^="b_"]').hide();
+                switch(type){
+                    case '1': $('#lb_from,#lb_to,#lb_mc,#lb_process,#b_from,#b_to,#b_mc,#b_process').show(); self.title_modal='Man'; break;
+                    case '2': $('#lb_eidt,#lb_mc,#lb_file,#b_eidt,#b_mc,#b_file').show(); self.title_modal='M/C'; break;
+                    case '3': $('#lb_mold,#lb_part,#lb_file,#b_mold,#b_part,#b_file').show(); self.title_modal='Mold/DIE'; break;
+                    case '4': $('#lb_mc,#lb_part,#lb_file,#b_mc,#b_part,#b_file').show(); self.title_modal='Method'; break;
+                    case '5': $('#lb_mc,#lb_part,#lb_change,#lb_file,#b_mc,#b_part,#b_change,#b_file').show(); self.title_modal="Part/Mat'l"; break;
                 }
-
+                if(status==='add'){
+                    self.IsAdd=true;
+                    $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process').selectpicker('val','');
+                    Object.assign(self,{slt_id:'',slt_spot:'',slt_instead:'',slt_mc_no:'',slt_edit:'',slt_mold_no:'',slt_part_no:'',slt_process:'',slt_change:'',slt_detail:'',slt_warning:'',fileList:[],images:[],tempID:[]});
+                    $("#formFileMultiple").val(null);
+                } else {
+                    self.IsAdd=false;
+                    const info=self.dataList.find(i=>i.ID===id); if(!info) return;
+                    Object.assign(self,{slt_id:info.ID,slt_spot:info.MAN_SPOT,slt_instead:info.MAN_INSTEAD,slt_edit:info.EDIT_POINT,slt_mc_no:info.MC_NO,slt_mold_no:info.MOLD_NO,slt_part_no:info.PART_NO,slt_process:info.PROCESS_POINT,slt_change:info.CHANGE,slt_detail:info.DETAILS,slt_warning:info.WARNINGS,fileList:[],images:[]});
+                    $("#formFileMultiple").val(null);
+                    await self.getFileList(self.slt_id);
+                    await $("#slt_mold_no").selectpicker("val",self.slt_mold_no); await $("#slt_part_no").selectpicker("val",self.slt_part_no);
+                    await $("#slt_edit").selectpicker("val",self.slt_edit); await $("#slt_process").selectpicker("val",self.slt_process);
+                    await $("#slt_spot").selectpicker("val",self.slt_spot); await $("#slt_instead").selectpicker("val",self.slt_instead);
+                    await $("#slt_mc_no").selectpicker("val",self.slt_mc_no); await $("#slt_change").selectpicker("val",self.slt_change);
+                }
+                modal.show();
+            },
+            async cancelAdd(){
+                const self=this; const modal=bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal'));
+                if(self.IsAdd){ for(let i=0;i<self.fileList.length;i++){ const fd=new FormData(); fd.append('item_id',self.fileList[i].id); fd.append('item_name',self.fileList[i].name); await $.ajax({url:'@Url.Action("deleteFile","lookup_ver1")',type:'POST',data:fd,dataType:'json',contentType:false,processData:false,success(){}}); } }
                 await modal.hide();
             },
-            async getFileList(id) {
-
-                const self = this;
-
-                 await $.ajax({
-                    url: "@Url.Action("SelectItem_Files", "lookup")",
-                    type: "POST",
-                     data: { item_id: id },
-                    success: function (result) {
-                        if (result.success) {
-
-                            self.fileList = []
-
-                            for (let i = 0; i < result.data.length; i++) {
-                                self.fileList.push(
-                                    {
-                                        id: result.data[i].ITEM_ID,
-                                        name: result.data[i].ITEM_NAME,
-                                        file_type: result.data[i].ITEM_FILE_TYPE,
-                                        size: result.data[i].ITEM_FILE_SIZE,
-                                    })
-                            }
-
-                        }
-
-                    }
-                });
-
-            },
-             async getProcess() {
-
-                 let self = this;
-
-                 await $.ajax({
-                    url: "@Url.Action("Option_Process", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-                            self.processList = result.data
-                        }
-
-                    }
-                 });
-
-            },
-            async getMoldNO() {
-
-                 let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("Option_Mold_NO", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-                            self.moldNOList = result.data
-                        }
-
-                    }
-                 });
-
-            },
-            async getEdit() {
-
-                 let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("Option_Edit", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-                            self.editList = result.data
-                        }
-
-                    }
-                 });
-
-            },
-            async getChange() {
-
-                let self = this;
-
-
-                await $.ajax({
-                    url: "@Url.Action("Option_Change", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-                            self.changeList = result.data
-                        }
-
-                    }
-                 });
-
-            },
-            async getPart() {
-
-                 let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("ListItem_Part", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-                            self.partsList = result.data
-                        }
-
-                    }
-                 });
-
-            },
-            async getMC() {
-
-                 let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("ListItem_MC", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-
-                            const inputData = result.data
-
-                            const transformedData = {};
-
-                            inputData.forEach(item => {
-                                const sizeTon = item.ITEM_SIZETON;
-                                const itemId = item.ITEM_NAME;
-
-                                if (sizeTon in transformedData) {
-                                    transformedData[sizeTon].list.push(itemId);
-                                } else {
-                                    transformedData[sizeTon] = {
-                                        sizeTon: sizeTon,
-                                        list: [itemId]
-                                    };
-                                }
-                            });
-
-                            self.mcsList = Object.values(transformedData);
-
-                        }
-
-                    }
-                });
-            },
-            async getUser() {
-
-                 let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("Option_EMP", "lookup")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-
-                            const inputData = result.data
-
-                            self.dataNameList = result.data
-
-                            const transformedData = {};
-
-                            inputData.forEach(item => {
-                                const itemId = item.EMP_NO;
-                                const wc_code = item.WC_CODE;
-                                const wc_name = item.WC_NAME;
-
-                                const gname_eng = item.GNAME_ENG;
-                                const fname_eng = item.FNAME_ENG;
-                                const gname_tha = item.GNAME_TH;
-                                const fname_tha = item.FNAME_TH;
-
-                                if (wc_code in transformedData) {
-                                    transformedData[wc_code].list.push(
-                                        {
-                                            itemId: itemId,
-                                            gname_eng: gname_eng,
-                                            fname_eng: fname_eng,
-                                            gname_tha: gname_tha,
-                                            fname_tha: fname_tha,
-                                        }
-                                    );
-                                } else {
-                                    transformedData[wc_code] = {
-                                        wc_code: wc_code,
-                                        wc_name: wc_name,
-                                        list: [
-                                            {
-                                                itemId: itemId,
-                                                gname_eng: gname_eng,
-                                                fname_eng: fname_eng,
-                                                gname_tha: gname_tha,
-                                                fname_tha: fname_tha,
-                                            }
-                                        ]
-                                    };
-                                }
-                            });
-
-                            self.userList = Object.values(transformedData);
-
-                        }
-                    }
-                 });
-
-            },
-            async getList() {
-
-                let self = this;
-
-                let d = self.date_select;
-                let yyyy = d.getFullYear();
-                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
-                let dd = ('0' + d.getDate()).slice(-2);
-                const date_file = dd + "-" + MM + "-" + yyyy;
-
-                await $.ajax({
-                    url: "@Url.Action("ListItem_ChangePoint_All", "lookup_ver1")",
-                    type: "POST",
-                    data: {},
-                    success: function (result) {
-                        if (result.success) {
-
-                            // สร้างออบเจ็กต์สำหรับการนับ
-                            const countByTypeAndDate = {};
-
-                            // วนลูปข้อมูลและนับจำนวน
-                            result.data.forEach((item) => {
-                                const dateArray = item.DATE_CHANGE.split("/");
-                                const dateStr = dateArray[1] + '/' + dateArray[0] + '/' + dateArray[2];
-                                const status = item.STATUS_TYPE;
-
-                                // แปลงวันที่จากข้อความเป็น Date object
-                                //const dates = new Date(dateStr);
-                                const dates = new Date(item.DATE_CHANGE);
-
-                                // สร้างสตริงที่มีรูปแบบ "MM/DD/YYYY"
-                                const date = `${(dates.getMonth() + 1).toString().padStart(2, '0')}/${dates.getDate().toString().padStart(2, '0')}/${dates.getFullYear()}`;
-
-                                let type = "";
-                                let name = "";
-                                switch (status) {
-                                    case "1":
-                                        type = "man";
-                                        name = "Man";
-                                        break;
-                                    case "2":
-                                        type = "mc";
-                                        name = "M/C";
-                                        break;
-                                    case "3":
-                                        type = "mold";
-                                        name = "Mold/DIE";
-                                        break;
-                                    case "4":
-                                        type = "met";
-                                        name = "Method";
-                                        break;
-                                    case "5":
-                                        type = "part";
-                                        name = "Part/Mat'l";
-                                        break;
-                                    default:
-                                        type = "unknown";
-                                        name = "unknown";
-                                }
-
-                                // สร้างออบเจ็กต์สำหรับเก็บข้อมูล
-                                const dataObject = {
-                                    date,
-                                    name,
-                                    type,
-                                    count: 1, // เริ่มต้นที่ 1
-                                };
-
-                                // สร้างคีย์เป็นสตริง "วันที่-TYPE" และเพิ่มข้อมูลลงในออบเจ็กต์
-                                const key = `${date}-${type}`;
-                                if (countByTypeAndDate[key]) {
-                                    countByTypeAndDate[key].id = type + dates.getDate().toString().padStart(2, '0') + countByTypeAndDate[key].count;
-                                    countByTypeAndDate[key].name = name + " (" + countByTypeAndDate[key].count +")";
-                                    countByTypeAndDate[key].count++;
-                                } else {
-                                    countByTypeAndDate[key] = dataObject;
-                                    countByTypeAndDate[key].id = type + dates.getDate().toString().padStart(2, '0') + countByTypeAndDate[key].count;
-                                    countByTypeAndDate[key].name = name + " (1)";
-                                }
-                            });
-
-                            // แปลงออบเจ็กต์เป็นอาร์เรย์
-                            const resultArray = Object.values(countByTypeAndDate);
-
-                            // แสดงผลลัพธ์อาร์เรย์
-                            //console.log(resultArray);
-
-                            self.eventList = resultArray
-
-                        }
-                    }
-                });
-
-            //        id: 'bHay68s', // Event's ID (required)
-            //        name: "Man (3)", // Event name (required)
-            //        date: "08/25/2023", // Event date (required)
-            //        type: "man", // Event type (required)
-            //        //description: 'Lorem ipsum dolor sit..',
-
-            },
-            formatDate(inputDate) {
-                const parts = inputDate.split('/');
-                const day = parts[0].length === 1 ? `0${parts[0]}` : parts[0];
-                const month = parts[1].length === 1 ? `0${parts[1]}` : parts[1];
-                const formattedDate = `${month}/${day}/${parts[2]}`;
-                return formattedDate;
-            },
-            async Open_Modal(status, type, id) {
-
-                let self = this
-                let el = document.querySelector('#change_point_modal');
-                let modal = bootstrap.Modal.getOrCreateInstance(el);
-                self.changeType = type
-
-                let edit_item = []
-                let item_info = []
-
-                self.modal_type = type
-
-                $('[id^="lb_"]').hide();
-                $('[id^="b_"]').hide();
-
-                switch (type) {
-                    case '1':
-                        $('[id="lb_from"]').show();
-                        $('[id="lb_to"]').show();
-                        $('[id="lb_mc"]').show();
-                        $('[id="lb_process"]').show();
-
-                        $('[id="b_from"]').show();
-                        $('[id="b_to"]').show();
-                        $('[id="b_mc"]').show();
-                        $('[id="b_process"]').show();
-
-                        self.title_modal = 'Man';
-                        break;
-                    case '2':
-                        $('[id="lb_eidt"]').show();
-                        $('[id="lb_mc"]').show();
-                        $('[id="lb_file"]').show();
-
-                        $('[id="b_eidt"]').show();
-                        $('[id="b_mc"]').show();
-                        $('[id="b_file"]').show();
-
-                        self.title_modal = 'M/C';
-                        break;
-                    case '3':
-                        $('[id="lb_mold"]').show();
-                        $('[id="lb_part"]').show();
-                        $('[id="lb_file"]').show();
-
-                        $('[id="b_mold"]').show();
-                        $('[id="b_part"]').show();
-                        $('[id="b_file"]').show();
-
-                        self.title_modal = 'Mold/DIE';
-                        break;
-                    case '4':
-                        $('[id="lb_mc"]').show();
-                        $('[id="lb_part"]').show();
-                        $('[id="lb_file"]').show();
-
-                        $('[id="b_mc"]').show();
-                        $('[id="b_part"]').show();
-                        $('[id="b_file"]').show();
-
-                        self.title_modal = 'Method';
-                        break;
-                    case '5':
-                        $('[id="lb_mc"]').show();
-                        $('[id="lb_part"]').show();
-                        $('[id="lb_change"]').show();
-                        $('[id="lb_file"]').show();
-
-                        $('[id="b_mc"]').show();
-                        $('[id="b_part"]').show();
-                        $('[id="b_change"]').show();
-                        $('[id="b_file"]').show();
-
-                        self.title_modal = "Part/Mat'l";
-                        break;
+            onFileChange(e){ const files=e.target.files||e.dataTransfer.files; if(!files.length) return; this.createImage(files); },
+            async createImage(files){
+                const self=this;
+                $('#btn-cn,#btn-s').prop('disabled',true).html('<i class="fas fa-sync fa-spin"></i>');
+                for(let i=0;i<files.length;i++){
+                    self.fileSize+=files[i].size/(1024*1024);
+                    if(self.fileSize<3){
+                        const ft=files[i].type; if(ft.startsWith('image/')) files[i].file_type='image'; else if(ft.includes('pdf')) files[i].file_type='pdf'; else if(ft.includes('spreadsheet')) files[i].file_type='excel'; else if(ft.includes('presentationml')) files[i].file_type='powerpoint'; else if(ft.includes('wordprocessingml')) files[i].file_type='word'; else files[i].file_type='text';
+                        self.fileList.push(files[i]);
+                        const fd=new FormData(); fd.append('file',$('#formFileMultiple')[0].files[i]); fd.append('type',files[i].file_type); fd.append('size',(files[i].size/1024/1024).toFixed(4)); fd.append('id',self.slt_id);
+                        await $.ajax({url:'@Url.Action("UploadFile","lookup_ver1")',type:'POST',data:fd,dataType:'json',contentType:false,processData:false, success: async function(res){ await self.tempID.push(res.data[0]); await self.getFileList(res.data[0]); }});
+                    } else { self.fileSize-=files[i].size/(1024*1024); alertBoxTime('Alert','ขนาดไฟล์รวมเกิน 3 MB','warning',2000,'',''); }
                 }
-
-                if (status == 'add') {
-                    self.IsAdd = true
-
-                    $.ajax({
-                        url: "@Url.Action("AddItem_ChangePoint", "lookup_ver1")",
-                        type: "POST",
-                        data: {
-                            dates: self.date_select,
-                            spot: "",
-                            instead: "",
-                            mc_no: "",
-                            edit: "",
-                            part_no: "",
-                            mold_no: "",
-                            change: "",
-                            process: "",
-                            detail: "",
-                            warning: "",
-                            type: "hide",
-                            spot_eng: "",
-                            spot_tha: "",
-                            instead_eng: "",
-                            instead_tha: "",
-                        },
-                        success: function (result2) {}
-                    });
-
-                    $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process').selectpicker('val', '');
-
-                    self.slt_id = ''
-                    self.slt_date = ''
-                    self.slt_spot = ''
-                    self.slt_instead = ''
-                    self.slt_edit = ''
-                    self.slt_mc_no = ''
-                    self.slt_mold_no = ''
-                    self.slt_part_no = ''
-                    self.slt_process = ''
-                    self.slt_change = ''
-                    self.slt_detail = ''
-                    self.slt_warning = ''
-                    self.fileList = []
-                    self.images = []
-                    $("#formFileMultiple").val(null);
-
-                } else {
-                    self.IsAdd = false
-
-                    item_info = self.dataList.find(item => item.ID === id);
-
-                    self.slt_id = item_info.ID
-                    self.slt_spot = item_info.MAN_SPOT
-                    self.slt_instead = item_info.MAN_INSTEAD
-                    self.slt_edit = item_info.EDIT_POINT
-                    self.slt_mc_no = item_info.MC_NO
-                    self.slt_mold_no = item_info.MOLD_NO
-                    self.slt_part_no = item_info.PART_NO
-                    self.slt_process = item_info.PROCESS_POINT
-                    self.slt_detail = item_info.DETAILS
-                    self.slt_change = item_info.CHANGE
-                    self.slt_warning = item_info.WARNINGS
-
-                    await self.getFileList(self.slt_id)
-
-                    await $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process').selectpicker('destroy');
-                    await $('select').selectpicker('render');
-
-                }
-
-                modal.show()
-
+                $('#btn-cn').prop('disabled',false).html('<i class="fas fa-times"></i> Cancel'); $('#btn-s').prop('disabled',false).html('<i class="fas fa-save"></i> บันทึก'); $("#formFileMultiple").val(null);
             },
-            async Save_Data() {
-
-                let self = this
-                let el = document.querySelector('#change_point_modal');
-                let modal = bootstrap.Modal.getOrCreateInstance(el);
-
-                let file_name = '';
-                let file_size = 0;
-                let file_type;
-
-                if (self.slt_spot !== '' || self.slt_instead !== '' || self.slt_eidt !== '' || self.slt_mc_no !== '' || self.slt_mold_no !== '' || self.slt_part_no !== '') {
-
-                    let spot_name_eng = ''
-                    let spot_name_tha = ''
-                    let instead_name_eng = ''
-                    let instead_name_tha = ''
-
-                    if (self.slt_spot!=='') {
-                        const item_spot = self.dataNameList.find(item => item.EMP_NO == self.slt_spot);
-                        spot_name_eng = item_spot.GNAME_ENG + ' ' + item_spot.FNAME_ENG
-                        spot_name_tha = item_spot.GNAME_TH + ' ' + item_spot.FNAME_TH
-                    }
-
-                    if (self.slt_instead !== '') {
-                        const item_instead = self.dataNameList.find(item => item.EMP_NO == self.slt_instead);
-                        instead_name_eng = item_instead.GNAME_ENG + ' ' + item_instead.FNAME_ENG
-                        instead_name_tha = item_instead.GNAME_TH + ' ' + item_instead.FNAME_TH
-                    }
-
-                    $("#btn-cn").html('<i class="fas fa-sync fa-spin"></i>');
-                    $("#btn-s").html('<i class="fas fa-sync fa-spin"></i>');
-
-                    $("#btn-cn").prop('disabled', true);
-                    $("#btn-s").prop('disabled', true);
-
-                    $.ajax({
-                        url: "@Url.Action("editItem_ChangePoint", "lookup_ver1")",
-                        type: "POST",
-                        data: {
-                            dates: self.date_select,
-                            spot: self.slt_spot,
-                            instead: self.slt_instead,
-                            mc_no: self.slt_mc_no,
-                            edit: self.slt_edit,
-                            part_no: self.slt_part_no,
-                            mold_no: self.slt_mold_no,
-                            change: self.slt_change,
-                            process: self.slt_process,
-                            detail: self.slt_detail,
-                            warning: self.slt_warning,
-                            type: self.changeType,
-                            spot_eng: spot_name_eng,
-                            spot_tha: spot_name_tha,
-                            instead_eng: instead_name_eng,
-                            instead_tha: instead_name_tha,
-                            id: self.slt_id,
-                        },
-                        success: function (result2) {
-                            if (result2.success) {
-
-                                swal({
-                                    title: "Alert",
-                                    text: result2.Message,
-                                    type: "success",
-                                    timer: 1200,
-                                    showCancelButton: false,
-                                    showConfirmButton: false
-                                })
-
-                                setTimeout(() => {
-                                    self.searchDate()
-                                }, "1000");
-                            } else {
-                                swal({
-                                    title: "Alert",
-                                    text: result2.Message,
-                                    type: "warning",
-                                    timer: 1500,
-                                    showCancelButton: false,
-                                    showConfirmButton: false
-                                })
-                            }
-
-                        }
-                    });
-
-                    $("#btn-cn").html('ยกเลิก');
-                    $("#btn-s").html('บันทึก');
-
-                    $("#btn-cn").prop('disabled', false);
-                    $("#btn-s").prop('disabled', false);
-
-                } else {
-                    alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
-                }
-
-
+            removeImage(idx){ const self=this; const fd=new FormData(); if(self.IsAdd){fd.append('item_id',self.tempID[idx].ITEM_ID);fd.append('item_name',self.tempID[idx].ITEM_NAME);}else{fd.append('item_id',self.fileList[idx].id);fd.append('item_name',self.fileList[idx].name);} $.ajax({url:'@Url.Action("deleteFile","lookup_ver1")',type:'POST',data:fd,dataType:'json',contentType:false,processData:false,success(){}}); self.images.splice(idx,1);self.fileList.splice(idx,1);self.tempID.splice(idx,1); },
+            async getFileList(id){
+                const self=this;
+                await $.ajax({url:"@Url.Action("SelectItem_Files","lookup_ver1")",type:"POST",data:{item_id:id},success(r){if(r.success){self.fileList=[];r.data.forEach(d=>self.fileList.push({id:d.ITEM_ID,name:d.ITEM_NAME,file_type:d.ITEM_FILE_TYPE,size:d.ITEM_FILE_SIZE}));}}});
             },
-            deleteItem() {
-
-                const self = this
-
-                let fn = function (isConfirm) {
-                    if (isConfirm) {
-                        $.ajax({
-                            url: "@Url.Action("DeleteItem_ChangePoint", "lookup_ver1")",
-                            type: "POST",
-                            data: { item_id: self.slt_id },
-                            success: function (result) {
-                                if (result.success) {
-                                    swal({
-                                        title: "แจ้งเตือน",
-                                        text: result.Message,
-                                        type: "success",
-                                        timer: 1000,
-                                        showCancelButton: false,
-                                        showConfirmButton: false
-                                    })
-                                    setTimeout(() => {
-                                        self.searchDate()
-                                    }, "1000");
-                                } else {
-                                    swal({
-                                        title: "แจ้งเตือน",
-                                        text: result.responseText,
-                                        type: "warning",
-                                        timer: 1000,
-                                        showCancelButton: false,
-                                        showConfirmButton: false
-                                    })
-                                }
-                            }
-                        });
-                    } else {
-                    }
-                }
-
-                alertBoxConfirm("แจ้งเตือน", "คุณต้องการลบข้อมูลใช่หรือไม่ ?", "", fn)
+            async Save_Data(){
+                const self=this;
+                let ok=(self.slt_spot!==''||self.slt_instead!==''||self.slt_mc_no!==''||self.slt_mold_no!==''||self.slt_part_no!=='');
+                if(!ok){ alertBoxTime('Alert','กรุณากรอกข้อมูลให้ครบถ้วน','warning',1500,'',''); return; }
+                let se='',st='',ie='',it='';
+                if(self.slt_spot!==''){ const s=self.dataNameList.find(i=>i.EMP_NO===self.slt_spot); if(s){se=s.GNAME_ENG+' '+s.FNAME_ENG;st=s.GNAME_TH+' '+s.FNAME_TH;} }
+                if(self.slt_instead!==''){ const s=self.dataNameList.find(i=>i.EMP_NO===self.slt_instead); if(s){ie=s.GNAME_ENG+' '+s.FNAME_ENG;it=s.GNAME_TH+' '+s.FNAME_TH;} }
+                $('#btn-cn,#btn-s').prop('disabled',true).html('<i class="fas fa-sync fa-spin"></i>');
+                const p={dates:self.date_select,spot:self.slt_spot,instead:self.slt_instead,mc_no:self.slt_mc_no,edit:self.slt_edit,part_no:self.slt_part_no,mold_no:self.slt_mold_no,change:self.slt_change,process:self.slt_process,detail:self.slt_detail,warning:self.slt_warning,type:self.changeType,spot_eng:se,spot_tha:st,instead_eng:ie,instead_tha:it};
+                if(!self.IsAdd) p.id=self.slt_id;
+                const url=self.IsAdd?"@Url.Action("AddItem_ChangePoint","lookup_ver1")":"@Url.Action("editItem_ChangePoint","lookup_ver1")";
+                $.ajax({url,type:"POST",data:p, success(r2){ swal({title:'Alert',text:r2.Message,type:r2.success?'success':'warning',timer:1200,showCancelButton:false,showConfirmButton:false}); if(r2.success) setTimeout(()=>{ self.getList(); bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal')).hide(); },1100); }});
+                $('#btn-cn').prop('disabled',false).html('<i class="fas fa-times"></i> Cancel'); $('#btn-s').prop('disabled',false).html('<i class="fas fa-save"></i> บันทึก');
             },
-            searchDate() {
-                let self = this;
-
-                let d = self.date_select;
-                let yyyy = d.getUTCFullYear();
-                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
-                let dd = ('0' + d.getDate()).slice(-2);
-                let hh = ('0' + d.getHours()).slice(-2);
-                let mm = ('0' + d.getMinutes()).slice(-2);
-                let ss = ('0' + d.getSeconds()).slice(-2);
-                // return yyyy + '-' + MM + '-' + dd + 'T' + hh + ':' + mm + ':' + ss + 'Z';
-
-                const url = '@Url.Action("detail", "home", new { id = "id_date"})'.replace("id_date", MM + dd + yyyy);
-
-                window.open(url,'_self')
-
+            deleteItem(){
+                const self=this;
+                alertBoxConfirm("Alert","ต้องการลบรายการนี้ใช่ไหม?","",function(ok){ if(!ok) return; $.ajax({url:"@Url.Action("DeleteItem_ChangePoint","lookup_ver1")",type:"POST",data:{item_id:self.slt_id},success(r){swal({title:'Alert',text:r.Message,type:r.success?'success':'warning',timer:1100,showCancelButton:false,showConfirmButton:false});if(r.success) setTimeout(()=>{ self.getList(); bootstrap.Modal.getOrCreateInstance(document.querySelector('#change_point_modal')).hide(); },1000);}}); });
             },
-             addEvent() {
-                let self = this;
-
-                const obj = {
-                    id: 'bHay681',
-                    name: "Part/Mat'l (5)",
-                    date: "08/13/2023",
-                    type: "part",
-                    everyYear: false
-                }
-
-                self.eventList.splice(self.eventList.length, 0, obj)
-
-                $("#evoCalendar").evoCalendar('destroy');
-
-                $("#evoCalendar").evoCalendar({
-                    eventHeaderFormat: 'dd MM yyyy',
-                    theme: 'Royal Navy',
-                    calendarEvents: self.eventList
-                });
-
-                $("#evoCalendar").evoCalendar('selectDate', '08/13/2023');
-
-            },
-             async deleteChangePointOver() {
-
-                await $.ajax({
-                    url: "@Url.Action("ListItem_ChangePoint_Over", "lookup_ver1")",
-                    type: "POST",
-                    data: { },
-                    success: function (result) {
-                        if (result.success) {
-                            if (result.data.length > 0) {
-
-                                for (let i = 0; i < result.data.length; i++) {
-
-                                    fd = new FormData();
-                                    fd.append('item_id', result.data[i].ID);
-
-                                     $.ajax({
-                                        url: '@Url.Action("DeleteItem_ChangePoint", "lookup_ver1")',
-                                        type: 'POST',
-                                        data: fd,
-                                            dataType: 'json',
-                                            contentType: false,
-                                            processData: false,
-                                            success: function (response) {}
-                                        });
-
-                                }
-
-                            }
-                        }
-                    }
-                });
-            },
-             async getGroup() {
-
-               let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
-                    type: "POST",
-                    data: {},
-                    success: function (result) {
-                        if (result.success) {
-
-                            self.groupList = result.data
-
-                            const arr = result.data;
-
-                            self.slt_group = '@Session["GROUP_ID"].ToString()';
-
-                            if (self.slt_group == "") {
-                                self.slt_group = result.data[0].GROUP_ID
-                            }
-
-                            const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
-
-                            const arrSelect = arr[index];
-
-                            if (arrSelect.MENU_1 == 'N') {
-                                $('#menu_1').hide();
-                            }
-                            if (arrSelect.MENU_2 == 'N') {
-                                $('#menu_2').hide();
-                            }
-                            if (arrSelect.MENU_3 == 'N') {
-                                $('#menu_3').hide();
-                            }
-                            if (arrSelect.MENU_4 == 'N') {
-                                $('#menu_4').hide();
-                            }
-                            if (arrSelect.MENU_5 == 'N') {
-                                $('#menu_5').hide();
-                            }
-
-                            if (arrSelect.MENU_1 == 'N') {
-                                $('#lk-menu-2').hide();
-                            }
-                            if (arrSelect.MENU_2 == 'N') {
-                                $('#lk-menu-3').hide();
-                            }
-                            if (arrSelect.MENU_3 == 'N') {
-                                $('#lk-menu-1').hide();
-                            }
-                            if (arrSelect.MENU_5 == 'N') {
-                                $('#lk-menu-4').hide();
-                            }
-                            if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
-                                $('#lk-menu-5').hide();
-                            }
-                            if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
-                                $('#lk-menu-6').hide();
-                            }
-
-
-                        }
-
-                    }
-                 });
-
-                 await $('#slt_group').selectpicker('destroy');
-                 await $('#slt_group').selectpicker('render');
-                 await $("#slt_group").selectpicker("val", self.slt_group)
-            },
-             async selectGroup(gID) {
-              let self = this;
-
-                await $.ajax({
-                    url: "@Url.Action("Select_GROUP", "lookup")",
-                    type: "POST",
-                    data: { item_group: gID},
-                    success: function (result) {
-                        if (result.success) {
-                            window.open("@Url.Action("index", "home")","_self")
-                        }
-
-                    }
-                });
-            }
-        },
-
-        watch: {
+            async deleteChangePointOver(){ await $.ajax({url:"@Url.Action("ListItem_ChangePoint_Over","lookup_ver1")",type:"POST",data:{},success(r){if(r.success&&r.data.length>0) r.data.forEach(item=>{const fd=new FormData();fd.append('item_id',item.ID);$.ajax({url:'@Url.Action("DeleteItem_ChangePoint","lookup_ver1")',type:'POST',data:fd,dataType:'json',contentType:false,processData:false,success(){}});});}}); },
         }
-    }).mount('#MainApp')
-
-
-
-    // JavaScript (for modal functionality)
-    //let currentModalImg;
-
-    //function openModalImage(img) {
-
-    //    const modal = document.querySelector('.modal');
-    //    const modalImg = modal.querySelector('.modal-content');
-    //    const closeModalBtn = modal.querySelector('.close');
-
-    //    currentModalImg = img;
-    //    modalImg.src = img.src;
-    //    modal.style.display = 'block';
-
-    //    closeModalBtn.addEventListener('click', closeModal);
-    //    window.addEventListener('click', outsideClick);
-    //}
-
-    //function closeModal() {
-    //    const modal = document.querySelector('.modal');
-    //    const closeModalBtn = modal.querySelector('.close');
-
-    //    modal.style.display = 'none';
-    //    closeModalBtn.removeEventListener('click', closeModal);
-    //    window.removeEventListener('click', outsideClick);
-    //}
-
-    //function outsideClick(e) {
-    //    const modal = document.querySelector('.modal');
-    //    if (e.target === modal) {
-    //        closeModal();
-    //    }
-    //}
-
-    //Keyboard navigation for modal gallery
-    //document.addEventListener('keydown', (e) => {
-    //    if (e.key === 'Escape') {
-    //        closeModal();
-    //    } else if (e.key === 'ArrowLeft') {
-    //        const prevImg = currentModalImg.previousElementSibling;
-    //        if (prevImg) {
-    //            currentModalImg = prevImg;
-    //            openModalImage(currentModalImg);
-    //        }
-    //    } else if (e.key === 'ArrowRight') {
-    //        const nextImg = currentModalImg.nextElementSibling;
-    //        if (nextImg) {
-    //            currentModalImg = nextImg;
-    //            openModalImage(currentModalImg);
-    //        }
-    //    }
-    //});
+    }).mount('#MainApp');
 </script>
