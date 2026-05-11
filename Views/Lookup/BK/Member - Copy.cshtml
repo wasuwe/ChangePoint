@@ -1,0 +1,836 @@
+﻿@{
+    ViewBag.Title = "Member";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+
+<style>
+
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    /*
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+         background-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,18,68,1) 15%, rgba(0,80,134,1) 35%, rgba(49,143,181,1) 55%, rgba(176,202,199,1) 75%, rgba(247,214,191,1) 100%);
+        background-repeat: no-repeat;
+        background-size: contain;
+        position: relative;
+        z-index: -2;
+    }*/
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+        <div class="haed-title">Master : Member</div>
+        @if (Session["STATUS"].ToString() == "M")
+        {
+            <div class="haed-fn">
+                <a href="" onclick="return false;">
+                    <i class="fas fa-plus-circle" v-on:click="Open_Modal('Add','')"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
+
+    <div class="section-tatble">
+
+        <table id="dataTable" class="table table-hover" style="width: 100%">
+            <thead class="table-primary">
+                <tr>
+                    <th>EMP NO.</th>
+                    <th>Name</th>
+                    <th>Work Center</th>
+                    <th>Update Date</th>
+                    <th>Status</th>
+                    @if (Session["STATUS"].ToString() == "M")
+                    {
+                        <th>Tools</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+
+    <div class="modal fade modal-lg" id="Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Item_modal_Label">Add Item</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+                            <label id="" for="txt_emp" class="col-4 col-form-label"><b>ชื่อ - นามสกุล </b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="txt_emp" v-model="slt_emp">
+                                        <option value="">เลือกพนักงาน</option>
+                                        <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
+                                            <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} / {{item.gname_eng}} {{item.fname_eng}} </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_wc" class="col-4 col-form-label"><b>WC Code</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txt_wc" class="form-control" v-model="slt_wc" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_role" class="col-4 col-form-label"><b>ตำแหน่ง</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="txt_role" v-model="slt_role">
+                                        <option value="">เลือกตำแหน่ง</option>
+                                        <option value="A">Admin</option>
+                                        <option value="S">Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_email" class="col-4 col-form-label"><b>อีเมล์</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txt_email" class="form-control" v-model="slt_email" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_password" class="col-4 col-form-label"><b>รหัสผ่าน</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="password" id="txt_password" class="form-control" v-model="slt_password" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_conpassword" class="col-4 col-form-label"><b>ยืนยันรหัสผ่าน</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="password" id="txt_conpassword" class="form-control" v-model="slt_conpassword" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="" v-if="chk_password && slt_conpassword != ''" class="offset-4 col-8 col-form-label"><b>รหัสผ่านไม่ตรงกัน</b></label>
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-add" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn-save"
+                            v-on:click="saveItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-lg" id="Edit-Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Edit_Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Edit_Item_modal_Label">Edite Item</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+
+                            <label id="" for="edit_txt_name" class="col-4 col-form-label"><b>ชื่อ - นามสกุล </b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="edit_txt_name" class="form-control" v-on:keyup.enter="" disabled />
+                                </div>
+                            </div>
+
+                            <label id="" for="edit_txt_role" class="col-4 col-form-label"><b>ตำแหน่ง</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="edit_txt_role" value="">
+                                        <option value="">เลือกตำแหน่ง</option>
+                                        <option value="A">Admin</option>
+                                        <option value="S">Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="" for="edit_txt_wc" class="col-4 col-form-label"><b>WC Code</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="edit_txt_wc" class="form-control" />
+                                </div>
+                            </div>
+
+                            <label id="" for="edit_txt_email" class="col-4 col-form-label"><b>อีเมล์</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="edit_txt_email" class="form-control" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+
+                            <label id="" for="edit_txt_password" class="col-4 col-form-label"><b>รหัสผ่าน</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="password" id="edit_txt_password" class="form-control" v-model="slt_password" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="edit_txt_conpassword" class="col-4 col-form-label"><b>ยืนยันรหัสผ่าน</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="password" id="edit_txt_conpassword" class="form-control" v-model="slt_conpassword" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="" v-if="chk_password" class="offset-4 col-8 col-form-label"><b>รหัสผ่านไม่ตรงกัน</b></label>
+
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>สถานะ</b></label>
+                            <div id="" class="col-8 col-form-label">
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-Y" value="Y">
+                                    <label class="form-check-label" for="IsUse-Y">
+                                        ใช้งาน
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-N" value="N">
+                                    <label class="form-check-label" for="IsUse-N">
+                                        ไม่ใช้งาน
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cancel-edit">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn-update"
+                            v-on:click="updateItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    let DTable = ''
+    let Update_ID = ''
+
+        createApp({
+            data() {
+                return {
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+                    col: [],
+
+                    slt_emp: '',
+                    slt_email: '',
+                    slt_password: '',
+                    slt_conpassword: '',
+                    slt_role: '',
+                    slt_use: '',
+                    slt_wc: '',
+                        
+                    chk_password: false,
+                    chk_password_valid: false,
+                    userList: [],
+                    IsAdd: true,
+                    dataTable: null,
+                }
+            },
+            watch: {
+
+                @*function validatePassword(password) {
+                  // Check length between 8 and 10 characters
+                  if (password.length < 8 || password.length > 10) {
+                    return false;
+                  }
+
+                  // Check for at least one lowercase and one uppercase letter
+                  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+                    return false;
+                  }
+
+                  // Check for special characters that don't impact web and system functionality
+                  if (!/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]+$/.test(password)) {
+                    return false;
+                  }
+
+                  // If all checks pass, the password is valid
+                  return true;
+                }
+
+                // Example usage:
+                const password = "Abcd@123";
+                if (validatePassword(password)) {
+                  console.log("Password is valid.");
+                } else {
+                  console.log("Password is not valid.");
+                }*@
+
+
+                slt_password(newValue, oldValue) {
+                    if (newValue == this.slt_conpassword)
+                        this.chk_password = false
+                    else
+                        this.chk_password = true
+                },
+                slt_conpassword(newValue, oldValue) {
+                    if (newValue == this.slt_password)
+                        this.chk_password = false
+                    else
+                        this.chk_password = true
+                }
+
+            },
+            mounted() {
+
+                let self = this
+
+                self.SetTeble()
+        
+            },
+            async created() {
+
+                let self = this
+
+                await self.getUser()
+                await $('#txt_emp, #txt_role, #edit_txt_emp, #edit_txt_role').selectpicker('destroy');
+                await $('#txt_emp, #txt_role, #edit_txt_emp, #edit_txt_role').selectpicker('render');
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                SetTeble() {
+
+                    let self = this
+
+                    if (self.status == "M") {
+                        self.col = [
+                            { data: 'EMP_NO', width: "20%", class: "text-center" },
+                            { data: 'FNAME', width: "20%", class: "text-center" },
+                            { data: 'WC_CODE', width: "20%", class: "text-center" },
+                            { data: 'UPDATE_BY', width: "20%", class: "text-center" },
+                            { data: 'IS_USE', width: "10%", class: "text-center" },
+                            { data: 'TOOL', width: "10%", class: "text-center", orderable: false }
+                        ]
+                    } else {
+                        self.col = [
+                            { data: 'EMP_NO', width: "20%", class: "text-center" },
+                            { data: 'FNAME', width: "20%", class: "text-center" },
+                            { data: 'WC_CODE', width: "20%", class: "text-center" },
+                            { data: 'UPDATE_BY', width: "20%", class: "text-center" },
+                            { data: 'IS_USE', width: "20%", class: "text-center" },
+                        ]
+                    }
+
+                    DTable = $('#dataTable').DataTable({
+                        order: [[0, 'asc']],
+                        ajax: {
+                            url: '@Url.Action("ListItem_EMP", "lookup")',
+                            dataSrc: function (json) {
+                                let item_ID = '';
+                                if (json.success) {
+                                    for (var i = 0, ien = json.data.length; i < ien; i++) {
+
+                                        item_id = json.data[i]["EMP_NO"];
+
+                                        json.data[i]["TOOL"] = '<a href="#" onclick="return false;" data-bs-toggle="modal" data-bs-target="#Edit-Item-modal" data-item_id="' + item_id + '" id="item_id-' + item_id + '"><i class="fas fa-edit" style="margin-right: 10px; color: rgb(44 76 235);"></i></a>'
+                                        if (self.role != 'V'  && '@Session["EMP_NO"].ToString()' != item_id) {
+                                            json.data[i]["TOOL"] += '<a href="#" onclick="return false;"id="deleteItemID-' + item_id + '"><i class="fas fa-trash-alt" style="color: rgb(225 55 55);" ></i></a>'
+                                        }
+
+                                        json.data[i]["TOOL"] += '<script>' + '\n';
+                                        json.data[i]["TOOL"] += '    $("#item_id-' + item_id + '").click(function () {' + '\n';
+                                        json.data[i]["TOOL"] += '        $.ajax({' + '\n';
+                                        json.data[i]["TOOL"] += '            url: "@Url.Action("SelectItem_Member", "lookup")",' + '\n';
+                                        json.data[i]["TOOL"] += '            type: "POST",' + '\n';
+                                        json.data[i]["TOOL"] += '            data: { item_id: "' + item_id + '" },' + '\n';
+                                        json.data[i]["TOOL"] += '            success: function (result) {' + '\n';
+                                        json.data[i]["TOOL"] += '                if (result.success) {' + '\n';
+                                        json.data[i]["TOOL"] += '                    $("#Edit-Item-modal #edit_txt_name").val(result.data[0]["EMP_NO"] + " : " + result.data[0]["GNAME_TH"] + " " + result.data[0]["FNAME_TH"] + " / " + result.data[0]["GNAME_ENG"] + " " + result.data[0]["FNAME_ENG"] )' + '\n';
+                                        json.data[i]["TOOL"] += '                    $("#Edit-Item-modal #edit_txt_role").selectpicker("val",result.data[0]["ROLE"] );' + '\n';
+                                        json.data[i]["TOOL"] += '                    $("#Edit-Item-modal #edit_txt_email").val(result.data[0]["EMAIL"])' + '\n';
+                                        json.data[i]["TOOL"] += '                    $("#Edit-Item-modal #edit_txt_wc").val(result.data[0]["WC_CODE"])' + '\n';
+
+                                        json.data[i]["TOOL"] += '                    Update_ID = "' + item_id + '"' + '\n';
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["IS_USE"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+                                        json.data[i]["TOOL"] += '                } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                }' + '\n';
+                                        json.data[i]["TOOL"] += '            }' + '\n';
+                                        json.data[i]["TOOL"] += '        });' + '\n';
+                                        json.data[i]["TOOL"] += '    });' + '\n';
+
+                                        json.data[i]["TOOL"] += '                        $("#deleteItemID-' + item_id + '").click(function () {' + '\n';
+                                        json.data[i]["TOOL"] += '                            let fn = function (isConfirm) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                if (isConfirm) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                    $.ajax({' + '\n';
+                                        json.data[i]["TOOL"] += '                                        url: "@Url.Action("DeleteItem_Member", "lookup")",' + '\n';
+                                        json.data[i]["TOOL"] += '                                        type: "POST",' + '\n';
+                                        json.data[i]["TOOL"] += '                                        data: { item_emp: "' + item_id + '"},' + '\n';
+                                        json.data[i]["TOOL"] += '                                        success: function (result) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                            if (result.success) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                                swal({' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    title: "Alert",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    text: result.Message,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    type: "success",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    timer: 1000,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showCancelButton: false,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showConfirmButton: false' + '\n';
+                                        json.data[i]["TOOL"] += '                                                })' + '\n';
+                                        json.data[i]["TOOL"] += '                                                DTable.ajax.reload();' + '\n';
+                                        json.data[i]["TOOL"] += '                                            } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                                                swal({' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    title: "Alert",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    text: result.responseText,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    type: "warning",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    timer: 1000,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showCancelButton: false,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showConfirmButton: false' + '\n';
+                                        json.data[i]["TOOL"] += '                                                })' + '\n';
+                                        json.data[i]["TOOL"] += '                                            }' + '\n';
+                                        json.data[i]["TOOL"] += '                                        }' + '\n';
+                                        json.data[i]["TOOL"] += '                                    });' + '\n';
+                                        json.data[i]["TOOL"] += '                                } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                                }' + '\n';
+                                        json.data[i]["TOOL"] += '                            }' + '\n';
+
+                                        json.data[i]["TOOL"] += ' alertBoxConfirm("แจ้งเตือน", "คุณต้องการลบข้อมูลใช่หรือไม่ ?", "", fn)' + '\n';
+
+                                        json.data[i]["TOOL"] += ' });' + '\n';
+
+                                        json.data[i]["TOOL"] += '<\/script>' + '\n';
+
+                                        json.data[i]["UPDATE_BY"] = json.data[i]["NAME_UPDATE"]  + '<br>' + json.data[i]["UPDATE_DATE"];
+
+                                        if (json.data[i]["IS_USE"] == 'Y') {
+                                            json.data[i]["IS_USE"] = 'Use'
+                                        } else {
+                                            json.data[i]["IS_USE"] = 'Unuse'
+                                        }
+
+                                    }
+                                    return json.data
+                                } else {
+                                    return json.data = []
+                                }
+                            },
+                        },
+                        columns: self.col
+                    });
+
+                },
+                async Open_Modal(status, index) {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (status == 'Add') {
+                        self.IsAdd = true
+
+                        self.slt_emp = '';
+                        self.slt_email = '';
+                        self.slt_password = '';
+                        self.slt_conpassword = '';
+                        self.slt_role = '';
+                        self.slt_use = '';
+                        self.slt_wc = '';
+                    } 
+
+                    modal.show()
+
+                },
+                async saveItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+                    
+                    if (self.slt_emp == '' || self.slt_role == '' || self.chk_password ) {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+                        $("#btn-save").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-save").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("AddItem_Member", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_emp: self.slt_emp,
+                                    item_role: self.slt_role,
+                                    item_email: self.slt_email,
+                                    item_password: self.slt_password,
+                                    item_wc: self.slt_wc,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        self.slt_emp = ''
+                                        self.slt_email = ''
+                                        self.slt_password = ''
+                                        self.slt_conpassword = ''
+                                        self.slt_role = ''
+                                        self.slt_wc = ''
+                                        self.chk_password = false
+                                        $("#txt_emp, #txt_role").selectpicker("val", "")
+
+                                        DTable.ajax.reload();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+
+                        }
+                    }
+
+                    $("#btn-save").html('บันทึก');
+                    $("#btn-save").prop('disabled', false);
+
+                },
+                async updateItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Edit-Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    role = $('#edit_txt_role').val()
+                    email = $('#edit_txt_email').val()
+                    wc = $('#edit_txt_wc').val()
+                    isuse = $('[name="IsUse"]:checked').val()
+
+                    if (role == '' || email == '' || self.chk_password) {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+                        $("#btn-update").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-update").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("EditItem_Member", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_emp: Update_ID,
+                                    item_role: role,
+                                    item_email: email,
+                                    item_password: self.slt_password,
+                                    item_isUse: isuse,
+                                    item_wc: wc,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        $('#edit_txt_role').val('')
+                                        $('#edit_txt_email').val('')
+                                        $('#edit_txt_password').val('')
+                                        $('#edit_txt_conpassword').val('')
+
+                                        DTable.ajax.reload();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+
+                        }
+                    }
+
+                    $("#btn-update").html('บันทึก');
+                    $("#btn-update").prop('disabled', false);
+
+                },
+                async getUser() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_EMP", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+
+                                const inputData = result.data
+
+                                self.dataNameList = result.data
+
+                                const transformedData = {};
+
+                                inputData.forEach(item => {
+                                    const itemId = item.EMP_NO;
+                                    const wc_code = item.WC_CODE;
+                                    const wc_name = item.WC_NAME;
+
+                                    const gname_eng = item.GNAME_ENG;
+                                    const fname_eng = item.FNAME_ENG;
+                                    const gname_tha = item.GNAME_TH;
+                                    const fname_tha = item.FNAME_TH;
+
+                                    if (wc_code in transformedData) {
+                                        transformedData[wc_code].list.push(
+                                            {
+                                                itemId: itemId,
+                                                gname_eng: gname_eng,
+                                                fname_eng: fname_eng,
+                                                gname_tha: gname_tha,
+                                                fname_tha: fname_tha,
+                                            }
+                                        );
+                                    } else {
+                                        transformedData[wc_code] = {
+                                            wc_code: wc_code,
+                                            wc_name: wc_name,
+                                            list: [
+                                                {
+                                                    itemId: itemId,
+                                                    gname_eng: gname_eng,
+                                                    fname_eng: fname_eng,
+                                                    gname_tha: gname_tha,
+                                                    fname_tha: fname_tha,
+                                                }
+                                            ]
+                                        };
+                                    }
+                                });
+
+                                self.userList = Object.values(transformedData);
+
+                            }
+                        }
+                     });
+                }
+
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-admin').addClass('active');
+
+    // ------------------- BackToTop ------------------- //
+
+    //var mybutton = document.getElementById("toTop");
+
+    //window.onscroll = function () {
+    //    scrollFunction()
+    //};
+
+    //function scrollFunction() {
+
+    //    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    //        mybutton.classList.add("active");
+
+    //    } else {
+    //        mybutton.classList.remove("active");
+    //    }
+    //}
+
+
+
+</script>

@@ -1,0 +1,843 @@
+﻿@{
+    ViewBag.Title = "Check Sheet";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+@Styles.Render("~/Content/vue3-easy-data-table@1.5.47.css")
+
+<style>
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+    
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+    .customize-table {
+        --easy-table-header-font-size: 14px;
+        --easy-table-header-height: 50px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #2d3a4f;
+        --easy-table-border: 1px solid #445269;
+    }
+
+
+    .customize-table td {
+        white-space: unset;
+    }
+
+    .text-style-normal {
+        font-weight: normal;
+        font-size: 16px
+
+    }
+    .item-header-1 {
+        font-weight: bold;
+        font-size: 20px
+    }
+    
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+
+        <div class="head-box">
+            <div class="haed-title">Master : Check Sheet</div>
+            <div class="select-group">
+                <select class="selectpicker"  data-placeholder="Select Group" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
+                    <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
+                </select>
+            </div>
+        </div>
+
+
+        @if (Session["STATUS"].ToString() == "M")
+        {
+            <div class="haed-fn">
+
+                <a href="" onclick="return false;">
+                    <i class="fas fa-plus-circle" v-on:click="Open_Modal('Add','')"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
+
+    <div class="section-tatble">
+        <div class="input-group" id="" style="margin-bottom: 10px;">
+            <input type="text" v-model="searchValue" class="form-control" placeholder="Search"/>
+        </div>
+
+        <easy-data-table :headers="headers"
+                         :items="items"
+                         :sort-by="sortBy"
+                         :sort-type="sortType"
+                         :search-value="searchValue"
+                         multi-sort
+                         show-index
+                         border-cell
+                         table-class-name="customize-table"
+                         header-text-direction="center"
+                         body-text-direction="center"
+                         class="text-center" />
+
+        <template #item-UPDATE_BY="{ UPDATE_BY, GNAME_ENG, FNAME_ENG }">
+            {{GNAME_ENG}}  {{FNAME_ENG}}
+        </template>
+
+
+        <template #item-IS_USE="{ IS_USE }">
+            {{IS_USE=='Y' ? 'Use' : 'Unuse'}}
+        </template>
+
+        <template #item-tool="{ ITEM_ID }">
+            <a href="#" onclick="return false;" v-on:click="Open_Modal('Edit', ITEM_ID)"><i class="fas fa-edit" style="margin-right: 10px; color: rgb(44 76 235);"></i></a>
+            <a href="#" onclick="return false;" v-on:click="deleteItem(ITEM_ID)"><i class="fas fa-trash-alt" style="color: rgb(225 55 55);"></i></a>
+        </template>
+
+    </div>
+
+    <div class="modal fade modal-xl" id="Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Item_modal_Label">{{IsAdd==true ? 'Add Item' : 'Edit item'}}</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+                            <label for="slt_title" class="col-4 col-form-label"><b>Check Sheet Name </b></label>
+                            <div class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="slt_title" v-model="slt_name" class="form-control" />
+                                </div>
+                            </div>
+
+                            <label for="" class="col-4 col-form-label"><b>Status</b></label>
+                            <div class="col-8 col-form-label">
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-Y" value="Y" v-model="slt_use">
+                                    <label class="form-check-label" for="IsUse-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-N" value="N" v-model="slt_use">
+                                    <label class="form-check-label" for="IsUse-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+                            <label for="slt_title" class="col-4 col-form-label">
+                                <b>Check Sheet </b>
+                                <a href="" onclick="return false;" v-on:click="add_item_header_1()">เพิ่มหัวข้อ Check Sheet</a>
+                            </label>
+                            <div class="col-12">
+                                {{slt_items}}
+
+                                <table class="table ">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" width="60%">Title</th>
+                                            <th scope="col" width="20%">Style</th>
+                                            <th scope="col" class="text-center" width="20%">#</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody v-for="(items, indexs) in slt_items">
+
+                                        <tr  v-if="items.type == 'header'">
+                                            <th scope="row">
+                                                <div class="input-group" id="">
+                                                    <input type="text" v-model="items.title" class="form-control" :class="items.class" />
+                                                </div>
+                                            </th>
+                                            <td>-</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-danger" v-on:click="remove_select_item(index)">Delete</button>
+                                            </td>
+                                        </tr>
+
+                                        <tr v-for="(item, index) in items.items">
+                                            <th scope="row" style="padding-left: 30px;">
+
+                                                @*Textbox*@
+                                                <div class="input-group" v-if="item.type == 'textbox'">
+                                                    <input type="text" v-model="item.title" class="form-control" :class="item.class" />
+                                                </div>
+
+                                                @*Textarae*@
+                                                <div class="input-group" v-if="item.type == 'textarea'">
+                                                    <textarea class="form-control" :class="item.class" v-model="item.title" rows="1"></textarea>
+                                                </div>
+
+                                                @*Radio*@
+                                                <div class="form-check " :class="{ 'form-check-inline': item.isHorizontal == 'true' }" v-if="item.type == 'radio'" v-for="(v, i) in item.list">
+                                                    <input class="form-check-input" type="radio" :name="'radio-' + indexs + '-' + index" :id="'radio-' + indexs + '-' + index + '-' + i" :value="v">  @*v-model="item.value"*@
+                                                    <label class="form-check-label" :for="'radio-' + indexs + '-' + index + '-' + i">{{v}}</label>
+                                                </div>
+
+                                                @*Checkbox*@
+                                                <div class="form-check" :class="{ 'form-check-inline': item.isHorizontal == 'true' }" v-if="item.type == 'checkbox'" v-for="(v, i) in item.list">
+                                                    @*v-model="item.value"*@
+                                                    <input class="form-check-input" type="checkbox" :id="'chkbox-' + indexs + '-' + index + '-' + i" :value="v" v-model="item.value">
+                                                    <label class="form-check-label" :for="'chkbox-' + indexs + '-' + index + '-' + i">
+                                                        {{v}}
+                                                    </label>
+
+                                                    <input type="text"  class="form-control" :class="item.class" v-model="item.list[i]" />
+                                                </div>
+
+                                            </th>
+
+                                            <td v-if="item.type == 'textbox' || item.type == 'textarea'">-</td>
+
+                                            <td class="text-center"  v-if="item.type == 'radio' || item.type == 'checkbox'">
+                                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                                    <input type="radio" class="btn-check" :id="'radio-style-1-' + indexs + '-' + index" value=true v-model="item.isHorizontal" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary" :for="'radio-style-1-' + indexs + '-' + index">Horizontal</label>
+
+                                                    <input type="radio" class="btn-check" :id="'radio-style-2-' + indexs + '-' + index" value=false v-model="item.isHorizontal" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" :for="'radio-style-2-' + indexs + '-' + index">Vertical</label>
+                                                </div>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-danger" v-on:click="remove_select_item(index)">Delete</button>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn_save"
+                            v-on:click="saveItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+@Scripts.Render("~/Scripts/vue3-easy-data-table.umd.js")
+
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    headers: [
+                        { text: "NAME", value: "ITEM_NAME", sortable: true },
+                        { text: "Update By", value: "UPDATE_BY", sortable: true },
+                        { text: "Update Date", value: "UPDATE_DATE", sortable: true },
+                        { text: "Status", value: "IS_USE", sortable: true },
+                        { text: "Tools", value: "tool", sortable: false },
+                    ],
+                    items: [],
+                    searchValue: '',
+                    sortBy: ["ITEM_NAME"],
+                    sortType: ["asc"],
+
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+
+                    slt_id: '',
+                    slt_name: '',
+                    slt_use: '',
+                    slt_items: [],
+                    slt_group: '',
+
+                    groupList: [],
+
+                    IsAdd: true,
+                    dataTable: null,
+                }
+            },
+            components: {
+                EasyDataTable: window['vue3-easy-data-table'],
+            },
+            mounted() {
+
+                let self = this
+
+            },
+            async created() {
+
+                let self = this
+
+                await self.getGroup()
+
+                await self.get_list()
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                async get_list() {
+
+                    let self = this;
+
+                    await $.ajax({
+                        url: '@Url.Action("ListItem_CHECK_SHEET", "lookup")',
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+                                self.items = result.data
+                            } else {
+                                self.items = []
+                            }
+
+                        }
+                    });
+                },
+                async Open_Modal(status, id) {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (status == 'Add') {
+                        self.IsAdd = true
+
+                        self.slt_name = ''
+                        self.slt_items = []
+                        self.slt_use = 'Y'
+
+                        $("#slt_member").selectpicker("val", '')
+
+                    } else {
+
+                        self.IsAdd = false
+                        self.id = id;
+                        $.ajax({
+                            url: "@Url.Action("SelectItem_CHECK_SHEET", "lookup")",
+                            type: "POST",
+                            data: { item_id: id },
+                            success: function (result) {
+                                if (result.success) {
+
+                                    self.slt_title = result.data[0]["ITEM_TITLE"]
+                                    self.slt_member = result.data[0]["ITEM_MEMBER"].length != '' ? result.data[0]["ITEM_MEMBER"].split(',') : [];
+                                    self.slt_use = result.data[0]["IS_USE"]
+
+                                    $("#slt_member").selectpicker("val", result.data[0]["ITEM_MEMBER"].split(','))
+
+                                } else {
+                                }
+                            }
+                        });
+                    }
+
+                    modal.show()
+
+                },
+                async saveItem() {
+
+                    const self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (self.slt_title == '' || self.slt_member.length == 0 ) {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+                        $("#btn-save").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-save").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("AddItem_CHECK_SHEET", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_title: self.slt_title,
+                                    item_member: self.slt_member.toString(),
+                                    item_isUse: self.slt_use,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        self.get_list();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+                            $.ajax({
+                                url: "@Url.Action("EditItem_CHECK_SHEET", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_title: self.slt_title,
+                                    item_member: self.slt_member.toString(),
+                                    item_id: self.id,
+                                    item_isUse: self.slt_use
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        self.get_list();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+                    $("#btn-save").html('บันทึก');
+                    $("#btn-save").prop('disabled', false);
+
+                },
+                deleteItem(id) {
+
+                    const self = this;
+
+                     let fn = function (isConfirm) {
+                         if (isConfirm) {
+                             $.ajax({
+                                 url: "@Url.Action("DeleteItem_CHECK_SHEET", "lookup")",
+                                 type: "POST",
+                                 data: { item_id: id  },
+                                 success: function (result) {
+                                     if (result.success) {
+                                         swal({
+                                             title: "Alert",
+                                             text: result.Message,
+                                             type: "success",
+                                             timer: 1000,
+                                             showCancelButton: false,
+                                             showConfirmButton: false
+                                         })
+                                         self.get_list();
+                                     } else {
+                                         swal({
+                                             title: "Alert",
+                                             text: result.responseText,
+                                             type: "warning",
+                                             timer: 1000,
+                                             showCancelButton: false,
+                                             showConfirmButton: false
+                                         })
+                                     }
+                                 }
+                             });
+                         } else {
+                         }
+                    }
+
+                    alertBoxConfirm("แจ้งเตือน", "คุณต้องการลบข้อมูลใช่หรือไม่ ?", "", fn)
+
+                },
+                 async getGroup() {
+
+                  let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.groupList = result.data
+
+                                const arr = result.data;
+
+                                self.slt_group = '@Session["GROUP_ID"].ToString()';
+
+                                if (self.slt_group == "") {
+                                    self.slt_group = result.data[0].GROUP_ID
+                                }
+
+                                const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
+
+                                const arrSelect = arr[index];
+
+                                if (arrSelect.MENU_1 == 'N') {
+                                    $('#lk-menu-2').hide();
+                                }
+                                if (arrSelect.MENU_2 == 'N') {
+                                    $('#lk-menu-3').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N') {
+                                    $('#lk-menu-1').hide();
+                                }
+                                if (arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-4').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-5').hide();
+                                }
+                                if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-6').hide();
+                                }
+
+                            }
+
+                        }
+
+                     });
+
+                     await $('#slt_group').selectpicker('destroy');
+                     await $('#slt_group').selectpicker('render');
+                     await $("#slt_group").selectpicker("val", self.slt_group)
+
+                },
+                async selectGroup(gID) {
+
+                    await $.ajax({
+                        url: "@Url.Action("Select_GROUP", "lookup")",
+                        type: "POST",
+                        data: { item_group: gID},
+                        success: function (result) {
+                            if (result.success) {
+                                window.open("@Url.Action("CHECK_SHEET", "lookup")","_self")
+                            }
+
+                        }
+                    });
+                },
+                add_item() {
+                    const self = this;
+                    self.slt_items.push(
+                        {
+                            index: self.slt_items.length + 1,
+                            title: '',
+                            text_style: 'text-style-normal',
+                        })
+                },
+                change_style(type, index) {
+                    const self = this
+
+
+                    switch (type) {
+                        case 1:
+                            self.slt_items[index].text_style = 'text-style-normal';
+                            break;
+                        case 2:
+                            self.slt_items[index].text_style = 'text-style-header';
+                            break;
+                    }
+
+                },
+                async remove_select_item(index) {
+                    const self = this;
+                    await self.slt_items.splice(index, 1);
+                },
+                add_item() {
+                    const self = this;
+                    self.slt_items.push(
+                        {
+                            index: self.slt_items.length + 1,
+                            title: '',
+                            text_style: 'text-style-normal',
+                        })
+                },
+                add_item_header_1() {
+                    const self = this;
+                    self.slt_items.push(
+                        {
+                            title: 'Header',
+                            type: 'header',
+                            class: 'item-header-1',
+                            items: [
+                                {
+                                    title: '',
+                                    comment: '',
+                                    type: 'textbox',
+                                    isHorizontal: 'true',
+                                    list: [],
+                                    value: [],
+                                    result: [],
+                                },
+                                {
+                                    title: '',
+                                    comment: '',
+                                    type: 'textarea',
+                                    isHorizontal: 'true',
+                                    list: [],
+                                    value: [],
+                                    result: []
+                                },
+                                {
+                                    title: '',
+                                    comment: '',
+                                    type: 'radio',
+                                    isHorizontal: 'true', //horizontal - vertical
+                                    list: [
+                                        'item 1',
+                                        'item 2',
+                                    ],
+                                    value: [],
+                                    result: []
+                                },
+                                {
+                                    title: '',
+                                    comment: '',
+                                    type: 'checkbox',
+                                    isHorizontal: 'true',
+                                    list: [
+                                        'item 1',
+                                        'item 2',
+                                    ],
+                                    value: [],
+                                    result: []
+                                }
+                            ]
+                        })
+
+                    //console.log(self.slt_items)
+
+                    //header: {
+                    //            header_text: 'Header',
+                    //            header_class: 'item-header-1',
+                    //            items: []
+                    //        }
+
+                    var temp = [{
+                        header: {
+                            title: 'Header',
+                            type: 'header',
+                            class: 'item-header-1',
+                            items: [
+                                {
+                                    title: 'Text 1',
+                                    type: 'textbox',
+                                    list: [],
+                                },
+                                {
+                                    title: 'Textarea 1',
+                                    type: 'textarea',
+                                    list: [],
+                                },
+                                {
+                                    title: 'Radio 1',
+                                    type: 'radio',
+                                    list: [
+                                        'item 1',
+                                        'item 2',
+                                    ],
+                                    result: []
+                                },
+                                {
+                                    title: 'Checkbox 1',
+                                    type: 'checkbox',
+                                    list: [
+                                        'item 1',
+                                        'item 2',
+                                    ],
+                                    result: []
+                                }
+                            ]
+                        }
+                    }]
+                }
+            },
+            watch: {
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-master').addClass('active');
+
+    // ------------------- BackToTop ------------------- //
+
+    //var mybutton = document.getElementById("toTop");
+
+    //window.onscroll = function () {
+    //    scrollFunction()
+    //};
+
+    //function scrollFunction() {
+
+    //    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    //        mybutton.classList.add("active");
+
+    //    } else {
+    //        mybutton.classList.remove("active");
+    //    }
+    //}
+
+
+
+</script>

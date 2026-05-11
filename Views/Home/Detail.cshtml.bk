@@ -1,0 +1,2077 @@
+﻿@{
+    ViewBag.Title = "Details";
+}
+
+
+<!-- Add the evo-calendar.css for styling -->
+@Styles.Render("~/Content/evo-calendar.min.css")
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+
+
+<style>
+    /* scrollbar */
+    ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        background: #216583;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+    }
+
+        ::-webkit-scrollbar-thumb:window-inactive {
+            background: #216583;
+        }
+
+    .header {
+        padding: 15px 0;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        border-bottom: 5px solid #216583;
+    }
+
+    .btn-add {
+        /* position: absolute;
+            right: 20px;
+            top: 20px; */
+        z-index: 100;
+        background: beige;
+        padding: 7px 7px;
+        border-radius: 8px;
+    }
+
+        /* CSS */
+        .btn-add.active {
+            width: 140px !important;
+            opacity: 1;
+        }
+
+    .btn-add {
+        width: 0% !important;
+        opacity: 0;
+        align-items: center;
+        background-color: #fff;
+        border: 2px solid #000;
+        box-sizing: border-box;
+        color: #000;
+        cursor: pointer;
+        display: inline-flex;
+        fill: #000;
+        font-size: 16px;
+        font-weight: 600;
+        height: 40px;
+        justify-content: center;
+        letter-spacing: -.8px;
+        line-height: 24px;
+        outline: 0;
+        padding: 0 0;
+        text-align: center;
+        text-decoration: none;
+        transition: all .3s;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    }
+        .btn-add .dropdown-toggle {
+            overflow: hidden;
+        }
+
+
+        .btn-add button {
+            align-items: center;
+            background-color: unset !important;
+            border: unset !important;
+            color: #000;
+            cursor: pointer;
+            display: inline-flex;
+            fill: #000;
+        }
+
+        .btn-add:focus {
+            color: #171e29;
+        }
+
+        .btn-add:hover {
+            border-color: #06f;
+            color: #06f;
+            fill: #06f;
+        }
+
+        .btn-add:active {
+            border-color: #06f;
+            color: #06f;
+            fill: #06f;
+        }
+
+
+
+    /* CSS */
+    .title-box {
+        font-size: 16px;
+        letter-spacing: 2px;
+        text-decoration: none;
+        text-transform: uppercase;
+        color: #000;
+        cursor: pointer;
+        border: 3px solid;
+        padding: 0.25em 0.5em;
+        box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px, 5px 5px 0px 0px;
+        position: relative;
+        user-select: none;
+        -webkit-user-select: none;
+        width: 160px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+        .title-box.title-man {
+            box-shadow: #FFBC42 1px 1px 0px 0px, #FFBC42 2px 2px 0px 0px, #FFBC42 3px 3px 0px 0px, #FFBC42 4px 4px 0px 0px, #FFBC42 5px 5px 0px 0px;
+        }
+
+        .title-box.title-mc {
+            box-shadow: #D81159 1px 1px 0px 0px, #D81159 2px 2px 0px 0px, #D81159 3px 3px 0px 0px, #D81159 4px 4px 0px 0px, #D81159 5px 5px 0px 0px;
+        }
+
+        .title-box.title-mold {
+            box-shadow: #8A197F 1px 1px 0px 0px, #8A197F 2px 2px 0px 0px, #8A197F 3px 3px 0px 0px, #8A197F 4px 4px 0px 0px, #8A197F 5px 5px 0px 0px;
+        }
+
+        .title-box.title-met {
+            box-shadow: #91a6ff 1px 1px 0px 0px, #91a6ff 2px 2px 0px 0px, #91a6ff 3px 3px 0px 0px, #91a6ff 4px 4px 0px 0px, #91a6ff 5px 5px 0px 0px;
+        }
+
+        .title-box.title-part {
+            box-shadow: #73D2DE 1px 1px 0px 0px, #73D2DE 2px 2px 0px 0px, #73D2DE 3px 3px 0px 0px, #73D2DE 4px 4px 0px 0px, #73D2DE 5px 5px 0px 0px;
+        }
+
+    .table-box {
+        margin-left: 30px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 15px;
+        margin-bottom: 40px;
+    }
+
+    .table {
+        margin: 0 !important;
+    }
+
+    .date-box {
+        display: flex;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .col-form-label {
+        margin-bottom: 5px;
+    }
+
+    .col-form-label {
+        display: flex;
+        align-content: center;
+        align-items: flex-start;
+    }
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+
+    img.img-table {
+        width: 50px;
+        height: auto;
+        transition: all 0.8s;
+        cursor: pointer;
+    }
+
+    /*img.img-table:hover {
+            width: 150px;
+            height: auto;
+            transition: all 0.8s;
+        }*/
+
+    /* CSS */
+    .image-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+        .image-gallery img {
+            width: 30%;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+    .no-data-box {
+        box-shadow: rgb(0 0 0 / 31%) 0px 5px 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 15px;
+        margin-bottom: 40px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    #MainApp {
+        display:none;
+    }
+
+    .fileUploads-box {
+        position: relative;
+    }
+
+        .fileUploads-box .fileUploads {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fileUploads-box .fileUploads input {
+            width: 100%;
+        }
+    .btn-add-file {
+        margin-left: 5px;
+        cursor: pointer;
+        font-size: 25px;
+        color: #3fb900;
+    }
+    .btn-remove-file {
+        margin-left: 5px;
+        cursor: pointer;
+        font-size: 25px;
+        color: #cb0000;
+    }
+
+    img.image-upload {
+        width: 100%;
+        height: 100px;
+        object-fit: contain;
+    }
+
+    .upload-item {
+        position: relative;
+        text-align: center;
+    }
+        .upload-item a {
+            border: none;
+            background: none;
+            color: red;
+            font-size: 20px;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+    .upload-boxs {
+        margin-top: 25px;
+    }
+
+    .upload-boxs p {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        width: 135px;
+        height: 1.2em;
+        white-space: nowrap;
+    }
+</style>
+
+<style>
+
+    .uploadbox {
+        background-color: #ffffff;
+        width: 100%;
+        padding: 30px 30px;
+        box-shadow: 0 1.25em 3.43em rgb(0 0 0 / 8%);
+        border-radius: 0.5em;
+    }
+
+        .uploadbox img {
+            width: 150px !important;
+        }
+
+        .uploadbox input[type="file"] {
+            display: none;
+        }
+
+        .uploadbox label {
+            display: block;
+            position: relative;
+            background-color: #025bee;
+            color: #ffffff;
+            font-size: 18px;
+            text-align: center;
+            width: 100%;
+            padding: 10px 0;
+            border-radius: 0.3em;
+            margin: 0 auto 1em auto;
+            cursor: pointer;
+        }
+
+
+        .uploadbox .image-display {
+            position: relative;
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-evenly;
+            gap: 1.25em;
+            flex-wrap: wrap;
+        }
+
+            .uploadbox .image-display figure {
+                width: 45%;
+                text-align: center;
+            }
+
+            .uploadbox .image-display img {
+                width: 100%;
+            }
+
+            .uploadbox .image-display figcaption {
+                font-size: 0.8em;
+                text-align: center;
+                color: #5a5861;
+            }
+
+        .uploadbox .active {
+            border: 0.2em dashed #025bee;
+        }
+
+        .uploadbox #error {
+            text-align: center;
+            color: #ff3030;
+        }
+</style>
+
+
+
+<div class="container-fluid " id="MainApp">
+
+    <!-- Add more images as needed -->
+    <div class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" alt="Modal Image">
+    </div>
+    <div class="header">
+
+        <div class="date-box" style="font-weight: bold;">
+            <div class="">วันที่</div>
+            <div class="date " id="datepicker11">
+                <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
+                            :monthChangeOnScroll="false" :format="dateFormat" auto-apply></Datepicker>
+            </div>
+            <div class="btn-date ">
+                <a name="" id="" class="btn btn-primary" href="#" role="button" onclick="return false;" v-on:click="searchDate">ค้นหา</a>
+            </div>
+        </div>
+
+        <div class="btn-group btn-add" id="btn-change">
+            <button type="button" class=" dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Change Point
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '1', '')">Man</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '2', '')">M/C</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '3', '')">Mold/DIE</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '4', '')">Method</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" onclick="return false;" href="#" v-on:click="Open_Modal('add', '5', '')">Part/Mat'l</a>
+                </li>
+
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="body-content">
+
+        <div class="no-data-box" v-if="manList.length == 0 && mcList.length == 0 && moldList.length == 0 && metList.length == 0 && partList.length == 0">
+            ไม่พบ Change Point ในวันนี้
+        </div>
+
+        <div class="title-box title-man" v-if="manList.length > 0">Man</div>
+
+        <div class="table-box table-man" v-if="manList.length > 0">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th scope="col">คนประจำจุด</th>
+                            <th scope="col">คนแทนจุด</th>
+                            <th scope="col">M/C NO.</th>
+                            <th scope="col">Process</th>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ข้อควรระวัง</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+
+                        <tr v-if="manList.length > 0" v-for="(items, index) in manList" class="">
+                            <td scope="row">
+                                <a class="link-primary" href="#" onclick="return false;" v-on:click="Open_Modal('edit','1',items.id)">
+                                    {{items.man_spot ? items.man_spot : '-'}}  {{items.man_spot_name_tha ? ' : ' + items.man_spot_name_tha : ''}}
+                                </a>
+                            </td>
+                            <td>
+                                {{items.man_instead ? items.man_instead : '-'}}  {{items.man_instead_name_tha ? ' : ' + items.man_instead_name_tha : ''}}
+                            </td>
+                            <td>{{items.mc_no ? items.mc_no : '-'}}</td>
+                            <td>{{items.process_point ? items.process_point : '-'}}</td>
+                            <td>{{items.details ? items.details : '-'}}</td>
+                            <td>{{items.warnings ? items.warnings : '-'}}</td>
+                        </tr>
+                        <tr v-if="manList.length == 0" class="">
+                            <td colspan="6">ไม่มีข้อมูล</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="title-box title-mc" v-if="mcList.length > 0">M/C</div>
+
+        <div class="table-box table-mc" v-if="mcList.length > 0">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th scope="col">M/C NO</th>
+                            <th scope="col">จุดแก้ไข</th>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ข้อควรระวัง</th>
+                            <th scope="col">ไฟล์/รูป</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+
+                        <tr v-if="mcList.length > 0" v-for="(items, index) in mcList" class="">
+                            <td scope="row">
+                                <a class="link-primary" href="#" onclick="return false;" v-on:click="Open_Modal('edit','2',items.id)">
+                                    {{items.mc_no ? items.mc_no : '-'}}
+                                </a>
+                            </td>
+                            <td>{{items.edit_point ? items.edit_point : '-'}}</td>
+                            <td>{{items.details ? items.details : '-'}}</td>
+                            <td>{{items.warnings ? items.warnings : '-'}}</td>
+                            <td>
+                                <img class="img-table" v-if="items.file_ext=='image'" :src="'/src/upload/'+items.file_name" :alt="items.file_name" onclick="openModalImage(this)" />
+                                <a v-if="items.file_ext=='pdf'" :href="'/src/upload/'+items.file_name" :alt="items.file_name" target="_blank">
+                                    <img src="/src/icons/pdf.png" style="width: 25px; border: 1px solid #ffffff; cursor: pointer;" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr v-if="mcList.length == 0" class="">
+                            <td colspan="6">ไม่มีข้อมูล</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="title-box title-mold" v-if="moldList.length > 0">Mold/DIE</div>
+
+        <div class="table-box table-mold" v-if="moldList.length > 0">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th scope="col">Part NO. </th>
+                            <th scope="col">Mold NO. </th>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ข้อควรระวัง</th>
+                            <th scope="col">ไฟล์/รูป</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+
+                        <tr v-if="moldList.length > 0" v-for="(items, index) in moldList" class="">
+                            <td scope="row">
+                                <a class="link-primary" href="#" onclick="return false;" v-on:click="Open_Modal('edit','3',items.id)">
+                                    {{items.part_no ? items.part_no : '-'}}
+                                </a>
+                            </td>
+                            <td scope="row">{{items.mold_no ? items.mold_no : '-'}}</td>
+                            <td>{{items.details ? items.details : '-'}}</td>
+                            <td>{{items.warnings ? items.warnings : '-'}}</td>
+                            <td>
+                                <img class="img-table" v-if="items.file_ext=='image'" :src="'/src/upload/'+items.file_name" :alt="items.file_name" onclick="openModalImage(this)" />
+                                <a v-if="items.file_ext=='pdf'" :href="'/src/upload/'+items.file_name" :alt="items.file_name" target="_blank">
+                                    <img src="/src/icons/pdf.png" style="width: 25px; border: 1px solid #ffffff; cursor: pointer;" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr v-if="moldList.length == 0" class="">
+                            <td colspan="6">ไม่มีข้อมูล</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="title-box title-met" v-if="metList.length > 0">Method</div>
+
+        <div class="table-box table-met" v-if="metList.length > 0">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th scope="col">M/C NO. </th>
+                            <th scope="col">Part NO. </th>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ข้อควรระวัง</th>
+                            <th scope="col">ไฟล์/รูป</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+
+                        <tr v-if="metList.length > 0" v-for="(items, index) in metList" class="">
+                            <td scope="row">
+                                <a class="link-primary" href="#" onclick="return false;" v-on:click="Open_Modal('edit','4',items.id)">
+                                    {{items.mc_no ? items.mc_no : '-'}}
+                                </a>
+                            </td>
+                            <td>{{items.part_no ? items.part_no : '-'}}</td>
+                            <td>{{items.details ? items.details : '-'}}</td>
+                            <td>{{items.warnings ? items.warnings : '-'}}</td>
+                            <td>
+                                <img class="img-table" v-if="items.file_ext=='image'" :src="'/src/upload/'+items.file_name" :alt="items.file_name" onclick="openModalImage(this)" />
+                                <a v-if="items.file_ext=='pdf'" :href="'/src/upload/'+items.file_name" :alt="items.file_name" target="_blank">
+                                    <img src="/src/icons/pdf.png" style="width: 25px; border: 1px solid #ffffff; cursor: pointer;" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr v-if="metList.length == 0" class="">
+                            <td colspan="6">ไม่มีข้อมูล</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="title-box title-part" v-if="partList.length > 0">Part/Mat' l</div>
+
+        <div class="table-box table-part" v-if="partList.length > 0">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th scope="col">Part NO. </th>
+                            <th scope="col">M/C NO. </th>
+                            <th scope="col">หัวข้อเปลี่ยนแปลง</th>
+                            <th scope="col">รายละเอียด</th>
+                            <th scope="col">ข้อควรระวัง</th>
+                            <th scope="col">ไฟล์/รูป</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+
+                        <tr v-if="partList.length > 0" v-for="(items, index) in partList" class="">
+                            <td scope="row">
+                                <a class="link-primary" href="#" onclick="return false;" v-on:click="Open_Modal('edit','5',items.id)">
+                                    {{items.part_no ? items.part_no : '-'}}
+                                </a>
+                            </td>
+                            <td>{{items.mc_no ? items.mc_no : '-'}}</td>
+                            <td>{{items.change ? items.change : '-'}}</td>
+                            <td>{{items.details ? items.details : '-'}}</td>
+                            <td>{{items.warnings ? items.warnings : '-'}}</td>
+                            <td>
+                                <img class="img-table" v-if="items.file_ext=='image'" :src="'/src/upload/'+items.file_name" :alt="items.file_name" onclick="openModalImage(this)" />
+                                <a v-if="items.file_ext=='pdf'" :href="'/src/upload/'+items.file_name" :alt="items.file_name" target="_blank">
+                                    <img src="/src/icons/pdf.png" style="width: 25px; border: 1px solid #ffffff; cursor: pointer;" />
+                                </a>
+                            </td>
+                        </tr>
+                        <tr v-if="partList.length == 0" class="">
+                            <td colspan="6">ไม่มีข้อมูล</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade modal-lg" id="change_point_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="change_point_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="change_point_modal_Label">Change {{title_modal}}</h5>
+                </div>
+                <div class="    modal-body">
+
+                    <section class="container">
+                        <form class="row">
+
+                            <label for="date" class="col-4 col-form-label"><b>วันที่</b></label>
+                            <div class="col-8 col-form-label">
+                                <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
+                                            :monthChangeOnScroll="false" :format="dateFormat" auto-apply></Datepicker>
+                            </div>
+
+                            <label id="lb_from" for="befor" class="col-4 col-form-label"><b>คนประจำจุด </b></label>
+                            <div id="b_from" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="befor" v-model="slt_spot">
+                                        <option value="">เลือกรายการ</option>
+                                        <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
+                                            <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_to" for="after" class="col-4 col-form-label"><b>คนแทนจุด</b></label>
+                            <div id="b_to" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="after" v-model="slt_instead">
+                                        <option value="">เลือกรายการ</option>
+                                        <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
+                                            <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_mc" for="mc" class="col-4 col-form-label"><b>M/C NO. </b></label>
+                            <div id="b_mc" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="mc" v-model="slt_mc_no">
+                                        <option value="">เลือกรายการ</option>
+                                        <optgroup v-for="(items, index) in mcsList" :label="items.sizeTon">
+                                            <option v-for="(item) in items.list">{{item}} </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_eidt" for="eidt" class="col-4 col-form-label"><b>จุดที่แก้ไข </b></label>
+                            <div id="b_eidt" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="eidt" v-model="slt_edit">
+                                        <option value="">เลือกรายการ</option>
+                                        <option v-for="(item) in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_part" for="part" class="col-4 col-form-label"><b>Part NO.</b></label>
+                            <div id="b_part" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="part" v-model="slt_part_no">
+                                        <option value="">เลือกรายการ</option>
+                                        <option v-for="(item) in partsList">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <label id="lb_mold" for="mold" class="col-4 col-form-label"><b>Mold NO.</b></label>
+                            <div id="b_mold" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="mold" v-model="slt_mold_no">
+                                        <option value="">เลือกรายการ</option>
+                                        <option v-for="(item) in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <label id="lb_change" for="mold" class="col-4 col-form-label"><b>หัวข้อการเปลี่ยนแปลง</b></label>
+                            <div id="b_change" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="edit" v-model="slt_change">
+                                        <option value="">เลือกรายการ</option>
+                                        <option v-for="(item) in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_process" for="process" class="col-4 col-form-label"><b>Process </b></label>
+                            <div id="b_process" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="process" v-model="slt_process">
+                                        <option value="">เลือกรายการ</option>
+                                        <option v-for="(item) in processList" :vlaue="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label for="detail" class="col-4 col-form-label"><b>รายละเอียด </b></label>
+                            <div class="col-8 col-form-label">
+                                <textarea class="form-control" placeholder="" id="detail" v-model="slt_detail"></textarea>
+                            </div>
+
+                            <label for="warning" class="col-4 col-form-label"><b>ข้อควรระวัง </b></label>
+                            <div class="col-8 col-form-label">
+                                <textarea class="form-control" placeholder="" id="warning" v-model="slt_warning"></textarea>
+                            </div>
+
+                            @*<label id="lb_file" for="upload" class="col-4 col-form-label"><b>รูป/เอกสาร (ถ้ามี)</b></label>
+                                <div id="b_file" class="col-8 col-form-label">
+                                    <div class="uploadbox">
+                                        <input type="file" id="upload-button" ref="file" accept="image/*,.pdf" multiple />
+                                        <label for="upload-button">
+                                            <i class="fas fa-upload"></i>&nbsp; เลือกหรือวางรูป
+                                        </label>
+                                        <div id="error"></div>
+                                        <div id="image-display" class="image-display"></div>
+                                    </div>
+                                </div>*@
+                            @*v-on:change="uploadFile" multiple*@
+
+
+                            <label id="lb_file" for="upload" class="col-4 col-form-label">
+                                <b>รูป/เอกสาร (ถ้ามี)</b>
+                            </label>
+                            <div id="b_file"  class="col-8 fileUploads-box">
+
+                                <div>
+                                    <input class="form-control" type="file" id="formFileMultiple" v-on:change="onFileChange" accept="image/*,.pdf,.xlsx,.docx,.pptx,.txt" multiple>
+                                </div>
+
+                                <div v-if="images" class="row">
+                                    <div v-for="(image, index) in images" class="col-4 upload-boxs">
+
+                                        <div v-if="fileList[index].file_type=='image'" class="upload-item">
+                                            <img :src="image" class="image-upload" />
+                                            <p>{{fileList[index].name}}</p>
+                                            <a href="#" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='pdf'" class="upload-item">
+                                            <img src="~/src/icons/pdf.png" class="image-upload" />
+                                            <p>{{fileList[index].name}}</p>
+                                            <a href="#" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='word'" class="upload-item">
+                                            <img src="~/src/icons/word.png" class="image-upload" />
+                                            <p>{{fileList[index].name}}</p>
+                                            <a href="#" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='excel'" class="upload-item">
+                                            <img src="~/src/icons/xls.png" class="image-upload" />
+                                            <p>{{fileList[index].name}}</p>
+                                            <a href="#" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='powerpoint'" class="upload-item">
+                                            <img src="~/src/icons/ppt.png" class="image-upload" />
+                                            <p>{{fileList[index].name}}</p>
+                                            <a href="#" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='text'" class="upload-item">
+                                            <img src="~/src/icons/text.png" class="image-upload" />
+                                            <p>{{fileList[index].name}}</p>
+                                            <a href="#" onclick="return false;" v-on:click="removeImage(index)"><i class="fas fa-times-circle"></i></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </form>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary"
+                            v-on:click="Save_Data()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div>
+        <h2>Select an image</h2>
+        <input multiple type="file" v-on:change="onFileChange">
+    </div>
+    <div v-if="images">
+        <div v-for="(image, index) in images">
+
+            <div v-if="fileList[index].file_type=='image'">
+                <img :src="image" />
+                <button v-on:click="removeImage(index)">Remove image</button>
+            </div>
+
+            <div v-if="fileList[index].file_type=='pdf'">
+                <img src="~/src/icons/pdf.png" />
+                <button v-on:click="removeImage(index)">Remove image</button>
+            </div>
+
+        </div>
+    </div>*@
+
+</div>
+
+
+@Scripts.Render("~/Scripts/evo-calendar.min.js")
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+
+
+
+@*<script>
+        setTimeout(() => {
+
+
+            let uploadButton = document.getElementById("upload-button");
+            //let chosenImage = document.getElementById("chosen-image");
+            //let fileName = document.getElementById("file-name");
+            let container = document.querySelector(".uploadbox");
+            let error = document.getElementById("error");
+            let imageDisplay = document.getElementById("image-display");
+            let file_size = 0
+
+            const fileHandler = (file, name, type) => {
+
+                file_size = ((file.size / 1024) / 1024).toFixed(4);
+
+                console.log(file_size, type)
+
+                if (type.split("/")[0] !== "image" && type.split("/")[1] !== "pdf") {
+                    //File Type Error
+                    error.innerText = "อัปโหลดไฟ้เฉพาะไฟล์ [รุูปภาพ หรือ PDF] เท่านั้น";
+                    return false;
+                }
+
+                if (file_size > 3) {
+                    //File Type Error
+                    error.innerText = "จำกัดขนาดไฟล์ในการอัปโหลดไม่เกิน 5 MB";
+                    return false;
+                }
+
+                error.innerText = "";
+                let reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = () => {
+                    //image and file name
+                    let imageContainer = document.createElement("figure");
+                    let img = document.createElement("img");
+
+                    if (type.split("/")[1] === "pdf") {
+                        img.src = '/src/icons/pdf.png'
+                    } else {
+                        img.src = reader.result;
+                    }
+                    imageContainer.appendChild(img);
+
+                    imageContainer.innerHTML += `<figcaption>${name}</figcaption>`;
+                    imageDisplay.appendChild(imageContainer);
+                };
+            };
+
+            //Upload Button
+            uploadButton.addEventListener("change", () => {
+                imageDisplay.innerHTML = "";
+                Array.from(uploadButton.files).forEach((file) => {
+                    fileHandler(file, file.name, file.type);
+                });
+            });
+
+            container.addEventListener(
+                "dragenter",
+                (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    container.classList.add("active");
+                },
+                false
+            );
+
+            container.addEventListener(
+                "dragleave",
+                (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    container.classList.remove("active");
+                },
+                false
+            );
+
+            container.addEventListener(
+                "dragover",
+                (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    container.classList.add("active");
+                },
+                false
+            );
+
+            container.addEventListener(
+                "drop",
+                (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    container.classList.remove("active");
+                    let draggedData = e.dataTransfer;
+                    let files = draggedData.files;
+                    imageDisplay.innerHTML = "";
+                    Array.from(files).forEach((file) => {
+                        fileHandler(file, file.name, file.type);
+                    });
+                },
+                false
+            );
+
+            window.onload = () => {
+                error.innerText = "";
+            };
+
+        }, "3000");
+    </script>*@
+
+<script>
+
+    $("#MainApp").delay(500).fadeIn()
+
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                date_select: new Date(),
+                dateFormat: (date_select) => {
+                    const day = date_select.getDate();
+                    const month = date_select.getMonth() + 1;
+                    const year = date_select.getFullYear();
+                    // const hour = date_start.getHours();
+                    // const min = date_start.getMinutes();
+                    // return `${day}/${month}/${year} ${hour}:${min} `;
+                    return `${day}/${month}/${year}`;
+                },
+                changeType: '',
+
+                fileList: [],
+
+                images: [],
+
+                userList: [],
+                mcsList: [],
+                partsList: [],
+                moldNOList: [],
+                editList: [],
+                changeList: [],
+                processList: [],
+
+                changePointList: [],
+
+                manList: [],
+                mcList: [],
+                moldList: [],
+                metList: [],
+                partList: [],
+                dataList: [],
+                dataNameList: [],
+
+                slt_id: '',
+                slt_spot: '',
+                slt_instead: '',
+                slt_mc_no: '',
+                slt_edit: '',
+                slt_part_no: '',
+                slt_mold_no: '',
+                slt_change: '',
+                slt_process: '',
+                slt_detail: '',
+                slt_warning: '',
+
+                slt_files: [],
+                modal_type: '',
+                title_modal: '',
+                date_page: '',
+                day_page: '',
+                month_page: '',
+                year_page: '',
+                date_calendar: [],
+            }
+        },
+        components: { Datepicker: VueDatePicker },
+        async created() {
+
+            const self = this;
+
+            self.date_page = '@ViewBag.Data.param_date'
+
+            if (self.date_page) {
+                self.day_page = self.date_page.substring(2, 4)
+                self.month_page = self.date_page.substring(0, 2)
+                self.year_page = self.date_page.substring(4, 9)
+
+                self.date_calendar = new Date(+self.year_page, +self.month_page - 1, +self.day_page);
+
+                self.date_select = self.date_calendar
+            }
+
+            await self.getList()
+
+            await self.getMoldNO()
+            await self.getProcess()
+            await self.getEdit()
+            await self.getChange()
+            await self.getPart()
+            await self.getMC()
+            await self.getUser()
+
+            await $('select').selectpicker('destroy');
+
+            await $('select').selectpicker('render');
+
+            await $("#btn-change").addClass('active');
+
+
+                        
+            //imageContainer = document.createElement("figure");
+            //img = document.createElement("img");
+            //imageDisplay = document.getElementById("image-display");
+
+            //img.src = '/src/icons/pdf.png'
+            //imageContainer.appendChild(img);
+
+            //imageContainer.innerHTML += `<figcaption>xxx.xxx</figcaption>`;
+            //imageDisplay.appendChild(imageContainer);
+
+        },
+         mounted() {
+
+             const self = this;
+
+
+        },
+        methods: {
+            onFileChange(e) {
+
+                var files = e.target.files || e.dataTransfer.files;
+                if (!files.length) return;
+                this.createImage(files);
+            },
+            createImage(files) {
+                var self = this;
+                for (var index = 0; index < files.length; index++) {
+                    var reader = new FileReader();
+                    console.log(files)
+                    reader.onload = function (event) {
+                        const imageUrl = event.target.result;
+                        self.images.push(imageUrl);
+                    }
+                    reader.readAsDataURL(files[index]);
+
+
+                    self.fileList.push(files[index]);
+
+                    if ((files[index].type).split("/")[0] === "image") {
+                        files[index].file_type = 'image';
+                    }
+
+                    if ((files[index].type).split("/")[1] === "pdf") {
+                        files[index].file_type = 'pdf';
+                    }
+
+                    if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                        files[index].file_type = 'excel';
+                    }
+
+                    if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.presentationml.presentation") {
+                        files[index].file_type = 'powerpoint';
+                    }
+
+                    if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                        files[index].file_type = 'word';
+                    }
+
+                    if ((files[index].type).split("/")[0] === "text") {
+                        files[index].file_type = 'text';
+                    }
+                }
+
+                console.log(self.images)
+                console.log(self.fileList)
+            },
+            removeImage(index) {
+                this.images.splice(index, 1)
+                this.fileList.splice(index, 1)
+            },
+             async getProcess() {
+
+                 const self = this;
+
+                 await $.ajax({
+                    url: "@Url.Action("Option_Process", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+                            self.processList = result.data
+                        }
+
+                    }
+                 });
+
+            },
+            async getMoldNO() {
+
+                const self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("Option_Mold_NO", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+                            self.moldNOList = result.data
+                        }
+
+                    }
+                 });
+
+            },
+            async getEdit() {
+
+                 let self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("Option_Edit", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+                            self.editList = result.data
+                        }
+
+                    }
+                 });
+
+            },
+            async getChange() {
+
+                let self = this;
+
+
+                await $.ajax({
+                    url: "@Url.Action("Option_Change", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+                            self.changeList = result.data
+                        }
+
+                    }
+                 });
+
+            },
+            async getPart() {
+
+                 let self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("ListItem_Part", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+                            self.partsList = result.data
+                        }
+
+                    }
+                 });
+
+            },
+            async getMC() {
+
+                 let self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("ListItem_MC", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+
+                            const inputData = result.data
+
+                            const transformedData = {};
+
+                            inputData.forEach(item => {
+                                const sizeTon = item.ITEM_SIZETON;
+                                const itemId = item.ITEM_ID;
+
+                                if (sizeTon in transformedData) {
+                                    transformedData[sizeTon].list.push(itemId);
+                                } else {
+                                    transformedData[sizeTon] = {
+                                        sizeTon: sizeTon,
+                                        list: [itemId]
+                                    };
+                                }
+                            });
+
+                            self.mcsList = Object.values(transformedData);
+
+                        }
+
+                    }
+                });
+            },
+            async getUser() {
+
+                 let self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("Option_EMP", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.succcess) {
+
+                            const inputData = result.data
+
+                            self.dataNameList = result.data
+
+                            const transformedData = {};
+
+                            inputData.forEach(item => {
+                                const itemId = item.EMP_NO;
+                                const wc_code = item.WC_CODE;
+                                const wc_name = item.WC_NAME;
+
+                                const gname_eng = item.GNAME_ENG;
+                                const fname_eng = item.FNAME_ENG;
+                                const gname_tha = item.GNAME_TH;
+                                const fname_tha = item.FNAME_TH;
+
+                                if (wc_code in transformedData) {
+                                    transformedData[wc_code].list.push(
+                                        {
+                                            itemId: itemId,
+                                            gname_eng: gname_eng,
+                                            fname_eng: fname_eng,
+                                            gname_tha: gname_tha,
+                                            fname_tha: fname_tha,
+                                        }
+                                    );
+                                } else {
+                                    transformedData[wc_code] = {
+                                        wc_code: wc_code,
+                                        wc_name: wc_name,
+                                        list: [
+                                            {
+                                                itemId: itemId,
+                                                gname_eng: gname_eng,
+                                                fname_eng: fname_eng,
+                                                gname_tha: gname_tha,
+                                                fname_tha: fname_tha,
+                                            }
+                                        ]
+                                    };
+                                }
+                            });
+
+                            self.userList = Object.values(transformedData);
+
+                        }
+                    }
+                 });
+
+            },
+            async getList() {
+
+                let self = this;
+
+                let d = self.date_select;
+                let yyyy = d.getFullYear();
+                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
+                let dd = ('0' + d.getDate()).slice(-2);
+                const date_file = dd + "-" + MM + "-" + yyyy;
+
+                await $.ajax({
+                    url: "@Url.Action("ListItem_ChangePoint_Day", "lookup")",
+                    type: "POST",
+                    data: { date_select: date_file},
+                    success: function (result) {
+                        if (result.succcess) {
+
+                            const inputData = result.data
+
+                            self.dataList = result.data
+
+                            const transformedData = {};
+
+                            inputData.forEach(item => {
+                                const type = item.STATUS_TYPE;
+
+                                const id = item.ID;
+                                const date_change = item.DATE_CHANGE;
+                                const man_spot = item.MAN_SPOT;
+                                const man_instead = item.MAN_INSTEAD;
+                                const mc_no = item.MC_NO;
+                                const edit_point = item.EDIT_POINT;
+                                const part_no = item.PART_NO;
+                                const mold_no = item.MOLD_NO;
+                                const change = item.CHANGE;
+                                const process_point = item.PROCESS_POINT;
+                                const details = item.DETAILS;
+                                const warnings = item.WARNINGS;
+                                const file_name = item.FILE_NAME;
+                                const file_size = item.FILE_SIZE;
+                                const file_path = item.FILE_PATH;
+                                const file_ext = item.FILE_EXTENSION;
+
+                                const man_spot_name_eng = item.MAN_SPOT_NAME_ENG;
+                                const man_spot_name_tha = item.MAN_SPOT_NAME_THA;
+                                const man_instead_name_eng = item.MAN_INSTEAD_NAME_ENG;
+                                const man_instead_name_tha = item.MAN_INSTEAD_NAME_THA;
+
+                                if (type in transformedData) {
+                                    transformedData[type].list.push(
+                                        {
+                                            id: id,
+                                            date_change: date_change,
+                                            man_spot: man_spot,
+                                            man_instead: man_instead,
+                                            mc_no: mc_no,
+                                            edit_point: edit_point,
+                                            part_no: part_no,
+                                            mold_no: mold_no,
+                                            change: change,
+                                            process_point: process_point,
+                                            details: details,
+                                            warnings: warnings,
+                                            file_name: file_name,
+                                            file_size: file_size,
+                                            file_path: file_path,
+                                            file_ext: file_ext,
+
+                                            man_spot_name_eng: man_spot_name_eng,
+                                            man_spot_name_tha: man_spot_name_tha,
+                                            man_instead_name_eng: man_instead_name_eng,
+                                            man_instead_name_tha: man_instead_name_tha,
+                                        }
+                                    );
+                                } else {
+                                    transformedData[type] = {
+                                        type: type,
+                                        list: [
+                                            {
+                                                id: id,
+                                                date_change: date_change,
+                                                man_spot: man_spot,
+                                                man_instead: man_instead,
+                                                mc_no: mc_no,
+                                                edit_point: edit_point,
+                                                part_no: part_no,
+                                                mold_no: mold_no,
+                                                change: change,
+                                                process_point: process_point,
+                                                details: details,
+                                                warnings: warnings,
+                                                file_name: file_name,
+                                                file_size: file_size,
+                                                file_path: file_path,
+                                                file_ext: file_ext,
+
+                                                man_spot_name_eng: man_spot_name_eng,
+                                                man_spot_name_tha: man_spot_name_tha,
+                                                man_instead_name_eng: man_instead_name_eng,
+                                                man_instead_name_tha: man_instead_name_tha,
+                                            }
+                                        ]
+                                    };
+                                }
+                            });
+
+
+                            const arrList = Object.values(transformedData)
+
+                            for (let i = 0; i < arrList.length; i++){
+
+                                if (arrList[i].type == '1') {
+                                    self.manList = arrList[i].list
+                                }
+
+                                if (arrList[i].type == '2') {
+                                    self.mcList = arrList[i].list
+                                }
+
+                                if (arrList[i].type == '3') {
+                                    self.moldList = arrList[i].list
+                                }
+
+                                if (arrList[i].type == '4') {
+                                    self.metList = arrList[i].list
+                                }
+
+                                if (arrList[i].type == '5') {
+                                    self.partList = arrList[i].list
+                                }
+                            }
+
+                        }
+                    }
+                });
+
+                console.log(self.mcList)
+
+            },
+            async submitFile() {
+
+                const self = this;
+                let fd = new FormData();
+                let files = $('#upload-button')[0].files;
+                
+
+                let d = new Date();
+                let yyyy = d.getFullYear();
+                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
+                let dd = ('0' + d.getDate()).slice(-2);
+                let hh = ('0' + d.getHours()).slice(-2);
+                let mm = ('0' + d.getMinutes()).slice(-2);
+                let ss = ('0' + d.getSeconds()).slice(-2);
+                const date_file = yyyy + MM + dd + hh + mm + ss;
+
+                // Check file selected or not
+                if (files.length > 0) {
+
+                    fd.append('file', files[0]);
+                    fd.append('date', date_file);
+
+                    console.log(fd)
+
+                    $.ajax({
+                        url: '@Url.Action("UploadFile", "home")',
+                        type: 'post',
+                        data: fd,
+                        dataType: 'json',
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            console.log(response)
+
+                        }
+                    });
+                } else {
+                    alert("Please select a file.");
+                }
+
+            },
+            async Open_Modal(status, type, id) {
+
+                let self = this
+                let el = document.querySelector('#change_point_modal');
+                let modal = bootstrap.Modal.getOrCreateInstance(el);
+                self.changeType = type
+
+                let edit_item = []
+                let item_info = []
+
+                self.modal_type = type
+
+                $('[id^="lb_"]').hide();
+                $('[id^="b_"]').hide();
+
+                switch (type) {
+                    case '1':
+                        $('[id="lb_from"]').show();
+                        $('[id="lb_to"]').show();
+                        $('[id="lb_mc"]').show();
+                        $('[id="lb_process"]').show();
+
+                        $('[id="b_from"]').show();
+                        $('[id="b_to"]').show();
+                        $('[id="b_mc"]').show();
+                        $('[id="b_process"]').show();
+
+                        self.title_modal = 'Man';
+                        break;
+                    case '2':
+                        $('[id="lb_eidt"]').show();
+                        $('[id="lb_mc"]').show();
+                        $('[id="lb_file"]').show();
+
+                        $('[id="b_eidt"]').show();
+                        $('[id="b_mc"]').show();
+                        $('[id="b_file"]').show();
+
+                        self.title_modal = 'M/C';
+                        break;
+                    case '3':
+                        $('[id="lb_mold"]').show();
+                        $('[id="lb_part"]').show();
+                        $('[id="lb_file"]').show();
+
+                        $('[id="b_mold"]').show();
+                        $('[id="b_part"]').show();
+                        $('[id="b_file"]').show();
+
+                        self.title_modal = 'Mold/DIE';
+                        break;
+                    case '4':
+                        $('[id="lb_mc"]').show();
+                        $('[id="lb_part"]').show();
+                        $('[id="lb_file"]').show();
+
+                        $('[id="b_mc"]').show();
+                        $('[id="b_part"]').show();
+                        $('[id="b_file"]').show();
+
+                        self.title_modal = 'Method';
+                        break;
+                    case '5':
+                        $('[id="lb_mc"]').show();
+                        $('[id="lb_part"]').show();
+                        $('[id="lb_change"]').show();
+                        $('[id="lb_file"]').show();
+
+                        $('[id="b_mc"]').show();
+                        $('[id="b_part"]').show();
+                        $('[id="b_change"]').show();
+                        $('[id="b_file"]').show();
+
+                        self.title_modal = "Part/Mat'l";
+                        break;
+                }
+
+                if (status == 'add') {
+                    self.IsAdd = true
+
+                    $('select').selectpicker('val', '');
+
+                    self.slt_id = ''
+                    self.slt_date = ''
+                    self.slt_spot = ''
+                    self.slt_instead = ''
+                    self.slt_edit = ''
+                    self.slt_mc_no = ''
+                    self.slt_mold_no = ''
+                    self.slt_part_no = ''
+                    self.slt_process = ''
+                    self.slt_change = ''
+                    self.slt_detail = ''
+                    self.slt_warning = ''
+                    self.slt_files = ''
+
+                } else {
+                    self.IsAdd = false
+
+                    //$('select').selectpicker('val', '');
+
+                    const item_info = self.dataList.find(item => item.ID === id);
+                    console.log(item_info)
+                    self.slt_id = item_info.ID
+                    self.slt_spot = item_info.MAN_SPOT
+                    self.slt_instead = item_info.MAN_INSTEAD
+                    self.slt_edit = item_info.EDIT_POINT
+                    self.slt_mc_no = item_info.MC_NO
+                    self.slt_mold_no = item_info.MOLD_NO
+                    self.slt_part_no = item_info.PART_NO
+                    self.slt_process = item_info.PROCESS_POINT
+                    self.slt_detail = item_info.DETAILS
+                    self.slt_change = item_info.CHANGE
+                    self.slt_warning = item_info.WARNINGS
+                    //self.slt_files = ""
+
+
+                    await $('select').selectpicker('destroy');
+                    await $('select').selectpicker('render');
+
+
+                }
+
+
+                modal.show()
+
+            },
+            async Save_Data() {
+
+                let self = this
+                let el = document.querySelector('#change_point_modal');
+                let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                let file_name = '';
+                let file_size = 0;
+                let file_type;
+
+                if (self.slt_spot !== '' || self.slt_instead !== '' || self.slt_eidt !== '' || self.slt_mc_no !== '' || self.slt_mold_no !== '' || self.slt_part_no !== '') {
+
+                    let spot_name_eng = ''
+                    let spot_name_tha = ''
+                    let instead_name_eng = ''
+                    let instead_name_tha = ''
+
+                    if (self.slt_spot!=='') {
+                        const item_spot = self.dataNameList.find(item => item.EMP_NO == self.slt_spot);
+                        spot_name_eng = item_spot.GNAME_ENG + ' ' + item_spot.FNAME_ENG
+                        spot_name_tha = item_spot.GNAME_TH + ' ' + item_spot.FNAME_TH
+                    }
+
+                    if (self.slt_instead !== '') {
+                        const item_instead = self.dataNameList.find(item => item.EMP_NO == self.slt_instead);
+                        instead_name_eng = item_instead.GNAME_ENG + ' ' + item_instead.FNAME_ENG
+                        instead_name_tha = item_instead.GNAME_TH + ' ' + item_instead.FNAME_TH
+                    }
+
+                    //------------- File -------------//
+
+                    fd = new FormData();
+                    files = $('#upload-button')[0].files;
+                    if (files.length > 0) {
+
+                        console.log(files[0].type)
+                        if ((files[0].type).split("/")[0] === "image") {
+                            file_type = 'image';
+                        }
+
+                        if ((files[0].type).split("/")[1] === "pdf") {
+                            file_type = 'pdf';
+                        }
+
+                        if ((files[0].type).split("/")[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                            file_type = 'excel';
+                        }
+
+                        if ((files[0].type).split("/")[1] === "vnd.openxmlformats-officedocument.presentationml.presentation") {
+                            file_type = 'powerpoint';
+                        }
+
+                        if ((files[0].type).split("/")[1] === "vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                            file_type = 'word';
+                        }
+
+                        let d = new Date();
+                        let yyyy = d.getFullYear();
+                        let MM = ('0' + (d.getMonth() + 1)).slice(-2);
+                        let dd = ('0' + d.getDate()).slice(-2);
+                        let hh = ('0' + d.getHours()).slice(-2);
+                        let mm = ('0' + d.getMinutes()).slice(-2);
+                        let ss = ('0' + d.getSeconds()).slice(-2);
+                        const date_file = yyyy + MM + dd + hh + mm + ss;
+
+                        fd.append('file', files[0]);
+                        fd.append('date', date_file);
+
+                            $.ajax({
+                            url: '@Url.Action("UploadFile", "home")',
+                            type: 'post',
+                            data: fd,
+                            dataType: 'json',
+                            contentType: false,
+                            processData: false,
+                            success: function (response) {
+
+                                $("#btn-saveItem").html('<i class="fas fa-sync fa-spin"></i>');
+                                $("#btn-saveItem").prop('disabled', true);
+                                console.log(files[0].type, ((files[0].size / 1024) / 1024).toFixed(4) )
+                                if (self.IsAdd) {
+                                    $.ajax({
+                                        url: "@Url.Action("AddItem_ChangePoint", "lookup")",
+                                        type: "POST",
+                                        data: {
+                                            dates: self.date_select,
+                                            spot: self.slt_spot,
+                                            instead: self.slt_instead,
+                                            mc_no: self.slt_mc_no,
+                                            edit: self.slt_edit,
+                                            part_no: self.slt_part_no,
+                                            mold_no: self.slt_mold_no,
+                                            change: self.slt_change,
+                                            process: self.slt_process,
+                                            detail: self.slt_detail,
+                                            warning: self.slt_warning,
+                                            type: self.changeType,
+                                            spot_eng: spot_name_eng,
+                                            spot_tha: spot_name_tha,
+                                            instead_eng: instead_name_eng,
+                                            instead_tha: instead_name_tha,
+                                            file_name: response.data,
+                                            file_size: ((files[0].size / 1024) / 1024).toFixed(4),
+                                            file_type: file_type
+                                        },
+                                        success: function (result2) {
+                                            if (result2.succcess) {
+                                                swal({
+                                                    title: "Alert",
+                                                    text: result2.Message,
+                                                    type: "success",
+                                                    timer: 1200,
+                                                    showCancelButton: false,
+                                                    showConfirmButton: false
+                                                })
+
+                                                setTimeout(() => {
+                                                    self.searchDate()
+                                                }, "1000");
+                                            } else {
+                                                swal({
+                                                    title: "Alert",
+                                                    text: result2.Message,
+                                                    type: "warning",
+                                                    timer: 1500,
+                                                    showCancelButton: false,
+                                                    showConfirmButton: false
+                                                })
+                                            }
+
+                                        }
+                                    });
+
+                                } else {
+                                    $.ajax({
+                                        url: "@Url.Action("editItem_ChangePoint", "lookup")",
+                                        type: "POST",
+                                        data: {
+                                            dates: self.date_select,
+                                            spot: self.slt_spot,
+                                            instead: self.slt_instead,
+                                            mc_no: self.slt_mc_no,
+                                            edit: self.slt_edit,
+                                            part_no: self.slt_part_no,
+                                            mold_no: self.slt_mold_no,
+                                            change: self.slt_change,
+                                            process: self.slt_process,
+                                            detail: self.slt_detail,
+                                            warning: self.slt_warning,
+                                            type: self.changeType,
+                                            spot_eng: spot_name_eng,
+                                            spot_tha: spot_name_tha,
+                                            instead_eng: instead_name_eng,
+                                            instead_tha: instead_name_tha,
+                                            id: self.slt_id,
+                                            file_name: file_name,
+                                            file_size: file_size,
+                                            file_type: file_type,
+                                        },
+                                        success: function (result2) {
+                                            if (result2.succcess) {
+                                                swal({
+                                                    title: "Alert",
+                                                    text: result2.Message,
+                                                    type: "success",
+                                                    timer: 1200,
+                                                    showCancelButton: false,
+                                                    showConfirmButton: false
+                                                })
+
+                                                setTimeout(() => {
+                                                    self.searchDate()
+                                                }, "1000");
+                                            } else {
+                                                swal({
+                                                    title: "Alert",
+                                                    text: result2.Message,
+                                                    type: "warning",
+                                                    timer: 1500,
+                                                    showCancelButton: false,
+                                                    showConfirmButton: false
+                                                })
+                                            }
+
+                                        }
+                                    });
+                                }
+
+
+                            }
+                        });
+                    } else {
+                        $("#btn-saveItem").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-saveItem").prop('disabled', true);
+                    
+                            if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("AddItem_ChangePoint", "lookup")",
+                                type: "POST",
+                                data: {
+                                    dates: self.date_select,
+                                    spot: self.slt_spot,
+                                    instead: self.slt_instead,
+                                    mc_no: self.slt_mc_no,
+                                    edit: self.slt_edit,
+                                    part_no: self.slt_part_no,
+                                    mold_no: self.slt_mold_no,
+                                    change: self.slt_change,
+                                    process: self.slt_process,
+                                    detail: self.slt_detail,
+                                    warning: self.slt_warning,
+                                    type: self.changeType,
+                                    spot_eng: spot_name_eng,
+                                    spot_tha: spot_name_tha,
+                                    instead_eng: instead_name_eng,
+                                    instead_tha: instead_name_tha,
+                                    file_name: file_name,
+                                    file_size: file_size,
+                                    file_type: file_type
+                                },
+                                success: function (result2) {
+                                    if (result2.succcess) {
+                                        swal({
+                                            title: "Alert",
+                                            text: result2.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        setTimeout(() => {
+                                            self.searchDate()
+                                        }, "1000");
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result2.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+                            $.ajax({
+                                url: "@Url.Action("editItem_ChangePoint", "lookup")",
+                                type: "POST",
+                                data: {
+                                    dates: self.date_select,
+                                    spot: self.slt_spot,
+                                    instead: self.slt_instead,
+                                    mc_no: self.slt_mc_no,
+                                    edit: self.slt_edit,
+                                    part_no: self.slt_part_no,
+                                    mold_no: self.slt_mold_no,
+                                    change: self.slt_change,
+                                    process: self.slt_process,
+                                    detail: self.slt_detail,
+                                    warning: self.slt_warning,
+                                    type: self.changeType,
+                                    spot_eng: spot_name_eng,
+                                    spot_tha: spot_name_tha,
+                                    instead_eng: instead_name_eng,
+                                    instead_tha: instead_name_tha,
+                                    id: self.slt_id,
+                                    file_name: file_name,
+                                    file_size: file_size,
+                                    file_type: file_type,
+                                },
+                                success: function (result2) {
+                                    if (result2.succcess) {
+                                        swal({
+                                            title: "Alert",
+                                            text: result2.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        setTimeout(() => {
+                                            self.searchDate()
+                                        }, "1000");
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result2.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+                    //------------- File -------------//
+
+
+                } else {
+                    alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                }
+
+
+            },
+            searchDate() {
+                let self = this;
+
+                let d = self.date_select;
+                let yyyy = d.getUTCFullYear();
+                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
+                let dd = ('0' + d.getDate()).slice(-2);
+                let hh = ('0' + d.getHours()).slice(-2);
+                let mm = ('0' + d.getMinutes()).slice(-2);
+                let ss = ('0' + d.getSeconds()).slice(-2);
+                // return yyyy + '-' + MM + '-' + dd + 'T' + hh + ':' + mm + ':' + ss + 'Z';
+
+
+                const url = '@Url.Action("detail", "home", new { id = "id_date"})'.replace("id_date", MM + dd + yyyy);
+
+                window.open(url,'_self')
+
+            }
+        },
+        watch: {
+        }
+    }).mount('#MainApp')
+</script>
+
+
+
+@*<div class="image-gallery">
+        <img src="https://images.freeimages.com/images/large-previews/3c0/jellyfish-1507290.jpg" alt="Image 1" onclick="openModalImage(this)">
+        <img src="https://images.freeimages.com/images/large-previews/d6c/jellyfish-1186923.jpg" alt="Image 2" onclick="openModalImage(this)">
+
+    </div>*@
+
+
+<script>
+    // JavaScript (for modal functionality)
+    let currentModalImg;
+
+    function openModalImage(img) {
+        const modal = document.querySelector('.modal');
+        const modalImg = modal.querySelector('.modal-content');
+        const closeModalBtn = modal.querySelector('.close');
+
+        currentModalImg = img;
+        modalImg.src = img.src;
+        modal.style.display = 'block';
+
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', outsideClick);
+    }
+
+    function closeModal() {
+        const modal = document.querySelector('.modal');
+        const closeModalBtn = modal.querySelector('.close');
+
+        modal.style.display = 'none';
+        closeModalBtn.removeEventListener('click', closeModal);
+        window.removeEventListener('click', outsideClick);
+    }
+
+    function outsideClick(e) {
+        const modal = document.querySelector('.modal');
+        if (e.target === modal) {
+            closeModal();
+        }
+    }
+
+    // Keyboard navigation for modal gallery
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        } else if (e.key === 'ArrowLeft') {
+            const prevImg = currentModalImg.previousElementSibling;
+            if (prevImg) {
+                currentModalImg = prevImg;
+                openModalImage(currentModalImg);
+            }
+        } else if (e.key === 'ArrowRight') {
+            const nextImg = currentModalImg.nextElementSibling;
+            if (nextImg) {
+                currentModalImg = nextImg;
+                openModalImage(currentModalImg);
+            }
+        }
+    });
+
+</script>

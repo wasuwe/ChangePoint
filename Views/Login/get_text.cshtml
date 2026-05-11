@@ -1,0 +1,672 @@
+﻿@{
+    ViewBag.Title = "Login";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+
+<style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #1c1c1e;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #34c759;
+            margin-bottom: 15px;
+        }
+
+        video, canvas {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        #output {
+            white-space: pre-wrap;
+            background: #2c2c2e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: left;
+            min-height: 60px;
+            max-height: 200px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            border-left: 3px solid #4a6fdc;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 15px;
+            font-size: 16px;
+            background-color: #4a6fdc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            button:hover {
+                background-color: #3a5fcc;
+                transform: translateY(-2px);
+            }
+
+            button:active {
+                transform: translateY(1px);
+            }
+
+        #wrapper {
+            position: relative;
+            display: inline-block;
+            margin-top: 15px;
+            cursor: crosshair;
+        }
+
+        #selection {
+            position: absolute;
+            border: 2px dashed #34c759;
+            background-color: rgba(52, 199, 89, 0.2);
+            pointer-events: none;
+            display: none;
+            box-shadow: 0 0 10px rgba(52, 199, 89, 0.5);
+            z-index: 10;
+        }
+
+        .status {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .processing-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .processing-option {
+            display: flex;
+            align-items: center;
+            background: #2c2c2e;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+            .processing-option input {
+                margin-right: 5px;
+            }
+
+        select, input {
+            background: #3c3c3e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @Html.Raw("@keyframes spin {")
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .highlight {
+            animation: pulse 1.5s infinite;
+        }
+
+        @Html.Raw("@keyframes pulse {")
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        #processedCanvas {
+            display: none;
+            margin-top: 10px;
+            border: 1px solid #444;
+        }
+
+        #imageSettings {
+            background: #2c2c2e;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        summary {
+            cursor: pointer;
+            color: #34c759;
+            padding: 5px;
+        }
+
+        details {
+            margin-top: 10px;
+            background: #2c2c2e;
+            padding: 10px;
+            border-radius: 10px;
+        }
+</style>
+
+<h2>OCR เฉพาะจุดจากกล้อง - เพิ่มความแม่นยำ</h2>
+<video id="video" width="640" height="480" autoplay playsinline></video><br>
+<div class="controls">
+    <button id="snapBtn">📸 จับภาพ</button>
+    <button id="switchCamBtn">🔄 สลับกล้อง</button>
+    <button id="settingsBtn">⚙️ ตั้งค่า</button>
+</div>
+<p class="status" id="status">รอการจับภาพ...</p>
+
+<div id="imageSettings">
+    <h3>การตั้งค่า OCR</h3>
+    <div class="processing-options">
+        <div class="processing-option">
+            <input type="checkbox" id="useGrayscale" checked>
+            <label for="useGrayscale">แปลงเป็นภาพขาวดำ</label>
+        </div>
+        <div class="processing-option">
+            <input type="checkbox" id="useSharpen" checked>
+            <label for="useSharpen">เพิ่มความคมชัด</label>
+        </div>
+        <div class="processing-option">
+            <input type="checkbox" id="useThreshold" checked>
+            <label for="useThreshold">ปรับความเข้มตัวอักษร</label>
+        </div>
+        <div class="processing-option">
+            <input type="checkbox" id="useResize">
+            <label for="useResize">ปรับขนาด</label>
+            <input type="number" id="resizeFactor" value="2" min="1" max="4" step="0.5" style="width: 50px;">
+        </div>
+    </div>
+
+    <details>
+        <summary>การตั้งค่า Tesseract ขั้นสูง</summary>
+        <div class="processing-options">
+            <div class="processing-option">
+                <label for="psm">โหมด PSM:</label>
+                <select id="psm">
+                    <option value="3">3 - Auto (ค่าเริ่มต้น)</option>
+                    <option value="6" selected>6 - บรรทัดเดียว</option>
+                    <option value="7">7 - บรรทัดเดียว (ไม่มีการแบ่งบรรทัด)</option>
+                    <option value="8">8 - คำเดียว</option>
+                    <option value="13">13 - ข้อความทั่วไป แบบไม่มีโครงสร้าง</option>
+                </select>
+            </div>
+            <div class="processing-option">
+                <label for="language">ภาษา:</label>
+                <select id="language">
+                    <option value="eng+tha" selected>อังกฤษ + ไทย</option>
+                    <option value="tha">ไทย</option>
+                    <option value="eng">อังกฤษ</option>
+                </select>
+            </div>
+            <div class="processing-option">
+                <label for="whitelist">Whitelist:</label>
+                <input type="text" id="whitelist" placeholder="เช่น 0-9A-Za-z">
+            </div>
+        </div>
+    </details>
+
+    <button id="showPreviewBtn">👁️ แสดงตัวอย่างการประมวลผลภาพ</button>
+</div>
+
+<div id="wrapper">
+    <canvas id="imageCanvas" width="640" height="480"></canvas>
+    <div id="selection"></div>
+</div>
+
+<canvas id="processedCanvas" width="640" height="480"></canvas>
+
+<p>ข้อความที่อ่านได้:</p>
+<div id="output">ยังไม่มีข้อความ</div>
+
+@Scripts.Render("~/Scripts/tesseract.js@4.0.2/dist/tesseract.min.js")
+
+<script>
+    const video = document.getElementById('video');
+    const snapBtn = document.getElementById('snapBtn');
+    const switchCamBtn = document.getElementById('switchCamBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const showPreviewBtn = document.getElementById('showPreviewBtn');
+    const canvas = document.getElementById('imageCanvas');
+    const processedCanvas = document.getElementById('processedCanvas');
+    // กำหนด willReadFrequently เป็น true เพื่อเพิ่มประสิทธิภาพ
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const processedCtx = processedCanvas.getContext('2d', { willReadFrequently: true });
+    const output = document.getElementById('output');
+    const selection = document.getElementById('selection');
+    const wrapper = document.getElementById('wrapper');
+    const statusText = document.getElementById('status');
+    const imageSettings = document.getElementById('imageSettings');
+
+    let startX, startY, endX, endY;
+    let stream;
+    let facingMode = "environment"; // เริ่มต้นด้วยกล้องหลัง
+    let isSelecting = false; // เพิ่มตัวแปรเพื่อตรวจสอบว่ากำลังลากหรือไม่
+    let hasCaptured = false; // เพิ่มตัวแปรเพื่อตรวจสอบว่าจับภาพแล้วหรือยัง
+
+    // ฟังก์ชันเปิดกล้อง
+    async function openCamera() {
+        try {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    advanced: [{ focusMode: "continuous" }]
+                }
+            });
+
+            video.srcObject = stream;
+            statusText.textContent = `กำลังใช้กล้อง${facingMode === "environment" ? "หลัง" : "หน้า"}`;
+        } catch (err) {
+            statusText.textContent = "เปิดกล้องไม่ได้: " + err.message;
+            console.error("เปิดกล้องไม่ได้:", err);
+        }
+    }
+
+    // เปิดกล้องเมื่อโหลดหน้า
+    openCamera();
+
+    // สลับกล้อง
+    switchCamBtn.addEventListener('click', () => {
+        facingMode = facingMode === "environment" ? "user" : "environment";
+        openCamera();
+    });
+
+    // เปิด/ปิดการตั้งค่า
+    settingsBtn.addEventListener('click', () => {
+        if (imageSettings.style.display === 'none' || imageSettings.style.display === '') {
+            imageSettings.style.display = 'block';
+        } else {
+            imageSettings.style.display = 'none';
+        }
+    });
+
+    // แสดงตัวอย่างการประมวลผลภาพ
+    showPreviewBtn.addEventListener('click', () => {
+        if (!hasCaptured) {
+            statusText.textContent = "กรุณาจับภาพก่อนดูตัวอย่าง";
+            return;
+        }
+
+        // ถ้ายังไม่ได้เลือกพื้นที่ ให้ใช้ภาพทั้งหมด
+        let sourceCanvas = canvas;
+        let x = 0, y = 0, w = canvas.width, h = canvas.height;
+
+        // ถ้ามีการเลือกพื้นที่แล้ว ให้ใช้เฉพาะพื้นที่ที่เลือก
+        if (startX !== undefined && startY !== undefined && endX !== undefined && endY !== undefined) {
+            x = Math.min(startX, endX);
+            y = Math.min(startY, endY);
+            w = Math.abs(endX - startX);
+            h = Math.abs(endY - startY);
+
+            if (w < 10 || h < 10) {
+                statusText.textContent = "พื้นที่เลือกเล็กเกินไป! กรุณาลากให้ใหญ่กว่านี้";
+                return;
+            }
+        }
+
+        // ประมวลผลภาพตามการตั้งค่า
+        processedCanvas.width = w;
+        processedCanvas.height = h;
+        processImage(sourceCanvas, processedCanvas, x, y, w, h);
+        processedCanvas.style.display = 'block';
+    });
+
+    // กดเพื่อจับภาพจากวิดีโอ
+    snapBtn.addEventListener('click', () => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        statusText.textContent = "เลือกพื้นที่ที่ต้องการสแกนข้อความ โดยการลากเมาส์";
+        statusText.classList.add('highlight');
+        wrapper.style.cursor = "crosshair";
+        hasCaptured = true;
+        processedCanvas.style.display = 'none';
+    });
+
+    // ฟังก์ชันประมวลผลภาพ
+    function processImage(sourceCanvas, targetCanvas, x, y, width, height) {
+        const targetCtx = targetCanvas.getContext('2d', { willReadFrequently: true });
+
+        // คัดลอกภาพจากต้นฉบับ
+        targetCtx.drawImage(sourceCanvas, x, y, width, height, 0, 0, width, height);
+
+        // ปรับขนาดถ้าต้องการ
+        if (document.getElementById('useResize').checked) {
+            const factor = parseFloat(document.getElementById('resizeFactor').value);
+            if (factor > 1) {
+                const newWidth = width * factor;
+                const newHeight = height * factor;
+
+                // สร้าง canvas ชั่วคราวเพื่อเก็บภาพเดิม
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+                tempCtx.drawImage(targetCanvas, 0, 0);
+
+                // ปรับขนาด canvas
+                targetCanvas.width = newWidth;
+                targetCanvas.height = newHeight;
+
+                // วาดภาพด้วยขนาดใหม่
+                targetCtx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, newWidth, newHeight);
+            }
+        }
+
+        // แปลงเป็นภาพขาวดำ (grayscale)
+        if (document.getElementById('useGrayscale').checked) {
+            const imageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                data[i] = avg;     // R
+                data[i + 1] = avg; // G
+                data[i + 2] = avg; // B
+            }
+
+            targetCtx.putImageData(imageData, 0, 0);
+        }
+
+        // ปรับความเข้มตัวอักษร (threshold)
+        if (document.getElementById('useThreshold').checked) {
+            const imageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
+            const data = imageData.data;
+            const threshold = 128;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                const val = avg > threshold ? 255 : 0;
+                data[i] = val;     // R
+                data[i + 1] = val; // G
+                data[i + 2] = val; // B
+            }
+
+            targetCtx.putImageData(imageData, 0, 0);
+        }
+
+        // เพิ่มความคมชัด (sharpen)
+        if (document.getElementById('useSharpen').checked) {
+            const imageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const kernelSize = 3;
+            const kernel = [
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+            ];
+
+            // สร้างข้อมูลภาพชั่วคราว
+            const tempData = new Uint8ClampedArray(data.length);
+            for (let i = 0; i < data.length; i++) {
+                tempData[i] = data[i];
+            }
+
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const centerIdx = (y * width + x) * 4;
+
+                    for (let rgb = 0; rgb < 3; rgb++) {
+                        let sum = 0;
+
+                        for (let ky = -1; ky <= 1; ky++) {
+                            for (let kx = -1; kx <= 1; kx++) {
+                                const idx = ((y + ky) * width + (x + kx)) * 4 + rgb;
+                                const kernelIdx = (ky + 1) * kernelSize + (kx + 1);
+                                sum += tempData[idx] * kernel[kernelIdx];
+                            }
+                        }
+
+                        data[centerIdx + rgb] = Math.min(255, Math.max(0, sum));
+                    }
+                }
+            }
+
+            targetCtx.putImageData(imageData, 0, 0);
+        }
+    }
+
+    // ปรับตำแหน่งของ selection ให้ถูกต้องเมื่อมีการลาก
+    function getCanvasCoordinates(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        return {
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY,
+            pageX: e.clientX,
+            pageY: e.clientY,
+            rect: rect
+        };
+    }
+
+    // เริ่มลากเพื่อเลือกพื้นที่
+    canvas.addEventListener('mousedown', e => {
+        if (!hasCaptured) return; // ถ้ายังไม่จับภาพ ไม่ต้องทำอะไร
+
+        const coords = getCanvasCoordinates(e);
+        startX = coords.x;
+        startY = coords.y;
+
+        // ตั้งค่าตำแหน่งเริ่มต้นของกรอบการเลือก
+        const rect = canvas.getBoundingClientRect();
+        selection.style.left = `${e.clientX - rect.left}px`;
+        selection.style.top = `${e.clientY - rect.top}px`;
+        selection.style.width = '0px';
+        selection.style.height = '0px';
+        selection.style.display = 'block';
+
+        isSelecting = true;
+    });
+
+    // ระหว่างลาก
+    canvas.addEventListener('mousemove', e => {
+        if (!isSelecting) return;
+
+        const coords = getCanvasCoordinates(e);
+        endX = coords.x;
+        endY = coords.y;
+
+        // คำนวณตำแหน่งและขนาดของกรอบการเลือก
+        const rect = canvas.getBoundingClientRect();
+        const left = Math.min(startX, endX) / (canvas.width / rect.width);
+        const top = Math.min(startY, endY) / (canvas.height / rect.height);
+        const width = Math.abs(endX - startX) / (canvas.width / rect.width);
+        const height = Math.abs(endY - startY) / (canvas.height / rect.height);
+
+        selection.style.left = `${left}px`;
+        selection.style.top = `${top}px`;
+        selection.style.width = `${width}px`;
+        selection.style.height = `${height}px`;
+    });
+
+    // ปล่อยเมาส์เพื่อเริ่ม OCR
+    canvas.addEventListener('mouseup', e => {
+        if (!isSelecting) return;
+
+        isSelecting = false;
+        statusText.classList.remove('highlight');
+
+        const coords = getCanvasCoordinates(e);
+        endX = coords.x;
+        endY = coords.y;
+
+        const x = Math.min(startX, endX);
+        const y = Math.min(startY, endY);
+        const w = Math.abs(endX - startX);
+        const h = Math.abs(endY - startY);
+
+        if (w < 10 || h < 10) {
+            statusText.textContent = "พื้นที่เลือกเล็กเกินไป! กรุณาลากให้ใหญ่กว่านี้";
+            selection.style.display = 'none';
+            return;
+        }
+
+        // แสดงพื้นที่ที่เลือกสักครู่ก่อนประมวลผล
+        setTimeout(() => {
+            selection.style.display = 'none';
+
+            // สร้าง canvas ใหม่สำหรับพื้นที่ที่ตัด
+            const cropped = document.createElement('canvas');
+            cropped.width = w;
+            cropped.height = h;
+
+            // ประมวลผลภาพ
+            processImage(canvas, cropped, x, y, w, h);
+
+            // ตั้งค่า Tesseract
+            const psm = document.getElementById('psm').value;
+            const language = document.getElementById('language').value;
+            const whitelist = document.getElementById('whitelist').value;
+
+            // เริ่มการประมวลผล OCR
+            statusText.innerHTML = '<span class="loading"></span> กำลังประมวลผลข้อความ...';
+            output.textContent = "กำลังประมวลผล...";
+
+            // ใช้ Tesseract.js v2.1.0 ซึ่งมีวิธีการใช้งานต่างจาก v4
+            const worker = Tesseract.createWorker({
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        statusText.innerHTML = `<span class="loading"></span> กำลังประมวลผล... ${Math.floor(m.progress * 100)}%`;
+                    }
+                }
+            });
+
+            (async () => {
+                try {
+                    await worker.load();
+                    await worker.loadLanguage(language);
+                    await worker.initialize(language);
+
+                    // ตั้งค่า PSM
+                    await worker.setParameters({
+                        tessedit_pageseg_mode: parseInt(psm)
+                    });
+
+                    // ตั้งค่า whitelist ถ้ามี
+                    if (whitelist) {
+                        await worker.setParameters({
+                            tessedit_char_whitelist: whitelist
+                        });
+                    }
+
+                    const { data } = await worker.recognize(cropped);
+                    const text = data.text;
+
+                    if (text.trim() === '') {
+                        output.textContent = "ไม่พบข้อความในพื้นที่ที่เลือก กรุณาลองอีกครั้ง";
+                    } else {
+                        output.textContent = text.trim();
+                    }
+
+                    statusText.textContent = "สแกนเสร็จสิ้น กรุณาเลือกพื้นที่ใหม่หรือจับภาพใหม่";
+
+                    await worker.terminate();
+                } catch (err) {
+                    output.textContent = "เกิดข้อผิดพลาด: " + err.message;
+                    statusText.textContent = "เกิดข้อผิดพลาดในการประมวลผล";
+                    console.error(err);
+                }
+            })();
+        }, 200);
+    });
+
+    // เพิ่มการรองรับการใช้งานบนอุปกรณ์ทัชสกรีน
+    canvas.addEventListener('touchstart', e => {
+        if (!hasCaptured) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener('touchmove', e => {
+        if (!isSelecting) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            buttons: 1
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    canvas.addEventListener('touchend', e => {
+        if (!isSelecting) return;
+        e.preventDefault();
+
+        const touch = e.changedTouches[0];
+        const mouseEvent = new MouseEvent('mouseup', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+
+    // แก้ไขปัญหา scrolling บนมือถือ
+    document.body.addEventListener('touchmove', e => {
+        if (isSelecting) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // ทำให้ canvas มีขนาดเดียวกับวิดีโอ
+    video.addEventListener('loadedmetadata', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        processedCanvas.width = video.videoWidth;
+        processedCanvas.height = video.videoHeight;
+    });
+</script>

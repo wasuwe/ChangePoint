@@ -1,0 +1,1239 @@
+﻿@{
+    ViewBag.Title = "Summary Report ";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+
+<style>
+    .css-box {
+        margin: 20px 0 0px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 20px 20px 10px;
+    }
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+    .head-box {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+    .haed-title {
+        font-size: 35px;
+        font-weight: bold;
+    }
+
+</style>
+
+<div id="MainApp">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="head-box">
+                <div class="haed-title">Report : Summary</div>
+                <div class="select-group">
+                    <select class="selectpicker" data-placeholder="เลือก Group" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
+                        <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-4">
+            <div class="chart-box css-box">
+                <div class="date-select">
+                    <Datepicker v-model="date_day"
+                                :enable-time-picker="false"
+                                :clearable="false"
+                                :monthChangeOnScroll="false"
+                                :markers="markers"
+                                :format="dateFormat_day"
+                                auto-apply
+                                @Html.Raw("@closed")="update_Chart_day()">
+                    </Datepicker>
+                </div>
+                <div id="chart_summary_day"></div>
+            </div>
+        </div>
+
+        <div class="col-8">
+            <div class="chart-box css-box">
+                <div class="date-select">
+                    <Datepicker v-model="date_month"
+                                :enable-time-picker="false"
+                                :clearable="false"
+                                :monthChangeOnScroll="false"
+                                auto-apply
+                                month-picker
+                                @Html.Raw("@closed")="update_Chart_month()">
+                    </Datepicker>
+                </div>
+                <div id="chart_summary_month"></div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="chart-box css-box">
+                <div class="date-select">
+                    <Datepicker v-model="date_year"
+                                :enable-time-picker="false"
+                                :clearable="false"
+                                :monthChangeOnScroll="false"
+                                auto-apply year-picker
+                                @Html.Raw("@closed")="update_Chart_year()">
+                    </Datepicker>
+                </div>
+                <div id="chart_summary_year"></div>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="chart-box css-box">
+                <div class="date-select">
+                    <Datepicker v-model="date_years"
+                                :enable-time-picker="false"
+                                :clearable="false"
+                                :monthChangeOnScroll="false"
+                                auto-apply
+                                year-picker
+                                range
+                                @Html.Raw("@closed")="update_Chart_years()">
+                    </Datepicker>
+                </div>
+                <div id="chart_summary_years"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/apexcharts.js")
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+
+<script>
+
+
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                date_day: new Date(),
+                date_month: { month: new Date().getMonth() , year: new Date().getFullYear()},
+                date_year: new Date().getFullYear(),
+                date_years: [new Date().getFullYear() - 2, new Date().getFullYear()+1],
+                dateFormat_day: (date) => {
+                    const day = date.getDate();
+                    const month = date.getMonth() + 1;
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                },
+                title_name: ['', 'Man', 'Machine', 'Mold/DIE', 'Method', 'Part/Mat\'l'],
+                month_name: ['','Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                value_day:[],
+                label_day:[],
+                options_day: {},
+
+                label_month: [],
+                value_month_1:[],
+                value_month_2:[],
+                value_month_3:[],
+                value_month_4:[],
+                value_month_5: [],
+                options_month: {},
+
+                label_year: [],
+                value_year_1: [],
+                value_year_2: [],
+                value_year_3: [],
+                value_year_4: [],
+                value_year_5: [],
+                options_year: {},
+
+                label_years: [],
+                value_years_1: [],
+                value_years_2: [],
+                value_years_3: [],
+                value_years_4: [],
+                value_years_5: [],
+                options_years: {},
+
+
+                groupList: [],
+                markers: [],
+                color_list: [],
+                slt_group: '',
+
+            }
+        },
+        components: { Datepicker: VueDatePicker },
+        async created() {
+
+            const self = this;
+
+            await self.getGroup();
+            await self.get_colors();
+            await self.getList_calendar()
+
+        },
+        async mounted() {
+            const self = this;
+
+            await self.get_data_day()
+            await self.get_data_month()
+            await self.get_data_year()
+            await self.get_data_years()
+
+            await self.call_Chart_day()
+            await self.call_Chart_month()
+            await self.call_Chart_year()
+            await self.call_Chart_years()
+
+        },
+        methods: {
+            addDays(dateTime, count_days = 0) {
+                return new Date(new Date(dateTime).setDate(dateTime.getDate() + count_days));
+            },
+            async get_data_day() {
+
+                self = this;
+
+                self.value_day = []
+                self.label_day = []
+
+                let d = self.date_day;
+                let yyyy = d.getFullYear();
+                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
+                let dd = ('0' + d.getDate()).slice(-2);
+                const date_search = dd + "-" + MM + "-" + yyyy;
+
+                 await $.ajax({
+                    url: "@Url.Action("Summary_day", "Report")",
+                    type: "POST",
+                     data: { date_select: date_search},
+                    success: function (result) {
+                        if (result.success) {
+
+                            result.data.forEach((item) => {
+
+                                self.value_day.push(parseInt(item.COUNT))
+                                self.label_day.push(self.title_name[item.TYPE])
+
+                            })
+
+                        } else {
+                            self.label_day = ['Man', 'Machine', 'Mold/DIE', 'Method', 'Part/Mat\'l']
+                            self.value_day = [0,0,0,0,0]
+                        }
+                    }
+                });
+
+            },
+            async get_data_month() {
+
+                self = this;
+
+                let arr_label = []
+
+                self.label_month = []
+                self.value_month_1 = []
+                self.value_month_2 = []
+                self.value_month_3 = []
+                self.value_month_4 = []
+                self.value_month_5 = []
+
+                // คำนวณวันที่เริ่มต้นของเดือน
+                const today = new Date(self.date_month.year + '-' + (self.date_month.month + 1) + '-1');
+
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                // คำนวณวันที่สิ้นสุดของเดือน
+                const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+                let yyyy = monthStart.getFullYear();
+                let MM = ('0' + (monthStart.getMonth() + 1)).slice(-2);
+                let dd = ('0' + monthStart.getDate()).slice(-2);
+                const date_start = dd + "-" + MM + "-" + yyyy;
+
+                yyyy = monthEnd.getFullYear();
+                MM = ('0' + (monthEnd.getMonth() + 1)).slice(-2);
+                dd = ('0' + monthEnd.getDate()).slice(-2);
+                const date_stop = dd + "-" + MM + "-" + yyyy;
+
+                 await $.ajax({
+                    url: "@Url.Action("Summary_month", "Report")",
+                    type: "POST",
+                     data: { date_start: date_start, date_stop: date_stop},
+                    success: function (result) {
+                        if (result.success) {
+
+                            result.data.forEach((item) => {
+                                arr_label.push(item.DATE)
+                            })
+
+                            self.label_month = [...new Set(arr_label)];
+
+                            let c = 1;
+
+                            let c_all = 1
+                            let c_1 = 1
+                            let c_2 = 1
+                            let c_3 = 1
+                            let c_4 = 1
+                            let c_5 = 1
+                            let day_old = ''
+                            let day_new = ''
+
+                            result.data.forEach((item) => {
+
+                                day_new = item.DATE
+
+                                if (day_old != day_new) {
+                                    if (c_1 < c_all) {
+                                        self.value_month_1.push(0)
+                                        c_1++
+                                    }
+                                    if (c_2 < c_all) {
+                                        self.value_month_2.push(0)
+                                        c_2++
+                                    }
+                                    if (c_3 < c_all) {
+                                        self.value_month_3.push(0)
+                                        c_3++
+                                    }
+                                    if (c_4 < c_all) {
+                                        self.value_month_4.push(0)
+                                        c_4++
+                                    }
+                                    if (c_5 < c_all) {
+                                        self.value_month_5.push(0)
+                                        c_5++
+                                    }
+                                    c_all++
+                                }
+
+                                if (item.TYPE == '1') {
+                                    self.value_month_1.push(parseInt(item.COUNT))
+                                    c_1++
+                                }
+                                if (item.TYPE == '2') {
+                                    self.value_month_2.push(parseInt(item.COUNT))
+                                    c_2++
+                                }
+                                if (item.TYPE == '3') {
+                                    self.value_month_3.push(parseInt(item.COUNT))
+                                    c_3++
+                                }
+                                if (item.TYPE == '4') {
+                                    self.value_month_4.push(parseInt(item.COUNT))
+                                    c_4++
+                                }
+                                if (item.TYPE == '5') {
+                                    self.value_month_5.push(parseInt(item.COUNT))
+                                    c_5++
+                                }
+
+                                day_old = day_new
+
+                            })
+
+                        } else {
+                            self.label_month = []
+                            self.value_month_1 = []
+                            self.value_month_2 = []
+                            self.value_month_3 = []
+                            self.value_month_4 = []
+                            self.value_month_5 = []
+                        }
+                    }
+                });
+
+            },
+            async get_data_year() {
+
+                self = this;
+
+                let arr_label = []
+
+                self.label_year = []
+                self.value_year_1 = []
+                self.value_year_2 = []
+                self.value_year_3 = []
+                self.value_year_4 = []
+                self.value_year_5 = []
+
+                // คำนวณวันที่เริ่มต้นของปี
+                const yearStart = new Date(self.date_year, 0, 1);
+                // คำนวณวันที่สิ้นสุดของปี
+                const yearEnd = new Date(self.date_year, 11, 31);
+
+                let yyyy = yearStart.getFullYear();
+                let MM = ('0' + (yearStart.getMonth() + 1)).slice(-2);
+                let dd = ('0' + yearStart.getDate()).slice(-2);
+                const date_start = dd + "-" + MM + "-" + yyyy;
+
+                yyyy = yearEnd.getFullYear();
+                MM = ('0' + (yearEnd.getMonth() + 1)).slice(-2);
+                dd = ('0' + yearEnd.getDate()).slice(-2);
+                const date_stop = dd + "-" + MM + "-" + yyyy;
+
+                 await $.ajax({
+                    url: "@Url.Action("Summary_year", "Report")",
+                    type: "POST",
+                     data: { date_start: date_start, date_stop: date_stop},
+                    success: function (result) {
+                        if (result.success) {
+
+                            result.data.forEach((item) => {
+                                arr_label.push(self.month_name[parseInt(item.DATE)])
+                            })
+
+                            self.label_year = [...new Set(arr_label)];
+
+                            let c = 1;
+
+                            let c_all = 1
+                            let c_1 = 1
+                            let c_2 = 1
+                            let c_3 = 1
+                            let c_4 = 1
+                            let c_5 = 1
+                            let day_old = ''
+                            let day_new = ''
+
+                            result.data.forEach((item) => {
+
+                                day_new = item.DATE
+
+                                if (day_old != day_new) {
+                                    if (c_1 < c_all) {
+                                        self.value_year_1.push(0)
+                                        c_1++
+                                    }
+                                    if (c_2 < c_all) {
+                                        self.value_year_2.push(0)
+                                        c_2++
+                                    }
+                                    if (c_3 < c_all) {
+                                        self.value_year_3.push(0)
+                                        c_3++
+                                    }
+                                    if (c_4 < c_all) {
+                                        self.value_year_4.push(0)
+                                        c_4++
+                                    }
+                                    if (c_5 < c_all) {
+                                        self.value_year_5.push(0)
+                                        c_5++
+                                    }
+                                    c_all++
+                                }
+
+                                if (item.TYPE == '1') {
+                                    self.value_year_1.push(parseInt(item.COUNT))
+                                    c_1++
+                                }
+                                if (item.TYPE == '2') {
+                                    self.value_year_2.push(parseInt(item.COUNT))
+                                    c_2++
+                                }
+                                if (item.TYPE == '3') {
+                                    self.value_year_3.push(parseInt(item.COUNT))
+                                    c_3++
+                                }
+                                if (item.TYPE == '4') {
+                                    self.value_year_4.push(parseInt(item.COUNT))
+                                    c_4++
+                                }
+                                if (item.TYPE == '5') {
+                                    self.value_year_5.push(parseInt(item.COUNT))
+                                    c_5++
+                                }
+
+                                day_old = day_new
+
+                            })
+
+                        } else {
+                            self.label_year = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                            self.value_year_1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            self.value_year_2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            self.value_year_3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            self.value_year_4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                            self.value_year_5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                        }
+                    }
+                });
+
+            },
+            async get_data_years() {
+
+                self = this;
+
+                let arr_label = []
+
+                self.label_years = []
+                self.value_years_1 = []
+                self.value_years_2 = []
+                self.value_years_3 = []
+                self.value_years_4 = []
+                self.value_years_5 = []
+
+                // คำนวณวันที่เริ่มต้นของปี
+                const yearStart = new Date(self.date_years[0], 0, 1);
+                // คำนวณวันที่สิ้นสุดของปี
+                const yearEnd = new Date(self.date_years[1] != null ? self.date_years[1] : self.date_years[0] , 11, 31);
+
+                let yyyy = yearStart.getFullYear();
+                let MM = ('0' + (yearStart.getMonth() + 1)).slice(-2);
+                let dd = ('0' + yearStart.getDate()).slice(-2);
+                const date_start = dd + "-" + MM + "-" + yyyy;
+
+                yyyy = yearEnd.getFullYear();
+                MM = ('0' + (yearEnd.getMonth() + 1)).slice(-2);
+                dd = ('0' + yearEnd.getDate()).slice(-2);
+                const date_stop = dd + "-" + MM + "-" + yyyy;
+
+                 await $.ajax({
+                    url: "@Url.Action("Summary_years", "Report")",
+                    type: "POST",
+                     data: { date_start: date_start, date_stop: date_stop},
+                    success: function (result) {
+                        if (result.success) {
+
+                            result.data.forEach((item) => {
+                                arr_label.push(item.DATE)
+                            })
+
+                            self.label_years = [...new Set(arr_label)];
+
+                            let c = 1;
+
+                            let c_all = 1
+                            let c_1 = 1
+                            let c_2 = 1
+                            let c_3 = 1
+                            let c_4 = 1
+                            let c_5 = 1
+                            let day_old = ''
+                            let day_new = ''
+
+                            result.data.forEach((item) => {
+
+                                day_new = item.DATE
+
+                                if (day_old != day_new) {
+                                    if (c_1 < c_all) {
+                                        self.value_years_1.push(0)
+                                        c_1++
+                                    }
+                                    if (c_2 < c_all) {
+                                        self.value_years_2.push(0)
+                                        c_2++
+                                    }
+                                    if (c_3 < c_all) {
+                                        self.value_years_3.push(0)
+                                        c_3++
+                                    }
+                                    if (c_4 < c_all) {
+                                        self.value_years_4.push(0)
+                                        c_4++
+                                    }
+                                    if (c_5 < c_all) {
+                                        self.value_years_5.push(0)
+                                        c_5++
+                                    }
+                                    c_all++
+                                }
+
+                                if (item.TYPE == '1') {
+                                    self.value_years_1.push(parseInt(item.COUNT))
+                                    c_1++
+                                }
+                                if (item.TYPE == '2') {
+                                    self.value_years_2.push(parseInt(item.COUNT))
+                                    c_2++
+                                }
+                                if (item.TYPE == '3') {
+                                    self.value_years_3.push(parseInt(item.COUNT))
+                                    c_3++
+                                }
+                                if (item.TYPE == '4') {
+                                    self.value_years_4.push(parseInt(item.COUNT))
+                                    c_4++
+                                }
+                                if (item.TYPE == '5') {
+                                    self.value_years_5.push(parseInt(item.COUNT))
+                                    c_5++
+                                }
+
+                                day_old = day_new
+
+                            })
+
+                        }
+                    }
+                });
+
+            },
+            async call_Chart_day() {
+
+                self = this;
+
+                self.options_day = await {
+                    series: self.value_day,
+                    labels: self.label_day,
+                    chart: {
+                        type: 'donut',
+                        height: '300px',
+                    },
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        text: 'Daily',
+                        align: 'center'
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                labels: {
+                                    show: true,
+                                    name: {
+                                        show: true,
+                                        fontSize: '22px',
+                                        fontFamily: 'Rubik',
+                                        color: '#dfsda',
+                                        offsetY: -10
+                                    },
+                                    value: {
+                                        show: true,
+                                        fontSize: '16px',
+                                        fontFamily: 'Helvetica, Arial, sans-serif',
+                                        color: undefined,
+                                        offsetY: 16,
+                                        formatter: function (val) {
+                                            return val
+                                        }
+                                    },
+                                    total: {
+                                        show: true,
+                                        label: 'Total',
+                                        color: '#373d3f',
+                                        formatter: function (w) {
+                                            return w.globals.seriesTotals.reduce((a, b) => {
+                                                return a + b
+                                            }, 0)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                var chart_summary_day = await document.querySelector('#chart_summary_day');
+                if (chart_summary_day) {
+                    self.chart_summary_day = await new ApexCharts(document.querySelector('#chart_summary_day'), self.options_day);
+                    await self.chart_summary_day.render();
+                }
+
+            },
+            async update_Chart_day() {
+
+                self = this;
+
+                await self.get_data_day()
+
+                if (chart_summary_day) {
+                    await self.chart_summary_day.updateOptions({
+                        series: self.value_day,
+                        labels: self.label_day,
+                    });
+                }
+
+            },
+            async call_Chart_month() {
+
+                self = this;
+
+                self.options_month = {
+                    series: [
+                        {
+                            name: 'Man',
+                            data: self.value_month_1
+                        }, {
+                            name: 'Machine',
+                            data: self.value_month_2
+                        }, {
+                            name: 'Mold/DIE',
+                            data: self.value_month_3
+                        }, {
+                            name: 'Method',
+                            data: self.value_month_4
+                        }, {
+                            name: 'Part/Mat\'l',
+                            data: self.value_month_5
+                        }
+                    ],
+                    chart: {
+                        height: '250px',
+                        type: 'bar',
+                        stacked: true,
+                    },
+                    colors: self.color_list,
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 0,
+                            dataLabels: {
+                                total: {
+                                    enabled: true,
+                                    offsetX: 0,
+                                    offsetY: 0,
+                                    style: {
+                                        fontSize: '13px',
+                                        fontWeight: 900
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function (val) {
+                            return val ;
+                        },
+                        offsetY: 0,
+                        style: {
+                            fontSize: '12px',
+                            colors: ["#304758"]
+                        }
+                    },
+
+                    xaxis: {
+                        categories: self.label_month,
+                        position: 'top',
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false
+                        },
+                        crosshairs: {
+                            fill: {
+                                type: 'gradient',
+                                gradient: {
+                                    colorFrom: '#D8E3F0',
+                                    colorTo: '#BED1E6',
+                                    stops: [0, 100],
+                                    opacityFrom: 0.4,
+                                    opacityTo: 0.5,
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                        },
+                        labels: {
+                            show: true,
+                            //formatter: function (val) {
+                            //    return val;
+                            //}
+                        },
+
+                    },
+                    yaxis: {
+                        axisBorder: {
+                            show: false
+                        },
+                        axisTicks: {
+                            show: false,
+                        },
+                        labels: {
+                            show: true,
+                            formatter: function (val) {
+                                return val ;
+                            }
+                        },
+                    },
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        text: 'Monthly',
+                        align: 'center'
+                    }
+                };
+
+
+                var chart_summary_month = document.querySelector('#chart_summary_month');
+                if (chart_summary_month) {
+                    self.chart_summary_month = new ApexCharts(document.querySelector('#chart_summary_month'), self.options_month);
+                    self.chart_summary_month.render();
+                }
+
+            },
+            async update_Chart_month() {
+
+                self = this;
+
+                await self.get_data_month()
+
+                if (chart_summary_month) {
+                    await self.chart_summary_month.updateOptions({
+                        series: [
+                            {
+                                name: 'Man',
+                                data: self.value_month_1
+                            }, {
+                                name: 'Machine',
+                                data: self.value_month_2
+                            }, {
+                                name: 'Mold/DIE',
+                                data: self.value_month_3
+                            }, {
+                                name: 'Method',
+                                data: self.value_month_4
+                            }, {
+                                name: 'Part/Mat\'l',
+                                data: self.value_month_5
+                            }
+                        ],
+                        xaxis: {
+                            categories: self.label_month,
+                        }
+                    });
+                }
+
+            },
+            async call_Chart_year() {
+
+                self = this;
+
+                self.options_year = await {
+                    series: [
+                        {
+                            name: 'Man',
+                            data: self.value_year_1
+                        }, {
+                            name: 'Machine',
+                            data: self.value_year_2
+                        }, {
+                            name: 'Mold/DIE',
+                            data: self.value_year_3
+                        }, {
+                            name: 'Method',
+                            data: self.value_year_4
+                        }, {
+                            name: 'Part/Mat\'l',
+                            data: self.value_year_5
+                        }
+                    ],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        stacked: true,
+                    },
+                    colors: self.color_list,
+                    plotOptions: {
+                        bar: {
+                            horizontal: true,
+                            dataLabels: {
+                                total: {
+                                    enabled: true,
+                                    offsetX: 0,
+                                    style: {
+                                        fontSize: '13px',
+                                        fontWeight: 900
+                                    }
+                                }
+                            }
+                        },
+                    },
+                    stroke: {
+                        width: 1,
+                        colors: ['#fff']
+                    },
+                    title: {
+                        text: 'Yearly',
+                        align: 'center'
+                    },
+                    xaxis: {
+                        categories: self.label_year,
+                        labels: {
+                            formatter: function (val) {
+                                return val
+                            }
+                        }
+                    },
+                    yaxis: {
+                        title: {
+                            text: undefined
+                        },
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val
+                            }
+                        }
+                    },
+                    fill: {
+                        opacity: 1
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'left',
+                        offsetX: 40
+                    }
+                }
+
+
+                var chart_summary_year = await document.querySelector('#chart_summary_year');
+                if (chart_summary_year) {
+                    self.chart_summary_year = await new ApexCharts(document.querySelector('#chart_summary_year'), self.options_year);
+                    await self.chart_summary_year.render();
+                }
+
+            },
+            async update_Chart_year() {
+
+                self = this;
+
+                await self.get_data_year()
+
+                if (chart_summary_year) {
+                    await self.chart_summary_year.updateOptions({
+                        series: [
+                            {
+                                name: 'Man',
+                                data: self.value_year_1
+                            }, {
+                                name: 'Machine',
+                                data: self.value_year_2
+                            }, {
+                                name: 'Mold/DIE',
+                                data: self.value_year_3
+                            }, {
+                                name: 'Method',
+                                data: self.value_year_4
+                            }, {
+                                name: 'Part/Mat\'l',
+                                data: self.value_year_5
+                            }
+                        ],
+                        xaxis: {
+                            categories: self.label_year,
+                        }
+                    });
+                }
+
+            },
+            async call_Chart_years() {
+
+                self = this;
+
+
+                self.options_years = {
+                    series: [{
+                        name: "Change Point Total",
+                        data: [40, 20, 5]
+                    }],
+                    chart: {
+                        height: '250px',
+                        type: 'line',
+                        zoom: {
+                            enabled: false
+                        }
+                    },
+                    dataLabels: {
+                        enabled: true
+                    },
+                    stroke: {
+                        curve: 'straight'
+                    },
+                    title: {
+                        text: 'Years',
+                        align: 'center'
+                    },
+                    grid: {
+                        row: {
+                            colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                            opacity: 0.5
+                        },
+                    },
+                    xaxis: {
+                        categories: ['2021', '2022', '2023'],
+                    }
+                };
+
+                self.options_years = {
+                    series: [
+                        {
+                            name: 'Man',
+                            data: self.value_years_1
+                        }, {
+                            name: 'Machine',
+                            data: self.value_years_2
+                        }, {
+                            name: 'Mold/DIE',
+                            data: self.value_years_3
+                        }, {
+                            name: 'Method',
+                            data: self.value_years_4
+                        }, {
+                            name: 'Part/Mat\'l',
+                            data: self.value_years_5
+                        }
+                    ],
+                        chart: {
+                        type: 'bar',
+                            height: 350,
+                                stacked: true,
+                    },
+                    colors: self.color_list,
+                    plotOptions: {
+                        bar: {
+                            horizontal: true,
+                                dataLabels: {
+                                total: {
+                                    enabled: true,
+                                        offsetX: 0,
+                                            style: {
+                                        fontSize: '13px',
+                                            fontWeight: 900
+                                    }
+                                }
+                            }
+                        },
+                    },
+                    stroke: {
+                        width: 1,
+                            colors: ['#fff']
+                    },
+                    title: {
+                        text: 'Years Prepare',
+                        align: 'center'
+                    },
+                    xaxis: {
+                        categories: self.label_years,
+                            labels: {
+                            formatter: function (val) {
+                                return val
+                            }
+                        }
+                    },
+                    yaxis: {
+                        title: {
+                            text: undefined
+                        },
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val
+                            }
+                        }
+                    },
+                    fill: {
+                        opacity: 1
+                    },
+                    legend: {
+                        position: 'top',
+                            horizontalAlign: 'left',
+                                offsetX: 40
+                    }
+                }
+
+
+                var chart_summary_years = document.querySelector('#chart_summary_years');
+                if (chart_summary_years) {
+                    self.chart_summary_years = new ApexCharts(document.querySelector('#chart_summary_years'), self.options_years);
+                    self.chart_summary_years.render();
+                }
+
+            },
+            async update_Chart_years() {
+
+                self = this;
+
+                await self.get_data_years()
+
+                if (chart_summary_years) {
+                    await self.chart_summary_years.updateOptions({
+                        series: [
+                            {
+                                name: 'Man',
+                                data: self.value_years_1
+                            }, {
+                                name: 'Machine',
+                                data: self.value_years_2
+                            }, {
+                                name: 'Mold/DIE',
+                                data: self.value_years_3
+                            }, {
+                                name: 'Method',
+                                data: self.value_years_4
+                            }, {
+                                name: 'Part/Mat\'l',
+                                data: self.value_years_5
+                            }
+                        ],
+                        xaxis: {
+                            categories: self.label_years,
+                        }
+                    });
+                }
+
+            },
+                async getGroup() {
+
+                const self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
+                    type: "POST",
+                    data: {},
+                    success: function (result) {
+                        if (result.success) {
+
+                            self.groupList = result.data
+
+                            const arr = result.data;
+
+                            self.slt_group = '@Session["GROUP_ID"].ToString()';
+
+                            if (self.slt_group == "") {
+                                self.slt_group = result.data[0].GROUP_ID
+                            }
+
+                            const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
+
+                            const arrSelect = arr[index];
+
+                            if (arrSelect.MENU_1 == 'N') {
+                                $('#lk-menu-2').hide();
+                            }
+                            if (arrSelect.MENU_2 == 'N') {
+                                $('#lk-menu-3').hide();
+                            }
+                            if (arrSelect.MENU_3 == 'N') {
+                                $('#lk-menu-1').hide();
+                            }
+                            if (arrSelect.MENU_5 == 'N') {
+                                $('#lk-menu-4').hide();
+                            }
+                            if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                $('#lk-menu-5').hide();
+                            }
+                            if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                $('#lk-menu-6').hide();
+                            }
+
+                        }
+
+                    }
+                    });
+
+                    await $('#slt_group').selectpicker('destroy');
+                    await $('#slt_group').selectpicker('render');
+                    await $("#slt_group").selectpicker("val", self.slt_group)
+            },
+            async selectGroup(gID) {
+
+                await $.ajax({
+                    url: "@Url.Action("Select_GROUP", "lookup")",
+                    type: "POST",
+                    data: { item_group: gID},
+                    success: function (result) {
+                        if (result.success) {
+                            window.open("@Url.Action("Summary", "Report")","_self")
+                        }
+
+                    }
+                });
+            },
+             async get_colors() {
+
+                const self = this;
+
+                await $.ajax({
+                    url: '@Url.Action("SelectItem_Colors", "lookup")',
+                    type: "POST",
+                    data: {},
+                    success: function (result) {
+                        if (result.success) {
+
+                            self.color_list.push(result.data[0]['ITEM_COLORS_1'])
+                            self.color_list.push(result.data[0]['ITEM_COLORS_2'])
+                            self.color_list.push(result.data[0]['ITEM_COLORS_3'])
+                            self.color_list.push(result.data[0]['ITEM_COLORS_4'])
+                            self.color_list.push(result.data[0]['ITEM_COLORS_5'])
+
+                        } else {
+                            self.color_list = []  
+                        }
+
+                    }
+                });
+            },
+            async getList_calendar() {
+
+                let self = this;
+
+                let d = self.date_day;
+                let yyyy = d.getFullYear();
+                let MM = ('0' + (d.getMonth() + 1)).slice(-2);
+                let dd = ('0' + d.getDate()).slice(-2);
+                const date_file = dd + "-" + MM + "-" + yyyy;
+
+                await $.ajax({
+                    url: "@Url.Action("ListItem_ChangePoint_All", "lookup")",
+                    type: "POST",
+                    data: {},
+                    success: function (result) {
+                        if (result.success) {
+
+                            result.data.forEach((item) => {
+
+                                const dateArray = item.DATE_CHANGE.split("/");
+                                const dateStr = dateArray[1] + '/' + dateArray[0] + '/' + dateArray[2];
+                                const dates = new Date(dateStr);
+
+                                self.markers.push(
+                                    {
+                                        date: dates,
+                                        type: 'dot',
+                                        tooltip: [],
+                                    })
+
+                            })
+
+                        }
+                    }
+                });
+
+
+            }
+        },
+        watch: {
+        }
+    }).mount('#MainApp')
+
+
+</script>

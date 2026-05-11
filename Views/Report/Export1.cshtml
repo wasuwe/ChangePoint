@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "Edit Point";
+}
+<link href="https://unpkg.com/vue3-easy-data-table/dist/style.css" rel="stylesheet">
+
+<script src="https://unpkg.com/vue3-easy-data-table"></script>
+
+<div id="app">
+
+    <span>search value: </span>
+    <input type="text" v-model="searchValue">
+
+
+    <easy-data-table    :headers="headers"
+                        :items="items"
+                        :search-value="searchValue" 
+                        :sort-by="sortBy"
+                        :sort-type="sortType"
+                     />
+
+    <template #item-tool="{ name }">
+        <a :href="name" onclick="return false;" v-on:click="getMC()">{{ name }}</a>
+    </template>
+
+</div>
+
+<script>
+    const App = {
+        components: {
+            EasyDataTable: window['vue3-easy-data-table'],
+        },
+        data() {
+            return {
+                headers: [
+                    { text: "Name", value: "name" },
+                    { text: "Height (cm)", value: "height", sortable: true },
+                    { text: "Weight (kg)", value: "weight", sortable: true },
+                    { text: "Age", value: "age", sortable: true },
+                    { text: "Tool", value: "tool" }
+                ],
+                items: [
+                    { "name": "Curry", "height": 178, "weight": 77, "age": 20 },
+                    { "name": "James", "height": 180, "weight": 75, "age": 21 },
+                    { "name": "Jordan", "height": 181, "weight": 73, "age": 22 }
+                ],
+                searchValue: '',
+                sortBy: ["number", "weight"],
+                sortType: ["desc", "asc"],
+            }
+        },
+        methods: {
+            async getMC() {
+
+                 let self = this;
+
+                await $.ajax({
+                    url: "@Url.Action("Option_MC", "lookup")",
+                    type: "POST",
+                    data: { },
+                    success: function (result) {
+                        if (result.success) {
+
+                        }
+
+                    }
+                });
+            }
+        }
+    };
+    Vue.createApp(App).mount('#app');
+</script>

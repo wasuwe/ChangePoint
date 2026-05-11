@@ -1,0 +1,302 @@
+﻿@{
+    ViewBag.Title = "Login";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+
+<style>
+    .sa-button-container {
+        margin-top: 20px;
+    }
+
+    a.dashboard-link {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+    }
+
+    button.btn.dropdown-toggle.bs-placeholder.btn-light {
+        border: 1px solid #999 !important;
+    }
+</style>
+
+<div id="MainApp" style="display: none;" >
+
+    <div class="container-fluid LoginBox">
+
+        <form class="loginForm" action="#" onsubmit="return false;" method="post">
+
+            <a class="dashboard-link" onclick="return false;" id="dashboard_link" v-on:click="Open_Modal()" href=""
+               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Dashboard">
+                <i class="fas fa-chart-line"></i>
+            </a>
+
+            <div class="btnSwitch-2" v-on:click="user_action='V'" v-if="!switch_action" >
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="btnSwitch-1" v-on:click="user_action='M'" v-if="switch_action">
+                <i class="fas fa-user"></i>
+            </div>
+
+            <div style="font-weight: bold;">Change Point</div>
+
+            <div class="LoginTitle">
+                <div class="LoginMember" :class="{ active: !switch_action }">Member </div>
+                <div class="LoginVisitor" :class="{ active: switch_action }">Operator </div>
+                <div class="LoginText"> Login</div>
+            </div>
+
+            <div class="LoginInput username">
+                <div class="LoginInput-Text">Username</div>
+                <div class="LoginInput-Input">
+                    <input type="text" name="txt_username" id="txt_username" placeholder="000000" v-model="txt_username" class="txtbox">
+                </div>
+            </div>
+
+            <div class="LoginInput password">
+                <div class="LoginInput-Text" id="lbPasswrod">Password</div>
+                <div class="LoginInput-Input">
+                    <input type="password" name="txt_password" id="txt_password" placeholder="" v-model="txt_password" class="txtbox" :disabled="switch_action">
+                </div>
+            </div>
+
+            <div class="LoginButton">
+                <button type="submit" id="btnLogin" class="btn btn-primary btn-sm btn" v-if="!btn_loading" v-on:click="login">Login</button>
+                <button type="submit" class="btn btn-primary btn-sm btn" disabled v-if="btn_loading"><i class="fas fa-sync fa-spin"></i></button>
+            </div>
+            <div class="LoginFooter">
+                <div class="ForgotPassowrd">
+                    <a id="ForgotPassowrd" href="#" onclick="return false;" v-on:click="ForgotPassowrd()">Forgot Password</a>
+                </div>
+            </div>
+
+            <div class="LoginHR">
+                <hr />
+                <label>Or</label>
+            </div>
+
+            <div class="LoginButton">
+                <button type="button" id="btnGuest" class="btn btn-success btn-sm btn" v-on:click="guest()" v-if="!btn_loading">ผู้เยี่ยมชม</button>
+                <button type="button" class="btn btn-success btn-sm btn" v-if="btn_loading"><i class="fas fa-sync fa-spin"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal fade modal-sm" id="dashboard-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="dashboard_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Item_modal_Label">Select Dashboard Group</h5>
+                </div>
+                <div class="modal-body">
+
+                    <div class="select-group">
+                        <select class="selectpicker" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group">
+                            <option value="">เลือก Group</option>
+                            <option v-for="(item,index) in groupList" :value="item.ITEM_ID">{{item.ITEM_NAME}}</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn_save"
+                            v-on:click="open_dashboard()">
+                        Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+
+<script>
+
+    
+
+        // ------------------------------ VUE JS ------------------------------ //
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    txt_username: '',
+                    txt_password: '',
+                    user_action: 'V',
+                    switch_action: true,
+                    btn_loading: false,
+                    groupList: [],
+                    slt_group: '',
+                }
+            },
+            async created() {
+
+                const self = this;
+                await self.getGroup()
+                await $('select').selectpicker('destroy');
+                await $('select').selectpicker('render');
+                await $('#MainApp').fadeIn(1500);
+
+                const el_dashboard = document.getElementById('dashboard_link')
+                const tooltip_dashborad = new bootstrap.Tooltip(el_dashboard)
+
+            },
+            async mounted() {
+
+            },
+            methods: {
+                async login() {
+                    const self = this;
+
+                    self.btn_loading = await true;
+
+                    await $.ajax({
+                        url: "@Url.Action("login", "login")",
+                        type: "POST",
+                        data: {
+                            item_username: self.txt_username,
+                            item_password: self.txt_password,
+                            action: self.user_action
+                        },
+                        success: async function (result) {
+                            if (result.success) {
+                                await alertBoxTime("แจ้งเตือน", result.responseText, "success")
+                                await setTimeout(function () {
+                                    if (
+                                        result.wc_code == '3601' ||
+                                        result.wc_code == '7001' ||
+                                        result.wc_code == '7090' ||
+                                        result.wc_code == '7180' ||
+                                        result.wc_code == '7110'
+                                    ) {
+                                        window.open("@Url.Action("index", "home_ver1")", "_self")
+                                    } else {
+                                        window.open("@Url.Action("index", "home")", "_self")
+                                    }
+                                }, 1000)
+                            } else {
+                                self.txt_password = '';
+                                alertBoxTime("แจ้งเตือน", result.responseText, "error")
+                            }
+                        }
+                    });
+
+                    self.btn_loading = await false;
+                },
+                async guest() {
+                    const self = this;
+
+                    self.btn_loading = await true;
+
+                    await $.ajax({
+                        url: "@Url.Action("Guest", "login")",
+                        type: "POST",
+                        data: { },
+                        success: async function (result) {
+                            if (result.success) {
+                                await alertBoxTime("แจ้งเตือน", "ยินดีต้อนรับผู้เยี่ยมชม", "success")
+                                await setTimeout(function () {
+                                    window.open("@Url.Action("index", "home")","_self")
+                                }, 1000)
+                            }
+                        }
+                    });
+
+                    self.btn_loading = await false;
+                },
+                ForgotPassowrd() {
+                    swal({
+                        title: 'ลืมรหัสผ่าน',
+                        text: 'กรุณากรอกรหัสพนักงาน',
+                        type: "input",
+                        showCancelButton: true,
+                        confirmButtonText: "ยืนยัน",
+                        closeOnConfirm: false,
+                        closeOnCancel: true
+                    },
+                        function (inputValue) {
+
+                        if (inputValue === null) return false;
+
+                        if (inputValue === "") {
+                            swal.showInputError("You need to write something!");
+                            return false
+                            }
+                            $(".sa-confirm-button-container button").prop('disabled', false);
+                            $(".sa-confirm-button-container button").prop('disabled', true);
+
+                            $.ajax({
+                                url: "@Url.Action("Forgot_Password", "login")",
+                                type: "POST",
+                                data: { item_id: inputValue, },
+                                success: function (result) {
+                                    if (result.success) {
+                                        alertBoxTime("แจ้งเตือน", result.data, "info", 1500)
+                                    } else {
+                                        alertBoxTime("แจ้งเตือน", result.data, "error", 1500)
+                                    }
+                                    $(".sa-confirm-button-container button").prop('disabled', false);
+                                }
+                            });
+                        });
+                },
+                async Open_Modal() {
+                    let el = document.querySelector('#dashboard-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+                    modal.show()
+                },
+                 async getGroup() {
+
+                    const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("ListItem_Group", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+                                self.groupList = result.data
+                            }
+
+                        }
+                    });
+                },
+                open_dashboard() {
+                    const self = this;
+
+                    if (self.slt_group != '') {
+                        const url = '@Url.Action("Group", "Dashboard", new { id = "group_id"})'.replace("group_id", self.slt_group);
+                        window.open(url, '_self')
+                    } else {
+                        alertBoxTime("แจ้งเตือน", 'กรุณาเลือก Group', "info")
+                    }
+
+                }
+
+            },
+
+            watch: {
+                user_action(newValue, oldValue) {
+                    const self = this;
+
+                    if (newValue == 'M') {
+                        self.switch_action = false
+                    } else {
+                        self.switch_action = true
+                    }
+
+                }
+            }
+        }).mount('#MainApp')
+
+
+</script>

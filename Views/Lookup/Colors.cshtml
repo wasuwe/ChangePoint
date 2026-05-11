@@ -1,0 +1,510 @@
+﻿@{
+    ViewBag.Title = "Colors";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+@Styles.Render("~/Content/vue3-easy-data-table@1.5.47.css")
+
+<style>
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+
+    .customize-table {
+        --easy-table-header-font-size: 14px;
+        --easy-table-header-height: 50px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #2d3a4f;
+        --easy-table-border: 1px solid #445269;
+    }
+
+    .color-box {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .flex-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 15px;
+        flex-direction: column;
+        width: 200px;
+        position: relative;
+    }
+
+    .btn-reset {
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        cursor: pointer;
+        color: #b181ff;
+    }
+
+    label.form-label {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .form-control-color {
+        width: 100%;
+    }
+
+    #MainApp {
+        display: none;
+    }
+
+    .btn-box {
+        text-align: center;
+        margin-top: 50px;
+    }
+
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+
+        <div class="head-box">
+            <div class="haed-title">Setting : Colors</div>
+            <div class="select-group">
+                <select class="selectpicker" data-placeholder="Select Group" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
+                    <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="color-box">
+        <div class="flex-item">
+            <label for="color_man" class="form-label">Man </label>
+            <input type="text" class="form-control " id=""  title="Choose your color" v-model="slt_color_man">
+            <input type="color" class="form-control form-control-color" id="color_man"  title="Choose your color" v-model="slt_color_man" >
+            <div class="btn-reset" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reset">
+                <i class="fas fa-undo-alt" v-on:click="reset_colors(1)"></i>
+            </div>
+        </div>
+        <div class="flex-item">
+            <label for="color_mc" class="form-label">Machine</label>
+            <input type="text" class="form-control " id="" title="Choose your color" v-model="slt_color_mc">
+            <input type="color" class="form-control form-control-color" id="color_mc" title="Choose your color" v-model="slt_color_mc">
+            <div class="btn-reset" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reset">
+                <i class="fas fa-undo-alt" v-on:click="reset_colors(2)"></i>
+            </div>
+        </div>
+        <div class="flex-item">
+            <label for="color_mold" class="form-label">Mold/DIE</label>
+            <input type="text" class="form-control " id="" title="Choose your color" v-model="slt_color_mold">
+            <input type="color" class="form-control form-control-color" id="color_mold" title="Choose your color" v-model="slt_color_mold">
+            <div class="btn-reset" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reset">
+                <i class="fas fa-undo-alt" v-on:click="reset_colors(3)"></i>
+            </div>
+        </div>
+        <div class="flex-item">
+            <label for="color_met" class="form-label">Method</label>
+            <input type="text" class="form-control " id="" title="Choose your color" v-model="slt_color_met">
+            <input type="color" class="form-control form-control-color" id="color_met" title="Choose your color" v-model="slt_color_met">
+            <div class="btn-reset" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reset">
+                <i class="fas fa-undo-alt" v-on:click="reset_colors(4)"></i>
+            </div>
+        </div>
+        <div class="flex-item">
+            <label for="color_part" class="form-label">Part/Mat'l</label>
+            <input type="text" class="form-control " id="" title="Choose your color" v-model="slt_color_part">
+            <input type="color" class="form-control form-control-color" id="color_part" title="Choose your color" v-model="slt_color_part">
+            <div class="btn-reset" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Reset">
+                <i class="fas fa-undo-alt" v-on:click="reset_colors(5)"></i>
+            </div>
+        </div>       
+    </div>
+
+    <div class="btn-box">
+        <button type="button" class="btn btn-primary btn-lg" v-on:click="save_item">Save</button>
+    </div>
+     
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+@Scripts.Render("~/Scripts/vue3-easy-data-table.umd.js")
+
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    $("#MainApp").delay(500).fadeIn()
+
+    function isHexColor(color) {
+        // ตรวจสอบความยาวของสตริง
+        if (color.length !== 7 && color.length !== 9) {
+            return false;
+        }
+
+        // ตรวจสอบว่าสตริงขึ้นต้นด้วย #
+        if (color[0] !== "#") {
+            return false;
+        }
+
+        // ตรวจสอบว่าสตริงที่เหลือเป็นตัวอักษรหรือตัวเลข
+        for (let i = 1; i < color.length; i++) {
+            if (!/[0-9a-f]/.test(color[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+        createApp({
+            data() {
+                return {
+                    slt_color_man: '',
+                    slt_color_mc: '',
+                    slt_color_mold: '',
+                    slt_color_met: '',
+                    slt_color_part: '',
+
+                    color_list: [],
+
+                    slt_group: '',
+                    groupList: [],
+
+                }
+            },
+            mounted() {
+
+                let self = this
+
+                //self.SetTeble()
+
+            },
+            async created() {
+
+                let self = this
+
+                await self.getGroup()
+
+                await self.get_list()
+
+                let tooltipelements = document.querySelectorAll("[data-bs-toggle='tooltip']");
+                tooltipelements.forEach((el) => {
+                    new bootstrap.Tooltip(el);
+                });
+
+            },
+            methods: {
+                async get_list() {
+
+                    const self = this;
+
+                    await $.ajax({
+                        url: '@Url.Action("SelectItem_Colors", "lookup")',
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+                                self.color_list = result.data[0]
+
+                                self.slt_color_man = result.data[0]['ITEM_COLORS_1']
+                                self.slt_color_mc = result.data[0]['ITEM_COLORS_2']
+                                self.slt_color_mold = result.data[0]['ITEM_COLORS_3']
+                                self.slt_color_met = result.data[0]['ITEM_COLORS_4']
+                                self.slt_color_part = result.data[0]['ITEM_COLORS_5']
+                            } else {
+                                self.color_list = []
+                            }
+
+                        }
+                    });
+                },
+                reset_colors(index) {
+                    const self = this
+
+                    switch (index) {
+                        case 1 :
+                            self.slt_color_man = self.color_list['ITEM_COLORS_1']
+                            break;
+                        case 2:
+                            self.slt_color_mc = self.color_list['ITEM_COLORS_2']
+                            break;
+                        case 3:
+                            self.slt_color_mold = self.color_list['ITEM_COLORS_3']
+                            break;
+                        case 4:
+                            self.slt_color_met = self.color_list['ITEM_COLORS_4']
+                            break;
+                        case 5:
+                            self.slt_color_part = self.color_list['ITEM_COLORS_5']
+                            break;
+                    }
+
+                },
+                async save_item() {
+
+                    const self = this
+
+                    $("#btn-save").html('<i class="fas fa-sync fa-spin"></i>');
+                    $("#btn-save").prop('disabled', true);
+
+                    $.ajax({
+                        url: "@Url.Action("Edit_Colors", "lookup")",
+                        type: "POST",
+                        data: {
+                            item_color_1: self.slt_color_man,
+                            item_color_2: self.slt_color_mc,
+                            item_color_3: self.slt_color_mold,
+                            item_color_4: self.slt_color_met,
+                            item_color_5: self.slt_color_part,
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                swal({
+                                    title: "แจ้งเตือน",
+                                    text: result.Message,
+                                    type: "success",
+                                    timer: 1200,
+                                    showCancelButton: false,
+                                    showConfirmButton: false
+                                })
+
+                                self.get_list();
+
+                            } else {
+                                swal({
+                                    title: "Alert",
+                                    text: result.Message,
+                                    type: "warning",
+                                    timer: 1500,
+                                    showCancelButton: false,
+                                    showConfirmButton: false
+                                })
+                            }
+
+                        }
+                    });
+
+                    $("#btn-save").html('Save');
+                    $("#btn-save").prop('disabled', false);
+
+                },
+                 async getGroup() {
+
+                    const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.groupList = result.data
+
+                                const arr = result.data;
+
+                                self.slt_group = '@Session["GROUP_ID"].ToString()';
+
+                                if (self.slt_group == "") {
+                                    self.slt_group = result.data[0].GROUP_ID
+                                }
+
+                                const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
+
+                                const arrSelect = arr[index];
+
+                                if (arrSelect.MENU_1 == 'N') {
+                                    $('#lk-menu-2').hide();
+                                }
+                                if (arrSelect.MENU_2 == 'N') {
+                                    $('#lk-menu-3').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N') {
+                                    $('#lk-menu-1').hide();
+                                }
+                                if (arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-4').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-5').hide();
+                                }
+                                if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-6').hide();
+                                }
+
+                            }
+
+                        }
+                     });
+
+                     await $('#slt_group').selectpicker('destroy');
+                     await $('#slt_group').selectpicker('render');
+                     await $("#slt_group").selectpicker("val", self.slt_group)
+                },
+                async selectGroup(gID) {
+
+                    await $.ajax({
+                        url: "@Url.Action("Select_GROUP", "lookup")",
+                        type: "POST",
+                        data: { item_group: gID},
+                        success: function (result) {
+                            if (result.success) {
+                                window.open("@Url.Action("Colors", "lookup")","_self")
+                            }
+
+                        }
+                    });
+                },
+                isHexColor(color) {
+                    // ตรวจสอบความยาวของสตริง
+                    if (color.length !== 7 && color.length !== 9) {
+                        return false;
+                    }
+
+                    // ตรวจสอบว่าสตริงขึ้นต้นด้วย #
+                    if (color[0] !== "#") {
+                        return false;
+                    }
+
+                    // ตรวจสอบว่าสตริงที่เหลือเป็นตัวอักษรหรือตัวเลข
+                    for (let i = 1; i < color.length; i++) {
+                        if (!/[0-9a-f]/.test(color[i])) {
+                            return false;
+                        }
+                    }
+                }
+            },
+            watch: {
+               
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-master').addClass('active');
+
+
+</script>

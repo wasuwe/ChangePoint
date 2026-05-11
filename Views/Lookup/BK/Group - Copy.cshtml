@@ -1,0 +1,857 @@
+﻿@{
+    ViewBag.Title = "Group";
+}
+
+@*@Styles.Render("~/Content/bootstrap-select.min.css")*@
+
+@Styles.Render("~/Content/select2.min.css")
+@Styles.Render("~/Content/select2-bootstrap-5-theme.min.css")
+@Styles.Render("~/Content/select2-bootstrap-5-theme.rtl.min.css")
+
+<style>
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    /*
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+         background-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,18,68,1) 15%, rgba(0,80,134,1) 35%, rgba(49,143,181,1) 55%, rgba(176,202,199,1) 75%, rgba(247,214,191,1) 100%);
+        background-repeat: no-repeat;
+        background-size: contain;
+        position: relative;
+        z-index: -2;
+    }*/
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+        <div class="haed-title">Master : Group</div>
+        @if (Session["STATUS"].ToString() == "M")
+        {
+            <div class="haed-fn">
+                <a href="" onclick="return false;">
+                    <i class="fas fa-plus-circle" v-on:click="Open_Modal('Add','')"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
+
+    <div class="section-tatble">
+
+        <table id="dataTable" class="table table-hover" style="width: 100%">
+            <thead class="table-primary">
+                <tr>
+                    <th>Group ID</th>
+                    <th>Group Name</th>
+                    <th>WC List</th>
+                    <th>Status</th>
+                    <th>Update By</th>
+                    @if (Session["STATUS"].ToString() == "M")
+                    {
+                        <th>Tools</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+
+    <div class="modal fade modal-lg" id="Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Item_modal_Label">Add Item </h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+
+                            <label id="" for="txt_name" class="col-4 col-form-label"><b>Group Name</b></label>
+                            <div id="b_from" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txt_name" class="form-control" v-model="slt_name"/>
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_wc" class="col-4 col-form-label"><b>Work Center</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="form-select" id="txt_wc" v-model="slt_wc" data-placeholder="เลือก WC" multiple>
+                                        <option v-for="(item,index) in wcList" :value="item.WC">{{item.WC}} : {{item.NAME}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-add" v-on:click="cancelAdd()">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn-save" 
+                            v-on:click="saveItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-lg" id="Edit-Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Edit_Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Edit_Item_modal_Label">Edite Item</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+                            <label id="" for="edit_txt_name" class="col-4 col-form-label"><b>Group Name</b></label>
+                            <div id="b_from" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="edit_txt_name" class="form-control" v-model="slt_name" />
+                                </div>
+                            </div>
+
+                            <label id="" for="edit_txt_wc" class="col-4 col-form-label"><b>Work Center</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select id="edit_txt_wc" name="edit_txt_wc[]" data-placeholder="เลือก WC" multiple>
+                                        <option v-for="(item,index) in wcList" :value="item.WC">{{item.WC}} : {{item.NAME}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>Status</b></label>
+                            <div id="" class="col-8 col-form-label">
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-Y" value="Y">
+                                    <label class="form-check-label" for="IsUse-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-N" value="N">
+                                    <label class="form-check-label" for="IsUse-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="" class="col-12 col-form-label "><hr></div>
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>Menu 1 : Man</b></label>
+                            <div id="" class="col-8 col-form-label ">
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu1" id="menu1-Y" value="Y">
+                                    <label class="form-check-label" for="menu1-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu1" id="menu1-N" value="N">
+                                    <label class="form-check-label" for="menu1-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>Menu 2 : Machine</b></label>
+                            <div id="" class="col-8 col-form-label">
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu2" id="menu2-Y" value="Y">
+                                    <label class="form-check-label" for="menu2-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu2" id="menu2-N" value="N">
+                                    <label class="form-check-label" for="menu2-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>Menu 3 : Mold/DIE</b></label>
+                            <div id="" class="col-8 col-form-label">
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu3" id="menu3-Y" value="Y">
+                                    <label class="form-check-label" for="menu3-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu3" id="menu3-N" value="N">
+                                    <label class="form-check-label" for="menu3-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>Menu 4 : Method</b></label>
+                            <div id="" class="col-8 col-form-label">
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu4" id="menu4-Y" value="Y">
+                                    <label class="form-check-label" for="menu4-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu4" id="menu4-N" value="N">
+                                    <label class="form-check-label" for="menu4-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <label id="" for="befor" class="col-4 col-form-label"><b>Menu 5 : Part/Mat'l</b></label>
+                            <div id="" class="col-8 col-form-label">
+
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu5" id="menu5-Y" value="Y">
+                                    <label class="form-check-label" for="menu5-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="menu5" id="menu5-N" value="N">
+                                    <label class="form-check-label" for="menu5-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+                        
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cancel-edit">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn-update"
+                            v-on:click="updateItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/select2.min.js")
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    let DTable = ''
+    let Update_ID = ''
+
+        createApp({
+            data() {
+                return {
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+                    col: [],
+
+                    slt_id: '',
+                    slt_name: '',
+                    slt_wc: [],
+                    slt_staff: [],
+
+                    wcList: [],
+                    staffList: [],
+
+                    IsAdd: true,
+                    dataTable: null,
+                }
+            },
+            watch: {
+
+            },
+            mounted() {
+
+                let self = this
+
+                self.SetTeble()
+
+            },
+            async created() {
+
+                let self = this
+
+                await self.getWC()
+                await self.deleteOver()
+
+                await $('#txt_wc,#edit_txt_wc').select2({
+                    theme: "bootstrap-5",
+                    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                    placeholder: $(this).data('placeholder'),
+                    closeOnSelect: true,
+                });
+
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                SetTeble() {
+
+                    let self = this
+
+                    if (self.status == "M") {
+                        self.col = [
+                            { data: 'ITEM_ID', width: "10%", class: "text-center" },
+                            { data: 'ITEM_NAME', width: "30%", class: "text-center" },
+                            { data: 'ITEM_WC', width: "20%", class: "text-center" },
+                            { data: 'IS_USE', width: "10%", class: "text-center" },
+                            { data: 'UPDATE_BY', width: "20%", class: "text-center" },
+                            { data: 'TOOL', width: "10%", class: "text-center", orderable: false }
+                        ]
+                    } else {
+                        self.col = [
+                            { data: 'ITEM_ID', width: "15%", class: "text-center" },
+                            { data: 'ITEM_NAME', width: "20%", class: "text-center" },
+                            { data: 'ITEM_WC', width: "15%", class: "text-center" },
+                            { data: 'IS_USE', width: "10%", class: "text-center" },
+                            { data: 'UPDATE_BY', width: "20%", class: "text-center" },
+                        ]
+                    }
+
+                    DTable = $('#dataTable').DataTable({
+                        order: [[0, 'asc']],
+                        ajax: {
+                            url: '@Url.Action("ListItem_Group", "lookup")',
+                            dataSrc: function (json) {
+                                let item_ID = '';
+                                if (json.success) {
+                                    for (var i = 0, ien = json.data.length; i < ien; i++) {
+
+                                        item_id = json.data[i]["ITEM_ID"];
+
+                                        json.data[i]["TOOL"] = '<a href="@Url.Action("Group", "Dashboard", new { id = "/" })' + item_id +'"><i class="fas fa-chart-line" style="margin-right: 10px; color: rgb(44 76 235);"></i></a>'
+
+                                        json.data[i]["TOOL"] += '<a href="#" onclick="return false;"  data-item_id="' + item_id + '" id="item_id-' + item_id + '"><i class="fas fa-edit" style="margin-right: 10px; color: rgb(44 76 235);"></i></a>'
+                                        if (self.role != 'V') {
+                                            json.data[i]["TOOL"] += '<a href="#" onclick="return false;"  data-item_id="' + item_id + '" id="deleteItemID-' + item_id + '"><i class="fas fa-trash-alt" style="color: rgb(225 55 55);" ></i></a>'
+                                        }
+
+                                        json.data[i]["UPDATE_BY"] = json.data[i]["GNAME_ENG"] + ' ' + json.data[i]["FNAME_ENG"] + '<br>' + json.data[i]["UPDATE_DATE"];
+
+                                        if (json.data[i]["IS_USE"] == 'Y') {
+                                            json.data[i]["IS_USE"] = 'Use'
+                                        } else {
+                                            json.data[i]["IS_USE"] = 'Unuse'
+                                        }
+
+                                        
+                                        json.data[i]["TOOL"] += '<script>' + '\n';
+
+                                        json.data[i]["TOOL"] += '$(\'[id ^= "item_id-' + item_id +'"]\').click(async function () {' + '\n';
+                                        json.data[i]["TOOL"] += '    let el = document.querySelector(\'#Edit-Item-modal\');' + '\n';
+                                        json.data[i]["TOOL"] += '    let modal = bootstrap.Modal.getOrCreateInstance(el);' + '\n';
+                                        json.data[i]["TOOL"] += '    const id = $(this).data(\'item_id\');' + '\n';
+                                        json.data[i]["TOOL"] += '    await $.ajax({' + '\n';
+                                        json.data[i]["TOOL"] += '        url: "@Url.Action("SelectItem_Group", "lookup")",' + '\n';
+                                        json.data[i]["TOOL"] += '        type: "POST",' + '\n';
+                                        json.data[i]["TOOL"] += '        data: { item_id: id },' + '\n';
+                                        json.data[i]["TOOL"] += '        success: function (result) {' + '\n';
+                                        json.data[i]["TOOL"] += '            if (result.success) {' + '\n';
+                                        json.data[i]["TOOL"] += '                $("#Edit-Item-modal #edit_txt_name").val(result.data[0]["ITEM_NAME"]);' + '\n';
+                                        json.data[i]["TOOL"] += '                $("#Edit-Item-modal #edit_txt_wc").val(result.data[0]["ITEM_WC"].split(",")).trigger("change");' + '\n';
+                                        json.data[i]["TOOL"] += '                Update_ID = id' + '\n';
+
+
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["MENU_1"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu1-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu1-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu1-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu1-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["MENU_2"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu2-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu2-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu2-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu2-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["MENU_3"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu3-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu3-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu3-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu3-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["MENU_4"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu4-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu4-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu4-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu4-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["MENU_5"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu5-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu5-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu5-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#menu5-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+
+
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["IS_USE"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+
+                                        json.data[i]["TOOL"] += '            }' + '\n';
+                                        json.data[i]["TOOL"] += '        }' + '\n';
+                                        json.data[i]["TOOL"] += '    });' + '\n';
+                                        json.data[i]["TOOL"] += '    await modal.show()' + '\n';
+                                        json.data[i]["TOOL"] += '});' + '\n';
+
+
+                                        json.data[i]["TOOL"] += '$(\'[id ^= "deleteItemID-' + item_id +'"]\').click(function () {' + '\n';
+                                        json.data[i]["TOOL"] += '    const id = $(this).data(\'item_id\');' + '\n';
+                                        json.data[i]["TOOL"] += '    let fn = function (isConfirm) {' + '\n';
+                                        json.data[i]["TOOL"] += '        if (isConfirm) {' + '\n';
+                                        json.data[i]["TOOL"] += '            $.ajax({' + '\n';
+                                        json.data[i]["TOOL"] += '                url: "@Url.Action("DeleteItem_Group", "lookup")",' + '\n';
+                                        json.data[i]["TOOL"] += '                type: "POST",' + '\n';
+                                        json.data[i]["TOOL"] += '                data: { item_id: id},' + '\n';
+                                        json.data[i]["TOOL"] += '                success: function (result) {' + '\n';
+                                        json.data[i]["TOOL"] += '                    if (result.success) {' + '\n';
+                                        json.data[i]["TOOL"] += '                        swal({' + '\n';
+                                        json.data[i]["TOOL"] += '                            title: "Alert",' + '\n';
+                                        json.data[i]["TOOL"] += '                            text: result.Message,' + '\n';
+                                        json.data[i]["TOOL"] += '                            type: "success",' + '\n';
+                                        json.data[i]["TOOL"] += '                            timer: 1000,' + '\n';
+                                        json.data[i]["TOOL"] += '                            showCancelButton: false,' + '\n';
+                                        json.data[i]["TOOL"] += '                            showConfirmButton: false' + '\n';
+                                        json.data[i]["TOOL"] += '                        })' + '\n';
+                                        json.data[i]["TOOL"] += '                        DTable.ajax.reload();' + '\n';
+                                        json.data[i]["TOOL"] += '                    } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        swal({' + '\n';
+                                        json.data[i]["TOOL"] += '                            title: "Alert",' + '\n';
+                                        json.data[i]["TOOL"] += '                            text: result.responseText,' + '\n';
+                                        json.data[i]["TOOL"] += '                            type: "warning",' + '\n';
+                                        json.data[i]["TOOL"] += '                            timer: 1000,' + '\n';
+                                        json.data[i]["TOOL"] += '                            showCancelButton: false,' + '\n';
+                                        json.data[i]["TOOL"] += '                            showConfirmButton: false' + '\n';
+                                        json.data[i]["TOOL"] += '                        })' + '\n';
+                                        json.data[i]["TOOL"] += '                    }' + '\n';
+                                        json.data[i]["TOOL"] += '                }' + '\n';
+                                        json.data[i]["TOOL"] += '            });' + '\n';
+                                        json.data[i]["TOOL"] += '        } else {' + '\n';
+                                        json.data[i]["TOOL"] += '        }' + '\n';
+                                        json.data[i]["TOOL"] += '    }' + '\n';
+                                        json.data[i]["TOOL"] += '    alertBoxConfirm("แจ้งเตือน", "คุณต้องการลบข้อมูลใช่หรือไม่ ?", "", fn)' + '\n';
+                                        json.data[i]["TOOL"] += '});' + '\n';
+
+                                        json.data[i]["TOOL"] += '<\/script>' + '\n';
+
+                                    }
+
+
+                                    return json.data
+                                } else {
+                                    return json.data = []
+                                }
+                            },
+                        },
+                        columns: self.col
+                    });
+
+                },
+                async Open_Modal(status, index) {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (status == 'Add') {
+                        self.IsAdd = true
+
+                        self.slt_name = ''
+                        self.slt_wc = []
+                        self.slt_staff = []
+
+                        $.ajax({
+                                url: "@Url.Action("AddItem_Group", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_name: self.slt_name,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+
+                                        self.slt_id = result.data[0].ID
+                                        Update_ID = result.data[0].ID
+
+                                        modal.show()
+                                    }
+                                }
+                        });
+                    }
+                },
+                async saveItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    name = $('#txt_name').val()
+                    wc = $('#txt_wc').val()
+
+                    if (wc == '' || name == '') {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+                        $("#btn-save").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-save").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("EditItem_Group", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_id: Update_ID,
+                                    item_name: name,
+                                    item_wc: wc.toString(),
+                                    item_isUse: 'Y',
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        $('#txt_name').val('')
+                                        $('#txt_wc').val('')
+
+                                        DTable.ajax.reload();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+
+                        }
+                    }
+
+                    $("#btn-save").html('บันทึก');
+                    $("#btn-save").prop('disabled', false);
+
+                },
+                async updateItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Edit-Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    name = $('#edit_txt_name').val()
+                    wc = $('#edit_txt_wc').val()
+                    isUse = $('[name="IsUse"]:checked').val()
+
+                    menu1 = $('[name="menu1"]:checked').val()
+                    menu2 = $('[name="menu2"]:checked').val()
+                    menu3 = $('[name="menu3"]:checked').val()
+                    menu4 = $('[name="menu4"]:checked').val()
+                    menu5 = $('[name="menu5"]:checked').val()
+
+                    if (wc == '' || name == '') {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+                        $("#btn-update").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-update").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("EditItem_Group", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_id: Update_ID,
+                                    item_name: name,
+                                    item_wc: wc.toString(),
+                                    item_isUse: isUse,
+                                    item_menu1: menu1,
+                                    item_menu2: menu2,
+                                    item_menu3: menu3,
+                                    item_menu4: menu4,
+                                    item_menu5: menu5,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        $('#edit_txt_name').val('')
+                                        $('#edit_txt_wc').val('')
+
+                                        DTable.ajax.reload();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+
+                        }
+                    }
+
+                    $("#btn-update").html('บันทึก');
+                    $("#btn-update").prop('disabled', false);
+
+                },
+                async getWC() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_WC", "lookup")",
+                        type: "POST",
+                        data: {item_part:'' },
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.wcList = result.data
+
+                            }
+
+                        }
+                    });
+                },
+                async deleteOver() {
+                    
+                    await $.ajax({
+                        url: "@Url.Action("Delete_Group_Over", "lookup")",
+                        type: "POST",
+                        data: {item_part:'' },
+                        success: function (result) {
+                            if (result.success) {
+                            }
+                        }
+                    });
+                },
+                async cancelAdd() {
+                    var self = this;
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (self.IsAdd) {
+
+                        await $.ajax({
+                            url: '@Url.Action("DeleteItem_Group", "lookup")',
+                            type: 'POST',
+                            data: { item_id: Update_ID },
+                            success: function (result) {
+                                if (result.success) {
+                                }
+                            }
+                        });
+                    }
+
+                    await modal.hide();
+                }
+
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-admin').addClass('active');
+
+</script>

@@ -1,0 +1,660 @@
+﻿@{
+    ViewBag.Title = "Dashboard";
+}
+
+<style>
+    body {
+        background-color: #262730;
+        /*background-color: #01172f;*/
+
+        color: #ffffff;
+    }
+
+    .section {
+        opacity: 1;
+        transition: all 0.8s;
+    }
+
+    .section.hiden {
+        opacity: 0;
+        transition: all 0.8s;
+    }
+
+
+    .selection-1 {
+        text-align: center;
+        margin-top: 3vw;
+        margin-bottom: 5vw;
+        font-size: 6vw;
+        font-weight: bold;
+        line-height: 65px;
+        height: 10vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .selection-1 .head-title {
+        font-size: 25px;
+    }
+
+    .selection-2 {
+        height: 80vh;
+    }
+
+        .selection-2 .item-box {
+            text-align: center;
+            border-radius: 8px;
+            border: 8px solid;
+            margin-bottom: 25px;
+            position: relative;
+            transition: all 0.8s
+        }
+
+            .selection-2 .item-box.man-box {
+                border-color: rgb(157, 228, 129);
+            }
+                .selection-2 .item-box.man-box .box-detail {
+                    border-color: rgb(157, 228, 129);
+                }
+
+            .selection-2 .item-box.mc-box {
+                border-color: rgb(216, 17, 89);
+            }
+                .selection-2 .item-box.mc-box .box-detail {
+                    border-color: rgb(216, 17, 89);
+                }
+
+            .selection-2 .item-box.mold-box {
+                border-color: rgb(138, 25, 127);
+            }
+                .selection-2 .item-box.mold-box .box-detail {
+                    border-color: rgb(138, 25, 127);
+                }
+
+            .selection-2 .item-box.met-box {
+                border-color: rgb(145, 166, 255);
+            }
+                .selection-2 .item-box.met-box .box-detail {
+                    border-color: rgb(145, 166, 255);
+                }
+
+            .selection-2 .item-box.part-box {
+                border-color: rgb(115, 210, 222);
+            }
+                .selection-2 .item-box.part-box .box-detail {
+                    border-color: rgb(115, 210, 222);
+                }
+
+            .selection-2 .item-box .box-img {
+            }
+
+                .selection-2 .item-box .box-img img {
+                    height: 80px;
+                    width: 80px;
+                    object-fit: cover;
+                    background: #ffffff;
+                    border-radius: 100%;
+                    border: 5px solid rgb(177 177 177);
+                    position: absolute;
+                    top: 10px;
+                    left: 10px;
+                    transition: all 0.8s
+                }
+
+            .selection-2 .item-box .box-title {
+                font-size: 3vw;
+                font-weight: bold;
+                line-height: normal;
+            }
+
+            .selection-2 .item-box .box-detail {
+                font-size: 9.5vw;
+                font-weight: bold;
+                line-height: normal;
+                border-bottom: 3px solid;
+                margin: 0 25px;
+                transition: all 0.8s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+                padding-left: 9vw;
+            }
+
+            .selection-2 .item-box .box-detail .box-detail-ok-ng {
+                font-size: 4vw;
+            }
+
+            .selection-2 .item-box .box-detail .box-detail-ok-ng .box-detail-ok {
+                color: lime;
+                border-bottom: 1px solid #ffffff;
+                padding-bottom: 5px;
+                text-align: center;
+                width: 6vw;
+            }
+
+         .selection-2 .item-box .box-detail .box-detail-ok-ng .box-detail-ng {
+                color: #ff6a00;
+            }
+    .selection-3 {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+    }
+
+        .selection-3 .progress {
+            border-radius: unset;
+            height: 10px;
+        }
+
+
+        @Html.Raw("@media only screen and (max-width: 992px)") {
+          .selection-2 .item-box .box-img img {
+                height: 50px;
+                width: 50px;
+                border: 3px solid rgb(177 177 177);
+            }
+        }
+
+    @Html.Raw("@media only screen and (max-width: 576px)") {
+          .box-img {
+            display: none;
+        }
+    }
+</style>
+
+<div id="MainApp" style="display: none;">
+    <div class="section selection-1" :class="{ hide: isHide }">
+        Change Point : {{txt_head}}
+    </div>
+
+    <div class="section selection-2" :class="{ hide: isHide }">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col-md-4">
+                    <div class="item-box man-box">
+
+                        <div class="box-img">
+                            <img src="~/src/icons/man.png" alt="man" />
+                        </div>
+
+                        <div class="box-detail">
+                            <div class="box-detail-total">
+                                {{count_no_man}}
+                            </div>
+                            <div class="box-detail-ok-ng">
+                                <div class="box-detail-ok">
+                                    {{count_no_man_ok}}
+                                </div>
+                                <div class="box-detail-ng">
+                                    {{count_no_man_ng}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-title">Man</div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 col-6">
+                    <div class="item-box mc-box">
+
+                        <div class="box-img">
+                            <img src="~/src/icons/conveyor.png" alt="mc" />
+                        </div>
+
+                        <div class="box-detail">
+                            <div class="box-detail-total">
+                                {{count_no_mc}}
+                            </div>
+                            <div class="box-detail-ok-ng">
+                                <div class="box-detail-ok">
+                                    {{count_no_mc_ok}}
+                                </div>
+                                <div class="box-detail-ng">
+                                    {{count_no_mc_ng}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-title">Machine</div>
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 col-6">
+                    <div class="item-box mold-box">
+
+                        <div class="box-img">
+                            <img src="~/src/icons/molding-machine.png" alt="mold" />
+                        </div>
+
+                        <div class="box-detail">
+                            <div class="box-detail-total">
+                                {{count_no_mold}}
+                            </div>
+                            <div class="box-detail-ok-ng">
+                                <div class="box-detail-ok">
+                                    {{count_no_mold_ok}}
+                                </div>
+                                <div class="box-detail-ng">
+                                    {{count_no_mold_ng}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-title">Mold/DIE</div>
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 offset-md-2 col-6">
+                    <div class="item-box met-box">
+
+                        <div class="box-img">
+                            <img src="~/src/icons/strategic-plan.png" alt="met" />
+                        </div>
+
+                        <div class="box-detail">
+                            <div class="box-detail-total">
+                                {{count_no_met}}
+                            </div>
+                            <div class="box-detail-ok-ng">
+                                <div class="box-detail-ok">
+                                    {{count_no_met_ok}}
+                                </div>
+                                <div class="box-detail-ng">
+                                    {{count_no_met_ng}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-title">Method</div>
+
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 col-6">
+                    <div class="item-box part-box">
+
+                        <div class="box-img">
+                            <img src="~/src/icons/raw-material.png" alt="part" />
+                        </div>
+
+                        <div class="box-detail">
+                            <div class="box-detail-total">
+                                {{count_no_part}}
+                            </div>
+                            <div class="box-detail-ok-ng">
+                                <div class="box-detail-ok">
+                                    {{count_no_part_ok}}
+                                </div>
+                                <div class="box-detail-ng">
+                                    {{count_no_part_ng}}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box-title">Part/Mat'l</div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="section selection-3" :class="{ hide: isHide }">
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" v-bind:style="{ width: progressive_bar }" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    $("#MainApp").delay(500).fadeIn()
+
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+                arr_head: ['Yesterday', 'Today', 'Tomorrow', 'This Week', 'Next Week', 'This Month', 'Next Month'],
+                txt_head: 'Today',
+                id_group: '@ViewBag.Data.param_id',
+                progressive_bar: '0%',
+
+                count_no_man: 0,
+                count_no_mc: 0,
+                count_no_mold: 0,
+                count_no_met: 0,
+                count_no_part: 0,
+
+                count_no_man_ok: 0,
+                count_no_mc_ok: 0,
+                count_no_mold_ok: 0,
+                count_no_met_ok: 0,
+                count_no_part_ok: 0,
+
+                count_no_man_ng: 0,
+                count_no_mc_ng: 0,
+                count_no_mold_ng: 0,
+                count_no_met_ng: 0,
+                count_no_part_ng: 0,
+
+                time_delay: 1.5,
+                time_yesterday: 10,
+                time_today: 40,
+                time_tomorrow: 20,
+                time_thisweek: 15,
+                time_nextweek: 20,
+                time_total: 0,
+
+                isHide:false,
+                data_list: [],
+
+
+            }
+        },
+        async created() {
+
+            const self = this;
+
+            await self.getData();
+
+            await $('#MainApp').fadeIn(1500);
+
+            await self.run_data();
+
+        },
+        async mounted() {
+
+        },
+        methods: {
+            progressive(time_show) {
+                const self = this;
+
+                self.progressive_bar = '0%'
+
+                let time_sec = 100 / time_show
+
+                for (var i = 0; i <= time_show; i++) {
+                    var sno = i + 1;
+                    (function myLoop(i) {
+                        setTimeout(() => {
+                            self.progressive_bar = (i * time_sec) + '%'
+                        }, 1000 * i);
+                    })(sno);
+                }
+            },
+            cal_time(time_show) {
+                const self = this;
+
+                let time = ((time_show * 1000) + (self.time_delay * 1000))
+
+                self.time_total = self.time_total + time;
+
+                return self.time_total;
+            },
+            addDays(dateTime, count_days = 0) {
+                return new Date(new Date(dateTime).setDate(dateTime.getDate() + count_days));
+            },
+            async getData() {
+
+                const self = this;
+
+                self.data_list = []
+
+                await $.ajax({
+                    url: "@Url.Action("ListItem_Dashboard", "Dashboard")",
+                    type: "POST",
+                    data: { group_id: self.id_group},
+                    success: function (result) {
+                        if (result.success) {
+
+                            result.data.forEach(function (value, i) {
+                                if (value.TYPE == 'overview') {
+                                    self.data_list.splice(self.data_list.length, 0, {
+                                        title: value.TITLE,
+                                        time: value.TIME
+                                    });
+                                }
+                            });
+
+                            self.data_list.splice(self.data_list.length, 0, {
+                                title: 'reload',
+                                time: '0'
+                            });
+                        } else {
+                            self.data_list = [
+                                                {
+                                                    "title": "1",
+                                                    "time": "10"
+                                                },
+                                                {
+                                                    "title": "2",
+                                                    "time": "40"
+                                                },
+                                                {
+                                                    "title": "3",
+                                                    "time": "10"
+                                                },
+                                                {
+                                                    "title": "4",
+                                                    "time": "10"
+                                                },
+                                                {
+                                                    "title": "reload",
+                                                    "time": "0"
+                                                }
+                                            ]
+                        }
+                    }
+                });
+
+            },
+            async run_data() {
+
+                const self = this;
+                let count = 1;
+
+                await self.data_list.forEach(async function (value, i) {
+
+                    if (count == 1) {
+                        switch (value.title) {
+                            case '1':
+                                self.get_yesterday();
+                                break;
+                            case '2':
+                                self.get_today();
+                                break;
+                            case '3':
+                                self.get_tomorrow();
+                                break;
+                            case '4':
+                                self.get_this_week();
+                                break;
+                            case '5':
+                                self.get_next_week();
+                                break;
+                            case '6':
+                                self.get_this_month();
+                                break;
+                            case '7':
+                                self.get_next_month();
+                                break;
+                            default:
+                        }
+                        self.progressive(value.time)
+                    } else {
+                        await setTimeout(() => {
+                            switch (value.title) {
+                                case '1':
+                                    self.get_yesterday();
+                                    break;
+                                case '2':
+                                    self.get_today();
+                                    break;
+                                case '3':
+                                    self.get_tomorrow();
+                                    break;
+                                case '4':
+                                    self.get_this_week();
+                                    break;
+                                case '5':
+                                    self.get_next_week();
+                                    break;
+                                case '6':
+                                    self.get_this_month();
+                                    break;
+                                case '7':
+                                    self.get_next_month();
+                                    break;
+                                default:
+                                    location.reload();
+                            }
+                            self.progressive(value.time)
+                        }, self.cal_time(self.data_list[i-1].time));
+                    }
+
+                    count++;
+
+                });
+
+            },
+            async sumary_data(begin_date, end_date, text_index) {
+                const self = this;
+
+                let yyyy = begin_date.getFullYear();
+                let MM = ('0' + (begin_date.getMonth() + 1)).slice(-2);
+                let dd = ('0' + begin_date.getDate()).slice(-2);
+                const date_select1 = dd + "-" + MM + "-" + yyyy;
+
+                yyyy = end_date.getFullYear();
+                MM = ('0' + (end_date.getMonth() + 1)).slice(-2);
+                dd = ('0' + end_date.getDate()).slice(-2);
+                const date_select2 = dd + "-" + MM + "-" + yyyy;
+
+                self.count_no_man = 0;
+                self.count_no_mc = 0;
+                self.count_no_mold = 0;
+                self.count_no_met = 0;
+                self.count_no_part = 0;
+
+                self.count_no_man_ok = 0;
+                self.count_no_mc_ok = 0;
+                self.count_no_mold_ok = 0;
+                self.count_no_met_ok = 0;
+                self.count_no_part_ok = 0;
+
+                self.count_no_man_ng = 0;
+                self.count_no_mc_ng = 0;
+                self.count_no_mold_ng = 0;
+                self.count_no_met_ng = 0;
+                self.count_no_part_ng = 0;
+
+                self.txt_head = self.arr_head[text_index];
+
+                await $.ajax({
+                        url: "@Url.Action("Get_Result_Dashboard_Today", "dashboard")",
+                        type: "POST",
+                        data: { date_select1: date_select1, date_select2: date_select2, group_id: self.id_group},
+                        success: function (result) {
+                            if (result.success) {
+
+                                result.data.forEach((item) => {
+                                    if (item.TITLE == '1') {
+                                        self.count_no_man = item.RESULT_TOTAL
+                                        self.count_no_man_ok = item.RESULT_OK
+                                        self.count_no_man_ng = item.RESULT_NG
+                                    }
+                                    if (item.TITLE == '2') {
+                                        self.count_no_mc = item.RESULT_TOTAL
+                                        self.count_no_mc_ok = item.RESULT_OK
+                                        self.count_no_mc_ng = item.RESULT_NG
+                                    }
+                                    if (item.TITLE == '3') {
+                                        self.count_no_mold = item.RESULT_TOTAL
+                                        self.count_no_mold_ok = item.RESULT_OK
+                                        self.count_no_mold_ng = item.RESULT_NG
+                                    }
+                                    if (item.TITLE == '4') {
+                                        self.count_no_met = item.RESULT_TOTAL
+                                        self.count_no_met_ok = item.RESULT_OK
+                                        self.count_no_met_ng = item.RESULT_NG
+                                    }
+                                    if (item.TITLE == '5') {
+                                        self.count_no_part = item.RESULT_TOTAL
+                                        self.count_no_part_ok = item.RESULT_OK
+                                        self.count_no_part_ng = item.RESULT_NG
+                                    }
+                                });
+                            }
+                        }
+                });
+            },
+            async get_yesterday() {
+                const self = this;
+                let today = new Date();
+                let yesterday = self.addDays(today, -1)
+                self.sumary_data(yesterday, yesterday, 0)
+            },
+            async get_today() {
+                const self = this;
+                let today = new Date();
+                self.sumary_data(today, today, 1)
+            },
+            async get_tomorrow() {
+                const self = this;
+                let today = new Date();
+                let tomorrow = self.addDays(today, 1)
+                self.sumary_data(tomorrow, tomorrow, 2)
+            },
+            async get_this_week() {
+                const self = this;
+                // คำนวณวันที่เริ่มต้นของสัปดาห์
+                const today = new Date();
+                const weekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() );
+                // คำนวณวันที่สิ้นสุดของสัปดาห์
+                const weekEnd = new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + 6 - weekStart.getDay());
+                self.sumary_data(weekStart, weekEnd, 3)
+            },
+            async get_next_week() {
+                const self = this;
+                // คำนวณวันที่เริ่มต้นของสัปดาห์ถัดไป
+                const today = new Date();
+                const nextWeekStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7 - today.getDay());
+                // คำนวณวันที่สิ้นสุดของสัปดาห์ถัดไป
+                const nextWeekEnd = new Date(nextWeekStart.getFullYear(), nextWeekStart.getMonth(), nextWeekStart.getDate() + 6 - nextWeekStart.getDay());
+                self.sumary_data(nextWeekStart, nextWeekEnd, 4)
+            },
+            async get_this_month() {
+                const self = this;
+                // คำนวณวันที่เริ่มต้นของเดือน
+                const today = new Date();
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                // คำนวณวันที่สิ้นสุดของเดือน
+                const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                self.sumary_data(monthStart, monthEnd, 5)
+            },
+            async get_next_month() {
+                const self = this;
+                // คำนวณวันที่เริ่มต้นของเดือนถัดไป
+                const today = new Date();
+                const nextMonthStart = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                // คำนวณวันที่สิ้นสุดของเดือนถัดไป
+                const nextMonthEnd = new Date(nextMonthStart.getFullYear(), nextMonthStart.getMonth() + 1, 0);
+                self.sumary_data(nextMonthStart, nextMonthEnd, 6)
+            }
+        },
+
+        watch: {
+        }
+    }).mount('#MainApp')
+
+
+</script>

@@ -1,0 +1,726 @@
+﻿@{
+    ViewBag.Title = "Member";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+@Styles.Render("~/Content/vue3-easy-data-table@1.5.47.css")
+
+<style>
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+
+    .customize-table {
+        --easy-table-header-font-size: 14px;
+        --easy-table-header-height: 50px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #2d3a4f;
+        --easy-table-border: 1px solid #445269;
+    }
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+        <div class="haed-title">Master : Member</div>
+        @if (Session["STATUS"].ToString() == "M")
+        {
+            <div class="haed-fn">
+                <a href="" onclick="return false;">
+                    <i class="fas fa-plus-circle" v-on:click="Open_Modal('Add','')"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
+
+    <div class="section-tatble">
+
+        <div class="input-group" id="" style="margin-bottom: 10px;">
+            <input type="text" v-model="searchValue" class="form-control" placeholder="Search" />
+        </div>
+
+        <easy-data-table :headers="headers"
+                         :items="items"
+                         :sort-by="sortBy"
+                         :sort-type="sortType"
+                         :search-value="searchValue"
+                         multi-sort
+                         show-index
+                         border-cell
+                         table-class-name="customize-table"
+                         header-text-direction="center"
+                         body-text-direction="center"
+                         class="text-center" />
+
+        <template #item-GNAME_ENG="{ GNAME_ENG, FNAME_ENG }">
+            {{GNAME_ENG}} {{FNAME_ENG}}
+        </template>
+
+        <template #item-IS_USE="{ IS_USE }">
+            {{IS_USE=='Y' ? 'Use' : 'Unuse'}}
+        </template>
+
+        <template #item-EMAIL="{ EMAIL }">
+            {{EMAIL!='' ? EMAIL : '-'}}
+        </template>
+
+        <template #item-tool="{ EMP_NO }">
+            <a href="#" onclick="return false;" v-on:click="Open_Modal('Edit', EMP_NO)"><i class="fas fa-edit" style="margin-right: 10px; color: rgb(44 76 235);"></i></a>
+            <a href="#" onclick="return false;" v-on:click="deleteItem(EMP_NO)"><i class="fas fa-trash-alt" style="color: rgb(225 55 55);"></i></a>
+        </template>
+
+    </div>
+
+    <div class="modal fade modal-lg" id="Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Item_modal_Label">{{IsAdd==true ? 'Add Item' : 'Edit item'}}</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+                            <label id="" for="txt_emp" class="col-4 col-form-label"><b>First Name - Last Name</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" v-if="IsAdd">
+                                    <select class="selectpicker" data-live-search="true" id="txt_emp" v-model="slt_emp" data-placeholder="Select EMP">
+                                        <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
+                                            <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} / {{item.gname_eng}} {{item.fname_eng}} </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="input-group" v-if="!IsAdd">
+                                    <input type="text" class="form-control" v-model="slt_name" disabled />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_wc" class="col-4 col-form-label"><b>WC Code</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txt_wc" class="form-control" v-model="slt_wc" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_role" class="col-4 col-form-label"><b>Position</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="txt_role" v-model="slt_role">
+                                        <option value="">Select</option>
+                                        <option value="A">Admin</option>
+                                        <option value="S">Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_email" class="col-4 col-form-label"><b>E-mail</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txt_email" class="form-control" v-model="slt_email" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_password" class="col-4 col-form-label"><b>Password</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="password" id="txt_password" class="form-control" v-model="slt_password" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="txt_conpassword" class="col-4 col-form-label"><b>Re-Password</b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="password" id="txt_conpassword" class="form-control" v-model="slt_conpassword" v-on:keyup.enter="" />
+                                </div>
+                            </div>
+
+                            <label id="" for="" v-if="chk_password && slt_conpassword != ''" class="offset-4 col-8 col-form-label"><b>Passwords don't match</b></label>
+
+                            <label for="" class="col-4 col-form-label"><b>Status</b></label>
+                            <div class="col-8 col-form-label">
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-Y" value="Y" v-model="slt_use">
+                                    <label class="form-check-label" for="IsUse-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-N" value="N" v-model="slt_use">
+                                    <label class="form-check-label" for="IsUse-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-add" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btn-save"
+                            v-on:click="saveItem()">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+@Scripts.Render("~/Scripts/vue3-easy-data-table.umd.js")
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+                    headers: [
+                        { text: "EMP NO", value: "EMP_NO", sortable: true },
+                        { text: "Name", value: "GNAME_ENG", sortable: true },
+                        { text: "Work Center", value: "WC_CODE", sortable: true },
+                        { text: "Email", value: "EMAIL", sortable: true },
+                        { text: "Update By", value: "NAME_UPDATE", sortable: true },
+                        { text: "Update Date", value: "UPDATE_DATE", sortable: true },
+                        { text: "Status", value: "IS_USE", sortable: true },
+                        { text: "Tool", value: "tool", sortable: false },
+                    ],
+                    items: [],
+                    searchValue: '',
+                    sortBy: ["EMP_NO"],
+                    sortType: ["asc"],
+
+                    slt_emp: '',
+                    slt_email: '',
+                    slt_password: '',
+                    slt_conpassword: '',
+                    slt_role: '',
+                    slt_use: '',
+                    slt_wc: '',
+                    slt_name: '',
+
+                    chk_password: false,
+                    chk_password_valid: false,
+                    userList: [],
+                    IsAdd: true,
+                    dataTable: null,
+                }
+            },
+            components: {
+                EasyDataTable: window['vue3-easy-data-table'],
+            },
+            watch: {
+
+                @*function validatePassword(password) {
+                  // Check length between 8 and 10 characters
+                  if (password.length < 8 || password.length > 10) {
+                    return false;
+                  }
+
+                  // Check for at least one lowercase and one uppercase letter
+                  if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+                    return false;
+                  }
+
+                  // Check for special characters that don't impact web and system functionality
+                  if (!/^[a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]+$/.test(password)) {
+                    return false;
+                  }
+
+                  // If all checks pass, the password is valid
+                  return true;
+                }
+
+                // Example usage:
+                const password = "Abcd@123";
+                if (validatePassword(password)) {
+                  console.log("Password is valid.");
+                } else {
+                  console.log("Password is not valid.");
+                }*@
+
+
+                slt_password(newValue, oldValue) {
+                    if (newValue == this.slt_conpassword)
+                        this.chk_password = false
+                    else
+                        this.chk_password = true
+                },
+                slt_conpassword(newValue, oldValue) {
+                    if (newValue == this.slt_password)
+                        this.chk_password = false
+                    else
+                        this.chk_password = true
+                }
+
+            },
+            mounted() {
+
+                let self = this
+
+            },
+            async created() {
+
+                let self = this
+
+                await self.get_list() 
+                await self.getUser()
+                await $('#txt_emp, #txt_role, #edit_txt_emp, #edit_txt_role').selectpicker('destroy');
+                await $('#txt_emp, #txt_role, #edit_txt_emp, #edit_txt_role').selectpicker('render');
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                async get_list() {
+
+                    let self = this;
+
+                    await $.ajax({
+                        url: '@Url.Action("ListItem_EMP", "lookup")',
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+                                self.items = result.data
+                            } else {
+                                self.items = []
+                            }
+
+                        }
+                    });
+                },
+                async Open_Modal(status, id) {
+
+                    const self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (status == 'Add') {
+                        self.IsAdd = true
+
+                        self.slt_emp = '';
+                        self.slt_email = '';
+                        self.slt_password = '';
+                        self.slt_conpassword = '';
+                        self.slt_role = '';
+                        self.slt_use = 'Y';
+                        self.slt_wc = '';
+
+                        await $('#txt_emp').selectpicker('destroy');
+                        await $('#txt_emp').selectpicker('render');
+
+                    } else {
+
+                        self.IsAdd = false
+                        self.id = id;
+                        $.ajax({
+                            url: "@Url.Action("SelectItem_Member", "lookup")",
+                            type: "POST",
+                            data: { item_id: id },
+                            success: function (result) {
+                                if (result.success) {
+
+                                    self.slt_name = `${result.data[0]["EMP_NO"]} : ${result.data[0]["GNAME_ENG"]} ${result.data[0]["FNAME_ENG"]} / ${result.data[0]["GNAME_TH"]} ${result.data[0]["FNAME_TH"]}` 
+
+                                    self.slt_emp = result.data[0]["EMP_NO"];
+                                    self.slt_email = result.data[0]["EMAIL"];
+                                    self.slt_password = '';
+                                    self.slt_conpassword = '';
+                                    self.slt_role = result.data[0]["ROLE"];
+                                    self.slt_wc = result.data[0]["WC_CODE"];
+                                    self.slt_use = result.data[0]["IS_USE"];
+
+                                    $("#txt_role").selectpicker("val", result.data[0]["ROLE"]);
+
+                                } else {
+                                }
+                            }
+                        });
+                    }
+
+                    await modal.show()
+
+                },
+                async saveItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (self.slt_emp == '' || self.slt_role == '' || self.chk_password ) {
+                        alertBoxTime('Alert', 'Please fill out the information completely', 'warning', 1100, '', '')
+                    } else {
+
+                        $("#btn-save").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-save").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("AddItem_Member", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_emp: self.slt_emp,
+                                    item_role: self.slt_role,
+                                    item_email: self.slt_email,
+                                    item_password: self.slt_password,
+                                    item_wc: self.slt_wc,
+                                    item_isUse: self.slt_use,
+
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        self.slt_emp = ''
+                                        self.slt_email = ''
+                                        self.slt_password = ''
+                                        self.slt_conpassword = ''
+                                        self.slt_role = ''
+                                        self.slt_wc = ''
+                                        self.chk_password = false
+                                        $("#txt_role").selectpicker("val", "")
+
+                                        self.get_list();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+                            $.ajax({
+                                url: "@Url.Action("EditItem_Member", "lookup")",
+                                type: "POST",
+                                data: {
+
+                                    item_emp: self.slt_emp,
+                                    item_role: self.slt_role,
+                                    item_email: self.slt_email,
+                                    item_password: self.slt_password,
+                                    item_isUse: self.slt_use,
+                                    item_wc: self.slt_wc,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        self.slt_emp = ''
+                                        self.slt_email = ''
+                                        self.slt_password = ''
+                                        self.slt_conpassword = ''
+                                        self.slt_role = ''
+                                        self.slt_wc = ''
+                                        self.chk_password = false
+                                        $("#txt_role").selectpicker("val", "")
+
+                                        self.get_list();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+                    $("#btn-save").html('Save');
+                    $("#btn-save").prop('disabled', false);
+
+                },
+                deleteItem(id) {
+
+                    const self = this;
+
+                     let fn = function (isConfirm) {
+                         if (isConfirm) {
+                             $.ajax({
+                                 url: "@Url.Action("DeleteItem_Member", "lookup")",
+                                 type: "POST",
+                                 data: { item_emp: id  },
+                                 success: function (result) {
+                                     if (result.success) {
+                                         swal({
+                                             title: "Alert",
+                                             text: result.Message,
+                                             type: "success",
+                                             timer: 1000,
+                                             showCancelButton: false,
+                                             showConfirmButton: false
+                                         })
+                                         self.get_list();
+                                     } else {
+                                         swal({
+                                             title: "Alert",
+                                             text: result.responseText,
+                                             type: "warning",
+                                             timer: 1000,
+                                             showCancelButton: false,
+                                             showConfirmButton: false
+                                         })
+                                     }
+                                 }
+                             });
+                         } else {
+                         }
+                    }
+
+                    alertBoxConfirm("Alert", "Do you want to delete the information?", "", fn)
+
+                },
+                async getUser() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_EMP", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+
+                                const inputData = result.data
+
+                                self.dataNameList = result.data
+
+                                const transformedData = {};
+
+                                inputData.forEach(item => {
+                                    const itemId = item.EMP_NO;
+                                    const wc_code = item.WC_CODE;
+                                    const wc_name = item.WC_NAME;
+
+                                    const gname_eng = item.GNAME_ENG;
+                                    const fname_eng = item.FNAME_ENG;
+                                    const gname_tha = item.GNAME_TH;
+                                    const fname_tha = item.FNAME_TH;
+
+                                    if (wc_code in transformedData) {
+                                        transformedData[wc_code].list.push(
+                                            {
+                                                itemId: itemId,
+                                                gname_eng: gname_eng,
+                                                fname_eng: fname_eng,
+                                                gname_tha: gname_tha,
+                                                fname_tha: fname_tha,
+                                            }
+                                        );
+                                    } else {
+                                        transformedData[wc_code] = {
+                                            wc_code: wc_code,
+                                            wc_name: wc_name,
+                                            list: [
+                                                {
+                                                    itemId: itemId,
+                                                    gname_eng: gname_eng,
+                                                    fname_eng: fname_eng,
+                                                    gname_tha: gname_tha,
+                                                    fname_tha: fname_tha,
+                                                }
+                                            ]
+                                        };
+                                    }
+                                });
+
+                                self.userList = Object.values(transformedData);
+
+                            }
+                        }
+                     });
+                }
+
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-admin').addClass('active');
+
+    // ------------------- BackToTop ------------------- //
+
+    //var mybutton = document.getElementById("toTop");
+
+    //window.onscroll = function () {
+    //    scrollFunction()
+    //};
+
+    //function scrollFunction() {
+
+    //    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    //        mybutton.classList.add("active");
+
+    //    } else {
+    //        mybutton.classList.remove("active");
+    //    }
+    //}
+
+
+
+</script>

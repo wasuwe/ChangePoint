@@ -1,0 +1,1024 @@
+﻿@{
+    ViewBag.Title = "Edit Point";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+@Styles.Render("~/Content/vue3-easy-data-table@1.5.47.css")
+
+
+<style>
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+        --easy-table-header-font-size: 14px;
+        --easy-table-header-height: 50px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #2d3a4f;
+        --easy-table-border: 1px solid #445269;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    /*
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+         background-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,18,68,1) 15%, rgba(0,80,134,1) 35%, rgba(49,143,181,1) 55%, rgba(176,202,199,1) 75%, rgba(247,214,191,1) 100%);
+        background-repeat: no-repeat;
+        background-size: contain;
+        position: relative;
+        z-index: -2;
+    }*/
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+
+    /*.section-table .dataTables_wrapper .dt-row > div{
+        overflow-x: scroll !important;
+    }
+
+
+    table#dataTable {
+        width: 2500px !important;
+    }*/
+    th, td {
+        white-space: nowrap;
+    }
+
+    div.dataTables_wrapper {
+        margin: 0 auto;
+    }
+
+    div.container {
+        width: 80%;
+    }
+
+    .haed-title {
+        font-size: 35px;
+        font-weight: bold;
+    }
+
+    .tables-head {
+        margin-bottom: 20px;
+    }
+
+    .select-group {
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+        .select-group .btn-reset-select {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 1;
+            font-size: 20px;
+            height: 100%;
+            width: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .select-group .btn-reset-select i {
+                background-color: #ffffff;
+                border-radius: 100%;
+            }
+
+    .section-table {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    .filter-box {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    .head-box {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+    td {
+        white-space: unset;
+    }
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-head">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="head-box">
+                    <div class="haed-title">Report : Export</div>
+                    <div class="select-group">
+                        <select class="selectpicker" data-placeholder="Select Group" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
+                            <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="filter-box">
+                    <div class="haed-title">Filter</div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="select-group">
+                                <Datepicker v-model="date_day"
+                                            :enable-time-picker="false"
+                                            :clearable="false"
+                                            :monthChangeOnScroll="false"
+                                            auto-apply
+                                            range
+                                            multi-calendars
+                                            :format="dateFormat_day"
+                                            :markers="markers">
+                                    @*@Html.Raw("@closed")="update_Chart_day()"*@
+                                </Datepicker>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_5m.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(1)"></i>
+                                </div>
+                                <select class="selectpicker" data-live-search="true" id="slt_5m" name="slt_5m" v-model="slt_5m" data-placeholder="5 M" multiple>
+                                    <option value="1">Man</option>
+                                    <option value="2">Machine</option>
+                                    <option value="3">Mold/DIE</option>
+                                    <option value="4">Method</option>
+                                    <option value="5">Part/Mat'l</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_mc_no.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(3)"></i>
+                                </div>
+                                <select class="selectpicker " data-live-search="true" id="slt_mc_no" data-placeholder="M/C" v-model="slt_mc_no" multiple>
+                                    <optgroup v-for="(items, index) in mcList" :label="items.sizeTon">
+                                        <option v-for="(item) in items.list">{{item}} </option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_mold_no.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(4)"></i>
+                                </div>
+                                <select class="selectpicker " data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" data-placeholder="Mold NO" multiple>
+                                    <option v-for="(item) in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_process.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(5)"></i>
+                                </div>
+                                <select class="selectpicker " data-live-search="true" id="slt_process" v-model="slt_process" data-placeholder="Process" multiple>
+                                    <option v-for="(item) in processList" :vlaue="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_man.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(2)"></i>
+                                </div>
+                                <select class="selectpicker" data-live-search="true" id="slt_man" v-model="slt_man" data-placeholder="Emp NO" multiple>
+                                    <optgroup v-for="(items, index) in manList" :label="items.wc_code +':'+ items.wc_name">
+                                        <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} </option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_change.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(6)"></i>
+                                </div>
+                                <select class="selectpicker " data-live-search="true" id="slt_change" v-model="slt_change" data-placeholder="Change topic" multiple>
+                                    <option v-for="(item) in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="select-group">
+                                <div class="btn-reset-select" v-if="slt_edit.length>0">
+                                    <i class="fas fa-times-circle" v-on:click="reset_select(7)"></i>
+                                </div>
+                                <select class="selectpicker " data-live-search="true" id="slt_edit" v-model="slt_edit" data-placeholder="Edit point" multiple>
+                                    <option v-for="(item) in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 d-grid gap-2  mx-auto">
+                            <button class="btn select-group btn-primary" type="button" v-on:click="search_filter()"><i class="fas fa-search"></i> Search</button>
+                        </div>
+                        <div class="col-md-3 d-grid gap-2  mx-auto">
+                            <button class="btn select-group btn-warning" type="button" v-on:click="reset_all()"><i class="fas fa-eraser"></i> Clear</button>
+                        </div>
+                        <div class="col-md-3 d-grid gap-2  mx-auto">
+                            <button class="btn select-group btn-success" type="button" v-on:click="export_plan_csv()"><i class="fas fa-download"></i> CSV</button>
+                        </div>
+                        @*<div class="col-md-3 d-grid gap-2  mx-auto">
+                            <button class="btn select-group btn-danger" type="button" v-on:click="export_text()"><i class="fas fa-download"></i> PDF</button>
+                        </div>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="section-table">
+
+        <easy-data-table :headers="headers"
+                         :items="items"
+                         :sort-by="sortBy"
+                         :sort-type="sortType"
+                         multi-sort
+                         show-index
+                         border-cell
+                         class="text-center"
+                         header-text-direction="center"
+                         body-text-direction="center" />
+
+        <template #item-DATE_STAMP="{ DATE_CHANGE,DATE_STAMP }">
+            {{DATE_STAMP !="" ? DATE_CHANGE : "-" }}
+        </template>
+
+        <template #item-MAN_SPOT_NAME_THA="{ MAN_SPOT_NAME_THA }">
+            {{MAN_SPOT_NAME_THA !="" ? MAN_SPOT_NAME_THA : "-" }}
+        </template>
+
+        <template #item-MAN_INSTEAD_NAME_THA="{ MAN_INSTEAD_NAME_THA }">
+            {{MAN_INSTEAD_NAME_THA !="" ? MAN_INSTEAD_NAME_THA : "-" }}
+        </template>
+
+        <template #item-PART_NO="{ PART_NO }">
+            {{PART_NO !="" ? PART_NO : "-" }}
+        </template>
+
+        <template #item-MC_NO="{ MC_NO }">
+            {{MC_NO !="" ? MC_NO : "-" }}
+        </template>
+
+        <template #item-MOLD_NO="{ MOLD_NO }">
+            {{MOLD_NO !="" ? MOLD_NO : "-" }}
+        </template>
+
+        <template #item-PROCESS_POINT="{ PROCESS_POINT }">
+            {{PROCESS_POINT !="" ? PROCESS_POINT : "-" }}
+        </template>
+
+        <template #item-EDIT_POINT="{ EDIT_POINT }">
+            {{EDIT_POINT !="" ? EDIT_POINT : "-" }}
+        </template>
+
+        <template #item-CHANGE="{ CHANGE }">
+            {{CHANGE !="" ? CHANGE : "-" }}
+        </template>
+
+        <template #item-DETAILS="{ DETAILS }">
+            <ul>
+                <li v-for="(item, index) in DETAILS.split(',')" style="list-style-type: none;">{{index+1}}. {{item}}</li>
+            </ul>
+        </template>
+
+        <template #item-WARNINGS="{ WARNINGS }">
+            <ul>
+                <li v-for="(item, index) in WARNINGS.split(',')" style="list-style-type: none;">{{index+1}}. {{item}}</li>
+            </ul>
+        </template>
+
+        <template #item-STATUS_TYPE="{ STATUS_TYPE }">
+            {{m_control[STATUS_TYPE]}}
+        </template>
+
+
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+@Scripts.Render("~/Scripts/vue3-easy-data-table.umd.js")
+
+
+<script>
+
+    $("#MainApp").delay(500).fadeIn()
+
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    let DTable = ''
+    let Update_ID = ''
+
+        createApp({
+            data() {
+                return {
+                    headers: [
+                        { text: "Change Date", value: "DATE_STAMP", sortable: true, fixed: true, width: 150 },
+                        { text: "5M Control", value: "STATUS_TYPE", sortable: true, fixed: true, width: 150},
+                        { text: "คนประจำจุด", value: "MAN_SPOT_NAME_THA", sortable: true, width: 150 },
+                        { text: "คนแทนจุด", value: "MAN_INSTEAD_NAME_THA", sortable: true, width: 150 },
+                        { text: "Part NO", value: "PART_NO", sortable: true, width: 150 },
+                        { text: "Machine", value: "MC_NO", sortable: true, width: 150 },
+                        { text: "Mold NO", value: "MOLD_NO", sortable: true, width: 150 },
+                        { text: "Process", value: "PROCESS_POINT", sortable: true, width: 150 },
+                        { text: "จุดแก้ไข", value: "EDIT_POINT", sortable: true, width: 300},
+                        { text: "จุดเปลี่ยนแปลง", value: "CHANGE", sortable: true, width: 300 },
+                        { text: "รายละเอียด", value: "DETAILS", sortable: true, width: 300 },
+                        { text: "ความเสี่ยง", value: "WARNINGS", sortable: true, width: 300},
+                        { text: "หมายเหตุ", value: "REMARK", sortable: true, width: 300 },
+                    ],
+                    items: [],
+                    searchValue: '',
+                    sortBy: ["DATE_STAMP", "STATUS_TYPE"],
+                    sortType: ["asc", "asc"],
+
+                    m_control: ['', 'Man', 'Machine', 'Mold/DIE', 'Method', 'Part/Mat\'l'],
+
+                    date_day: [ ],
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+                    col: [],
+                    slt_group: '',
+                    groupList: [],
+                    dataTable: null,
+
+                    dateFormat_day: (date) => {
+                        const day_1 = date[0].getDate();
+                        const month_1 = date[0].getMonth() + 1;
+                        const year_1 = date[0].getFullYear();
+
+                        const day_2 = date[1].getDate();
+                        const month_2 = date[1].getMonth() + 1;
+                        const year_2 = date[1].getFullYear();
+
+                        return `${day_1}/${month_1}/${year_1} - ${day_2}/${month_2}/${year_2}`;
+                    },
+
+                    slt_5m: [],
+                    slt_man: [],
+                    slt_mc_no: [],
+                    slt_mold_no: [],
+                    slt_process: [],
+                    slt_change: [],
+                    slt_edit: [],
+
+                    manList: [],
+                    mcList: [],
+                    moldNOList: [],
+                    metList: [],
+                    partList: [],
+                    editList: [],
+                    changeList: [],
+                    processList: [],
+                    markers: [],
+
+
+                }
+
+            },
+            components: {
+                Datepicker: VueDatePicker,
+                EasyDataTable: window['vue3-easy-data-table'],
+            },
+            mounted() {
+
+                let self = this
+
+            },
+            async created() {
+
+                let self = this
+
+                const today = new Date();
+                // คำนวณวันที่เริ่มต้นของเดือน
+                self.date_day[0] = new Date(today.getFullYear(), today.getMonth(), 1);
+                // คำนวณวันที่สิ้นสุดของเดือน
+                self.date_day[1] = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+
+                await self.get_list();
+
+                await self.getGroup()
+
+                await self.getList_calendar()
+                await self.getMoldNO()
+                await self.getProcess()
+                await self.getEdit()
+                await self.getChange()
+                await self.getPart()
+                await self.getMC()
+                await self.getUser()
+
+                await $('#slt_man,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process').selectpicker('destroy');
+
+                await $('select').selectpicker('render');
+
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+
+                },
+                async search_filter() {
+                    const self = this;
+
+                    self.get_list()
+
+                },
+                async get_list() {
+
+                    let self = this;
+
+                    const dateStart = await self.date_day[0];
+                    const dateEnd = await self.date_day[1];
+
+                    let yyyy = await dateStart.getFullYear();
+                    let MM = await ('0' + (dateStart.getMonth() + 1)).slice(-2);
+                    let dd = await ('0' + dateStart.getDate()).slice(-2);
+                    const date_start = await dd + "-" + MM + "-" + yyyy;
+
+                    yyyy = await dateEnd.getFullYear();
+                    MM = await ('0' + (dateEnd.getMonth() + 1)).slice(-2);
+                    dd = await ('0' + dateEnd.getDate()).slice(-2);
+                    const date_stop = await dd + "-" + MM + "-" + yyyy;
+
+
+                    await $.ajax({
+                        url: "@Url.Action("ListItem_ChangePoint_All", "Report")",
+                        type: "POST",
+                        data: {
+                            date_start: date_start, date_stop: date_stop,
+                            item_5m: self.slt_5m.map(d => `'${d}'`).join(),
+                            item_man: self.slt_man.map(d => `'${d}'`).join(),
+                            item_mc: self.slt_mc_no.map(d => `'${d}'`).join(),
+                            item_mold: self.slt_mold_no.map(d => `'${d}'`).join(),
+                            item_process: self.slt_process.map(d => `'${d}'`).join(),
+                            item_change: self.slt_change.map(d => `'${d}'`).join(),
+                            item_edit: self.slt_edit.map(d => `'${d}'`).join(),
+                        },
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.items = result.data
+                                let i = 0;
+                                self.items.forEach((item) => {
+
+                                    const dateParts = item.DATE_CHANGE.split("/");
+                                    const day = parseInt(dateParts[0], 10);
+                                    const month = parseInt(dateParts[1], 10);
+                                    const year = parseInt(dateParts[2], 10);
+
+                                    const date = new Date(`${year}-${month}-${day}`);
+                                    const timestamp = date.getTime();
+
+                                    self.items[i].DATE_STAMP = timestamp
+
+                                    i++
+
+                                })
+
+                            } else {
+                                self.items = []
+                            }
+
+                        }
+                    });
+                },
+                 async getGroup() {
+
+                  let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.groupList = result.data
+
+                                const arr = result.data;
+
+                                self.slt_group = '@Session["GROUP_ID"].ToString()';
+
+                                if (self.slt_group == "") {
+                                    self.slt_group = result.data[0].GROUP_ID
+                                }
+
+                                const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
+
+                                const arrSelect = arr[index];
+
+                                if (arrSelect.MENU_1 == 'N') {
+                                    $('#lk-menu-2').hide();
+                                }
+                                if (arrSelect.MENU_2 == 'N') {
+                                    $('#lk-menu-3').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N') {
+                                    $('#lk-menu-1').hide();
+                                }
+                                if (arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-4').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-5').hide();
+                                }
+                                if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-6').hide();
+                                }
+
+                            }
+
+                        }
+                     });
+
+                     await $('#slt_group').selectpicker('destroy');
+                     await $('#slt_group').selectpicker('render');
+                     await $("#slt_group").selectpicker("val", self.slt_group)
+                },
+                 async selectGroup(gID) {
+
+                    await $.ajax({
+                        url: "@Url.Action("Select_GROUP", "lookup")",
+                        type: "POST",
+                        data: { item_group: gID},
+                        success: function (result) {
+                            if (result.success) {
+                                window.open("@Url.Action("Export", "Report")","_self")
+                            }
+
+                        }
+                    });
+                },
+                 async getProcess() {
+
+                     let self = this;
+
+                     await $.ajax({
+                        url: "@Url.Action("Option_Process", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.processList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getMoldNO() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Mold_NO", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.moldNOList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getEdit() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Edit", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.editList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getChange() {
+
+                    let self = this;
+
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Change", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.changeList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getPart() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Part", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.partsList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getMC() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_MC", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+
+                                const inputData = result.data
+
+                                const transformedData = {};
+
+                                inputData.forEach(item => {
+                                    const sizeTon = item.ITEM_SIZETON;
+                                    const itemId = item.ITEM_NAME;
+
+                                    if (sizeTon in transformedData) {
+                                        transformedData[sizeTon].list.push(itemId);
+                                    } else {
+                                        transformedData[sizeTon] = {
+                                            sizeTon: sizeTon,
+                                            list: [itemId]
+                                        };
+                                    }
+                                });
+
+                                self.mcList = Object.values(transformedData);
+
+                            }
+
+                        }
+                    });
+                },
+                async getUser() {
+
+                     let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_EMP", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+
+                                const inputData = result.data
+
+                                self.dataNameList = result.data
+
+                                const transformedData = {};
+
+                                inputData.forEach(item => {
+                                    const itemId = item.EMP_NO;
+                                    const wc_code = item.WC_CODE;
+                                    const wc_name = item.WC_NAME;
+
+                                    const gname_eng = item.GNAME_ENG;
+                                    const fname_eng = item.FNAME_ENG;
+                                    const gname_tha = item.GNAME_TH;
+                                    const fname_tha = item.FNAME_TH;
+
+                                    if (wc_code in transformedData) {
+                                        transformedData[wc_code].list.push(
+                                            {
+                                                itemId: itemId,
+                                                gname_eng: gname_eng,
+                                                fname_eng: fname_eng,
+                                                gname_tha: gname_tha,
+                                                fname_tha: fname_tha,
+                                            }
+                                        );
+                                    } else {
+                                        transformedData[wc_code] = {
+                                            wc_code: wc_code,
+                                            wc_name: wc_name,
+                                            list: [
+                                                {
+                                                    itemId: itemId,
+                                                    gname_eng: gname_eng,
+                                                    fname_eng: fname_eng,
+                                                    gname_tha: gname_tha,
+                                                    fname_tha: fname_tha,
+                                                }
+                                            ]
+                                        };
+                                    }
+                                });
+
+                                self.manList = Object.values(transformedData);
+
+                            }
+                        }
+                    });
+
+                },
+                reset_select(type) {
+                    const self = this;
+
+                    switch (type) {
+                        case 1:
+                            self.slt_5m = [];
+                            $("#slt_5m").selectpicker("val",'')
+                            break;
+                        case 2:
+                            self.slt_man = [];
+                            $("#slt_man").selectpicker("val", '')
+                            break;
+                        case 3:
+                            self.slt_mc_no = [];
+                            $("#slt_mc_no").selectpicker("val", '')
+                            break;
+                        case 4:
+                            self.slt_mold_no = [];
+                            $("#slt_mold_no").selectpicker("val", '')
+                            break;
+                        case 5:
+                            self.slt_process = [];
+                            $("#slt_process").selectpicker("val", '')
+                            break;
+                        case 6:
+                            self.slt_change = [];
+                            $("#slt_change").selectpicker("val", '')
+                            break;
+                        case 7:
+                            self.slt_edit = [];
+                            $("#slt_edit").selectpicker("val", '')
+                            break;
+                    }
+                },
+                async reset_all() {
+                    const self = this;
+
+                    const today = await new Date();
+                    // คำนวณวันที่เริ่มต้นของเดือน
+                    self.date_day[0] = await new Date(today.getFullYear(), today.getMonth(), 1);
+                    // คำนวณวันที่สิ้นสุดของเดือน
+                    self.date_day[1] = await new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+                    self.slt_5m = await [];
+                    await $("#slt_5m").selectpicker("val", '')
+                    self.slt_man = await [];
+                    await $("#slt_man").selectpicker("val", '')
+                    self.slt_mc_no = await [];
+                    await $("#slt_mc_no").selectpicker("val", '')
+                    self.slt_mold_no = await [];
+                    await $("#slt_mold_no").selectpicker("val", '')
+                    self.slt_process = await [];
+                    await $("#slt_process").selectpicker("val", '')
+                    self.slt_change = await [];
+                    await $("#slt_change").selectpicker("val", '')
+                    self.slt_edit = await [];
+                    await $("#slt_edit").selectpicker("val", '')
+
+                    await  self.get_list();
+
+                },
+                export_plan_csv() {
+
+                    let self = this
+                    console.log(self.items)
+                    $.ajax({
+                        url: "@Url.Action("export_data_CSV", "report")",
+                        type: "POST",
+                        data: {
+                            result: self.items,
+                            date_start: self.dateTostring(self.date_day[0]),
+                            date_stop: self.dateTostring(self.date_day[1]),
+                        },
+                        success: async function (result) {
+                            if (result.success) {
+                                var link = document.createElement('a');
+                                await document.body.appendChild(link);
+                                await link.setAttribute('download', '');
+                                 link.href = result.data.replace("~","");
+                                await link.click();
+                                await link.remove();
+
+                                await $.ajax({
+                                    url: "@Url.Action("delete_export_data_file", "report")",
+                                    type: "POST",
+                                    data: { path_file: result.data },
+                                    success: function (result) {
+                                        if (result.success) {
+
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                },
+                dateTostring(date_sting) {
+                    const self = this;
+
+                    const day = date_sting.getDate();
+                    const month = date_sting.getMonth() + 1;
+                    const year = date_sting.getFullYear();
+
+                    return `${day}/${month}/${year}`;
+
+                },
+                async getList_calendar() {
+
+                    let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("ListItem_ChangePoint_All", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+
+                                result.data.forEach((item) => {
+
+                                    const dateArray = item.DATE_CHANGE.split("/");
+                                    const dateStr = dateArray[1] + '/' + dateArray[0] + '/' + dateArray[2];
+                                    const dates = new Date(dateStr);
+
+                                    self.markers.push(
+                                        {
+                                            date: dates,
+                                            type: 'dot',
+                                            tooltip: [],
+                                        })
+
+                                })
+
+                            }
+                        }
+                    });
+
+
+                }
+
+            },
+            watch: {
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-report').addClass('active');
+
+
+
+</script>

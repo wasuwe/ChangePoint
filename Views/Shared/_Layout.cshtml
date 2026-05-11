@@ -1,0 +1,641 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - ChangePoint</title>
+
+    @Styles.Render("~/Content/all.min.css")
+    @Styles.Render("~/Content/fontawesome.min.css")
+    @Styles.Render("~/Content/bootstrap.min.css")
+    @Styles.Render("~/Content/sweetalert.css")
+    @Styles.Render("~/Content/DataTables/css/dataTables.bootstrap5.min.css")
+    @Styles.Render("~/Content/vue-datepicker@4.0.1.css")
+
+    @Scripts.Render("~/Scripts/jquery-3.7.0.min.js")
+    @Scripts.Render("~/Scripts/bootstrap.bundle.min.js")
+    @Scripts.Render("~/Scripts/sweetalert.min.js")
+    @Scripts.Render("~/Scripts/fontawesome/fontawesome.min.js")
+    @Scripts.Render("~/Scripts/DataTables/jquery.dataTables.min.js")
+    @Scripts.Render("~/Scripts/DataTables/dataTables.bootstrap5.min.js")
+
+    @Scripts.Render("~/Scripts/vue@3.2.47/dist/vue.global.js")
+
+    @Scripts.Render("~/Scripts/vue-datepicker.js")
+
+    @Scripts.Render("~/Scripts/dselect.js")
+
+    <link rel="shortcut icon" type="image/x-icon" href="~/src/icons/calendar2.png" />
+
+    <style>
+
+        body {
+            font-family: var(--bs-body-font-family) !important;
+        }
+
+        .LoginBox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f2f2f2;
+        }
+
+        .loginForm {
+            width: 350px;
+            /*height: 300px;*/
+            /*border: solid 3px #eeeeee;*/
+            padding: 90px 55px 33px;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 5px 10px 0 rgb(0 0 0 / 10%);
+            background: #fff;
+            border-radius: 10px;
+        }
+
+        .LoginHR {
+            width: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .LoginHR hr {
+                width: 100%;
+            }
+
+            .LoginHR label {
+                position: absolute;
+                background-color: #ffffff;
+                padding: 0px 8px;
+                font-weight: bold;
+            }
+
+
+        .LoginTitle {
+            margin-bottom: 20px;
+            font-size: 30px;
+            font-weight: bold;
+            display: flex;
+        }
+
+            .LoginTitle .LoginVisitor {
+                width: 0px;
+                overflow: hidden;
+                transition: all 0.45s;
+            }
+
+                .LoginTitle .LoginVisitor.active {
+                    width: 140px;
+                }
+
+            .LoginTitle .LoginMember {
+                width: 0px;
+                overflow: hidden;
+                transition: all 0.45s;
+            }
+
+                .LoginTitle .LoginMember.active {
+                    width: 130px;
+                }
+
+        .LoginInput {
+            display: flex;
+            grid-gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .LoginInput.password {
+                grid-gap: 20px;
+            }
+
+            .LoginInput input {
+                width: 100%
+            }
+
+        .LoginButton {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex-direction: column;
+            grid-gap: 10px;
+            margin-bottom: 10px;
+            margin: 10px 0;
+        }
+
+            .LoginButton button {
+                width: 100%;
+            }
+
+        .ForgotPassowrd {
+            font-size: 13px;
+        }
+
+            .ForgotPassowrd a {
+                color: #838383;
+            }
+
+        .btnSwitch-2 {
+            color: rgb(255, 184, 76);
+        }
+
+        .btnSwitch-1 {
+            color: rgb(43, 52, 103);
+        }
+
+        .btnSwitch-1, .btnSwitch-2 {
+            position: absolute;
+            right: 149px;
+            top: 35px;
+            border: 2px solid;
+            padding: 5px;
+            border-radius: 100%;
+            height: 50px;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #ffffff;
+            font-size: 30px;
+        }
+
+
+
+        /*.headbar-between {
+            justify-content: space-between;
+        }*/
+        .headbar-search {
+            grid-gap: 5px;
+        }
+
+        .btn-default {
+            background: #eee;
+        }
+
+            .btn-default:hover {
+                background: #d3d3d3 !important;
+            }
+
+
+        .MenuBox {
+            display: flex;
+            flex-wrap: wrap;
+            grid-gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+            .MenuBox .MenuItem {
+                height: 150px;
+                border: solid 1px #00000e;
+                width: 24%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                background: #eee;
+                font-size: 40px;
+            }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #919191;
+            padding: 10px;
+            margin: 0;
+        }
+
+            footer p {
+                margin: 0;
+                font-size: 15px;
+            }
+
+        /*---------- table Page ----------*/
+        .tables-page-head {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .tables-page-head .haed-title {
+                font-size: 35px;
+                font-weight: bold;
+            }
+
+            .tables-page-head .haed-fn a {
+                font-size: 30px;
+                color: #47c513;
+                transition: all 0.4s;
+            }
+
+                .tables-page-head .haed-fn a i {
+                    transition: all 0.4s;
+                }
+
+                .tables-page-head .haed-fn a:hover i {
+                    transform: scale(1.2)
+                }
+
+
+        tbody a {
+            text-decoration: unset !important;
+            color: #000000;
+        }
+
+        .form-switch .form-check-input {
+            width: 4em;
+            height: 2em;
+            margin: 0;
+            margin-right: 20px;
+        }
+
+        #IsUse {
+            position: absolute;
+            right: 0;
+            top: 10px;
+        }
+
+        /*---------- table Page ----------*/
+
+        .cancel.btn.btn-lg.btn-default {
+            color: #fff !important;
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+        }
+
+        .title-name {
+            min-width: 100px;
+        }
+
+        .dselect-wrapper {
+            border: unset;
+            padding: 0;
+        }
+
+        div#MyClockDisplay {
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        #unread-msg {
+            display: none;
+        }
+    </style>
+
+</head>
+<body id="body">
+    @if (ViewBag.Data.IsLayout)
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background: #2B303A !important; box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="@Url.Action("index","home")"><i class="fas fa-calendar-alt"></i> ChangePoint</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigaton">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse headbar-between justify-content-between " id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link " id="nav-link-detail" aria-current="page" href="@Url.Action("detail","home")">Detail</a>
+                        </li>
+
+                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="nav-link-master" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Master Data
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="nav-link-master">
+                                    <li id="lk-menu-1"><a class="dropdown-item" href="@Url.Action("Mold_NO","lookup")">Mold NO.</a></li>
+                                    <li id="lk-menu-2"><a class="dropdown-item" href="@Url.Action("Process","lookup")">Process</a></li>
+                                    <li id="lk-menu-3"><a class="dropdown-item" href="@Url.Action("Edit","lookup")">จุดที่แก้ไข [M/C]</a></li>
+                                    <li id="lk-menu-4"><a class="dropdown-item" href="@Url.Action("Change","lookup")">หัวข้อการเปลี่ยนแปลง [Part/Mat'l]</a></li>
+                                    <li id="lk-menu-5"><a class="dropdown-item" href="@Url.Action("Part","lookup")">Part</a></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Machine","lookup")">Machine</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Detail","lookup")">Detail</a></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Detail_Category","lookup")">Detail Category</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Dashboard","lookup")">Dashboard Setting</a></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Colors","lookup")">Colors Setting</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Colors","lookup")">@*Approve Route*@</a></li>
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Approve_Member","lookup")">Group Member</a></li> @*recipient*@
+                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Check_Sheet","lookup")">@*Check Sheet*@</a></li>
+                                </ul>
+                            </li>
+                        }
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="nav-link-report" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Report
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="nav-link-master">
+                                <li id="lk-menu-1"><a class="dropdown-item" href="@Url.Action("Summary","Report")">Summary</a></li>
+                                <li id="lk-menu-1"><a class="dropdown-item" href="@Url.Action("Export","Report")">Export</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <div id="MyClockDisplay" class="clock" onload="showTime()">
+                        <i class="far fa-clock"></i>
+                    </div>
+
+
+                    @if (ViewBag.Data.IsLogin)
+                    {
+                        <div class="d-flex justify-content align-items-center" style="grid-gap: 15px;">
+                            <ul class="navbar-nav">
+                                @*<li class="nav-item">
+            <a class="nav-link position-relative" id="nav-link-approved" aria-current="page" href="@Url.Action("detail","home")">
+                <i class="fas fa-bell"></i>
+                <span class="position-absolute top-5 start-80 translate-middle badge rounded-pill bg-danger">
+                    9
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </a>
+        </li>*@
+
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="nav-link-admin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                        @if (Session["STATUS"].ToString() == "V")
+                                        {
+                                            <i style="color: rgb(153, 168, 255);" class="fas fa-user"></i>
+                                        }
+                                        else if (Session["STATUS"].ToString() == "M")
+                                        {
+                                            <i style="color: rgb(255, 184, 76);" class="fas fa-star"></i>
+                                        }
+                                        else
+                                        {
+                                            <i style="color: rgb(255, 255, 255);" class="fas fa-eye"></i>
+                                        }
+
+                                        <label class="title-name">
+                                            @Session["GNAME_ENG"] @Session["FNAME_ENG"]
+                                        </label>
+
+                                    </a>
+                                    <ul class="dropdown-menu" style="" aria-labelledby="nav-link-admin">
+                                        @if (Session["ROLE"].ToString() == "A")
+                                        {
+                                            <li><a class="dropdown-item" href="@Url.Action("Member", "lookup")">Member</a></li>
+                                            <li><a class="dropdown-item" href="@Url.Action("Group", "lookup")">Group</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                        }
+                                        @if (false)
+                                        {
+                                            <li><a class="dropdown-item" href="@Url.Action("Dashboard", "Home", new { id = "21"})">Dashboard</a></li>
+                                        }
+                                        <li><a class="dropdown-item" href="@Url.Action("logout", "login")">Logout</a></li>
+                                    </ul>
+                                </li>
+
+                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link position-relative" id="nav-link-approved" aria-current="page" href="@Url.Action("Index","Waiting")">
+                                            <i class="fas fa-bell"></i>
+                                            <span class="position-absolute top-5 start-80 translate-middle badge rounded-pill bg-danger" id="unread-msg">
+                                            </span>
+                                        </a>
+                                    </li>
+                                }
+
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content align-items-center" style="grid-gap: 15px;">
+                            <div style="color: white;">
+                                <a class="nav-link" href="#" id="Logout">Login</a>
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </nav>
+    }
+
+
+
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    </ul>
+                </div>
+            </div>
+        </div>*@
+
+
+    @if (ViewBag.Data.IsLayout)
+    {
+        <div class="container-fluid body-content">
+            @RenderBody()
+        </div>
+        @*<footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>*@
+    }
+    else
+    {
+        @RenderBody()
+    }
+
+
+
+
+    <script>
+        
+        async function count_waiting() {
+            await $.ajax({
+            url: "@Url.Action("Count_Waiting_Confirm", "Waiting")",
+            type: "POST",
+            data: { },
+            success: function (result) {
+                    if (result.data[0].RESULT > 0) {
+                    $('#unread-msg').delay(500).html(result.data[0].RESULT)
+                        $('#unread-msg').delay(500).fadeIn()
+                    } else {
+                    $('#unread-msg').delay(500).fadeOut()
+                }
+                }
+            });
+        }
+
+
+        function showTime() {
+            var date = new Date();
+            var h = date.getHours(); // 0 - 23
+            var m = date.getMinutes(); // 0 - 59
+            var s = date.getSeconds(); // 0 - 59
+            var session = "AM";
+
+            if (h == 0) {
+                h = 12;
+            }
+
+            if (h > 12) {
+                h = h - 12;
+                session = "PM";
+            }
+
+            h = (h < 10) ? "0" + h : h;
+            m = (m < 10) ? "0" + m : m;
+            s = (s < 10) ? "0" + s : s;
+
+            var time = h + ":" + m + ":" + s + " " + session;
+            document.getElementById("MyClockDisplay").innerText = time;
+            document.getElementById("MyClockDisplay").textContent = time;
+
+            setTimeout(showTime, 1000);
+
+        }
+
+        if ('@ViewBag.Data.IsLayout' == 'True' )
+        {
+            showTime();
+            count_waiting();
+
+        }
+
+         $("#btn_search").click(function () {
+            let searchTxt = $("#txt_search").val();
+
+            $.ajax({
+                url: "@Url.Action("searchTxt", "home")",
+                type: "POST",
+                data: { searchTxt: searchTxt },
+                success: function (result) {
+
+                    alertBox("Alert", "Search : " + result.responseText, "success")
+
+                }
+             })
+         });
+
+        $("#Logout").click(function () {
+            let searchTxt = $("#txt_search").val();
+
+            $.ajax({
+                url: "@Url.Action("logout", "login")",
+                type: "POST",
+                data: {},
+                success: function (result) {
+
+                    window.open("@Url.Action("index", "login")","_self")
+
+                }
+            });
+        });
+
+     //----------------------------- Sweet Alert --------------------------------------//
+
+        function alertBox(title = "", text = "", icon = "success", customsClass = "", fn = "") {
+
+            //type : warning, error, success, info
+
+            swal({
+                title: title,
+                text: text,
+                type: icon,
+                customClass: customsClass,
+                showCancelButton: false,
+                showConfirmButton: true
+            }, fn);
+        }
+
+        function alertBoxTime(title = "", text = "", icon = "success", time = 1100, customsClass = "", fn = "") {
+
+            //type : warning, error, success, info
+
+            //[your function] = function (isConfirm) {
+            //    if (isConfirm) {
+            //        swal({
+            //            title: "Alert",
+            //            text: "Success",
+            //            type: "success",
+            //            timer: 1000,
+            //            showCancelButton: false,
+            //            showConfirmButton: false
+            //        })
+            //    } else {
+
+            //    }
+            //}
+
+            swal({
+                title: title,
+                text: text,
+                type: icon,
+                customClass: customsClass,
+                timer: time,
+                showCancelButton: false,
+                showConfirmButton: false
+            }, fn);
+        }
+
+        function alertBoxConfirm(title = "", text = "", customsClass = "", fn = "") {
+
+            //[your function] = function (isConfirm) {
+            //    if (isConfirm) {
+            //        swal({
+            //            title: "Alert",
+            //            text: "Success",
+            //            type: "success",
+            //            timer: 1000,
+            //            showCancelButton: false,
+            //            showConfirmButton: false
+            //        })
+            //    } else {
+
+            //    }
+            //}
+             swal({
+                title: title,
+                text: text,
+                type: "warning",
+                customClass: customsClass,
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false,
+                 closeOnCancel: true
+            }, fn );
+        }
+
+     //----------------------------- Sweet Alert --------------------------------------//
+
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

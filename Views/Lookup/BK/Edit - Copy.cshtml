@@ -1,0 +1,698 @@
+﻿@{
+    ViewBag.Title = "Edit Point";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+
+<style>
+    
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    /*
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+         background-image: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,18,68,1) 15%, rgba(0,80,134,1) 35%, rgba(49,143,181,1) 55%, rgba(176,202,199,1) 75%, rgba(247,214,191,1) 100%);
+        background-repeat: no-repeat;
+        background-size: contain;
+        position: relative;
+        z-index: -2;
+    }*/
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+
+        <div class="head-box">
+            <div class="haed-title">Master : จุดที่แก้ไข (M/C)</div>
+            <div class="select-group">
+                <select class="selectpicker" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
+                    <option value="">เลือก Group</option>
+                    <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
+                </select>
+            </div>
+        </div>
+
+        @if (Session["STATUS"].ToString() == "M")
+        {
+            <div class="haed-fn">
+                <a href="" onclick="return false;">
+                    <i class="fas fa-plus-circle" v-on:click="Open_Modal('Add','')"></i>
+                </a>
+            </div>
+        }
+    </div>
+
+    @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
+
+    <div class="section-tatble">
+
+        <table id="dataTable" class="table table-hover" style="width: 100%">
+            <thead class="table-primary">
+                <tr>
+                    <th>Name</th>
+                    <th>Update By</th>
+                    <th>Update Date</th>
+                    <th>Status</th>
+                    @if (Session["STATUS"].ToString() == "M")
+                    {
+                        <th>Tools</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+
+    </div>
+
+    <div class="modal fade modal-lg" id="Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Item_modal_Label">Add Item</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+                            <label id="lb_from" for="befor" class="col-4 col-form-label"><b>จุดที่แก้ไข </b></label>
+                            <div id="b_from" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txtItemName" class="form-control" v-on:keyup.enter="saveItem()" />
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn_save"
+                            v-on:click="saveItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-lg" id="Edit-Item-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="Edit_Item_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Edit_Item_modal_Label">Edite Item</h5>
+                </div>
+                <div class="modal-body">
+
+                    <section class="container">
+                        <div class="row">
+
+                            <label id="lb_from" for="befor" class="col-4 col-form-label"><b>จุดที่แก้ไข </b></label>
+                            <div id="b_from" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <input type="text" id="txtItemNameEdit" class="form-control" v-on:keyup.enter="updateItem()" />
+                                </div>
+                            </div>
+
+                            <label id="lb_from" for="befor" class="col-4 col-form-label"><b>Status</b></label>
+
+                            <div id="b_from" class="col-8 col-form-label">
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-Y" value="Y">
+                                    <label class="form-check-label" for="IsUse-Y">
+                                        Use
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="IsUse" id="IsUse-N" value="N">
+                                    <label class="form-check-label" for="IsUse-N">
+                                        Unuse
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="btn_update"
+                            v-on:click="updateItem()">
+                        บันทึก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    let DTable = ''
+    let Update_ID = ''
+
+        createApp({
+            data() {
+                return {
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+                    col: [],
+
+                    slt_name: '',
+                    slt_group: '',
+
+                    groupList: [],
+
+                    IsAdd: true,
+                    dataTable: null,
+                }
+            },
+            mounted() {
+
+                let self = this
+
+                self.SetTeble()
+
+            },
+            async created() {
+
+                let self = this
+
+                await self.getGroup()
+
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+
+
+                },
+                SetTeble() {
+
+                    let self = this
+
+                    if (self.status == "M") {
+                        self.col = [
+                            { data: 'ITEM_NAME', width: "30%", class: "text-center" },
+                            { data: 'UPDATE_BY', width: "20%", class: "text-center" },
+                            { data: 'UPDATE_DATE', width: "20%", class: "text-center" },
+                            { data: 'IS_USE', width: "10%", class: "text-center" },
+                            { data: 'TOOL', width: "20%", class: "text-center", orderable: false }
+                        ]
+                    } else {
+                        self.col = [
+                            { data: 'ITEM_NAME', width: "40%", class: "text-center" },
+                            { data: 'UPDATE_BY', width: "20%", class: "text-center" },
+                            { data: 'UPDATE_DATE', width: "20%", class: "text-center" },
+                            { data: 'IS_USE', width: "20%", class: "text-center" },
+                        ]
+                    }
+
+                    DTable = $('#dataTable').DataTable({
+                        order: [[3, 'desc']],
+                        ajax: {
+                            url: '@Url.Action("ListItem_Edit", "lookup")',
+                            dataSrc: function (json) {
+                                let item_ID = '';
+                                if (json.success) {
+                                    for (var i = 0, ien = json.data.length; i < ien; i++) {
+
+                                        item_id = json.data[i]["ITEM_ID"];
+
+                                        json.data[i]["TOOL"] = '<a href="#" onclick="return false;" data-bs-toggle="modal" data-bs-target="#Edit-Item-modal" data-item_id="' + item_id + '" id="item_id-' + item_id + '"><i class="fas fa-edit" style="margin-right: 10px; color: rgb(44 76 235);"></i></a>'
+                                        if (self.role != 'V') {
+                                            json.data[i]["TOOL"] += '<a href="#" onclick="return false;" id="deleteItemID-' + item_id + '" data-item_id="' + item_id + '" ><i class="fas fa-trash-alt" style="color: rgb(225 55 55);" ></i></a>'
+                                        }
+
+                                        json.data[i]["UPDATE_BY"] = json.data[i]["GNAME_ENG"] + '  ' + json.data[i]["FNAME_ENG"]
+
+                                        if (json.data[i]["IS_USE"] == 'Y') {
+                                            json.data[i]["IS_USE"] = 'Use'
+                                        } else {
+                                            json.data[i]["IS_USE"] = 'Unuse'
+                                        }
+
+                                        
+                                        json.data[i]["TOOL"] += '<script>' + '\n';
+                                        json.data[i]["TOOL"] += '$(\'[id ^= "item_id-' + item_id +'"]\').click(async function () {' + '\n';
+                                        json.data[i]["TOOL"] += '    const id = $(this).data(\'item_id\');' + '\n';
+                                        json.data[i]["TOOL"] += '        $.ajax({' + '\n';
+                                        json.data[i]["TOOL"] += '            url: "@Url.Action("SelectItem_Edit", "lookup")",' + '\n';
+                                        json.data[i]["TOOL"] += '            type: "POST",' + '\n';
+                                        json.data[i]["TOOL"] += '            data: { item_id: id },' + '\n';
+                                        json.data[i]["TOOL"] += '            success: function (result) {' + '\n';
+                                        json.data[i]["TOOL"] += '                if (result.success) {' + '\n';
+                                        json.data[i]["TOOL"] += '                    $("#Edit-Item-modal #txtItemNameEdit").val(result.data[0]["ITEM_NAME"])' + '\n';
+
+                                        json.data[i]["TOOL"] += '                    Update_ID = id' + '\n';
+                                        json.data[i]["TOOL"] += '                   if (result.data[0]["IS_USE"] == "Y") {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-Y").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-N").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-N").prop("checked",true)' + '\n';
+                                        json.data[i]["TOOL"] += '                        $("#IsUse-Y").prop("checked",false)' + '\n';
+                                        json.data[i]["TOOL"] += '                   }' + '\n';
+                                        json.data[i]["TOOL"] += '                } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                }' + '\n';
+                                        json.data[i]["TOOL"] += '            }' + '\n';
+                                        json.data[i]["TOOL"] += '        });' + '\n';
+                                        json.data[i]["TOOL"] += '    });' + '\n';
+
+                                        json.data[i]["TOOL"] += '                       $(\'[id ^= "deleteItemID-' + item_id +'"]\').click(function () {' + '\n';
+                                        json.data[i]["TOOL"] += '                           const id = $(this).data(\'item_id\');' + '\n';
+                                        json.data[i]["TOOL"] += '                            let fn = function (isConfirm) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                if (isConfirm) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                    $.ajax({' + '\n';
+                                        json.data[i]["TOOL"] += '                                        url: "@Url.Action("DeleteItem_Edit", "lookup")",' + '\n';
+                                        json.data[i]["TOOL"] += '                                        type: "POST",' + '\n';
+                                        json.data[i]["TOOL"] += '                                        data: { item_id: id },' + '\n';
+                                        json.data[i]["TOOL"] += '                                        success: function (result) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                            if (result.success) {' + '\n';
+                                        json.data[i]["TOOL"] += '                                                swal({' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    title: "Alert",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    text: result.Message,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    type: "success",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    timer: 1000,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showCancelButton: false,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showConfirmButton: false' + '\n';
+                                        json.data[i]["TOOL"] += '                                                })' + '\n';
+                                        json.data[i]["TOOL"] += '                                                DTable.ajax.reload();' + '\n';
+                                        json.data[i]["TOOL"] += '                                            } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                                                swal({' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    title: "Alert",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    text: result.responseText,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    type: "warning",' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    timer: 1000,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showCancelButton: false,' + '\n';
+                                        json.data[i]["TOOL"] += '                                                    showConfirmButton: false' + '\n';
+                                        json.data[i]["TOOL"] += '                                                })' + '\n';
+                                        json.data[i]["TOOL"] += '                                            }' + '\n';
+                                        json.data[i]["TOOL"] += '                                        }' + '\n';
+                                        json.data[i]["TOOL"] += '                                    });' + '\n';
+                                        json.data[i]["TOOL"] += '                                } else {' + '\n';
+                                        json.data[i]["TOOL"] += '                                }' + '\n';
+                                        json.data[i]["TOOL"] += '                            }' + '\n';
+
+                                        json.data[i]["TOOL"] += ' alertBoxConfirm("แจ้งเตือน", "คุณต้องการลบข้อมูลใช่หรือไม่ ?", "", fn)' + '\n';
+
+                                        json.data[i]["TOOL"] += ' });' + '\n';
+
+                                        json.data[i]["TOOL"] += '<\/script>' + '\n';
+                                    }
+
+
+                                    return json.data
+                                } else {
+                                    return json.data = []
+                                }
+                            },
+                        },
+                        columns: self.col
+                    });
+
+                    //DTable = self.myModal
+
+                },
+                async Open_Modal(status, index) {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    if (status == 'Add') {
+                        self.IsAdd = true
+
+                        self.part_no = ''
+                        self.part_name = ''
+                        self.model = ''
+                        self.mat = ''
+                        self.wieght_part = ''
+                        self.wieght_scrap = ''
+
+                    }
+
+                    modal.show()
+
+                },
+                async saveItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    ItemName = $('#txtItemName').val()
+                    //isUse = $('[name="IsUse"]:checked').val()
+
+
+                    if (ItemName == '') {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+
+                        $("#btn-save").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-save").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("AddItem_Edit", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_Name: ItemName,
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        $('#txtItemName').val('')
+
+                                        DTable.ajax.reload();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+
+                        }
+                    }
+
+                    $("#btn-save").html('บันทึก');
+                    $("#btn-save").prop('disabled', false);
+
+                },
+                async updateItem() {
+
+                    let self = this
+
+                    let el = document.querySelector('#Edit-Item-modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                    ItemName = $('#txtItemNameEdit').val()
+                    isUse = $('[name="IsUse"]:checked').val()
+
+                    console.log(ItemName)
+                    if (ItemName == '') {
+                        alertBoxTime('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'warning', 1100, '', '')
+                    } else {
+
+
+                        $("#btn-update").html('<i class="fas fa-sync fa-spin"></i>');
+                        $("#btn-update").prop('disabled', true);
+
+                        if (self.IsAdd) {
+                            $.ajax({
+                                url: "@Url.Action("EditItem_Edit", "lookup")",
+                                type: "POST",
+                                data: {
+                                    item_name: ItemName,
+                                    item_id: Update_ID,
+                                    item_isUse: isUse
+                                },
+                                success: function (result) {
+                                    if (result.success) {
+                                        swal({
+                                            title: "แจ้งเตือน",
+                                            text: result.Message,
+                                            type: "success",
+                                            timer: 1200,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+
+                                        self.part_name = ''
+
+                                        DTable.ajax.reload();
+
+                                        modal.hide();
+                                    } else {
+                                        swal({
+                                            title: "Alert",
+                                            text: result.Message,
+                                            type: "warning",
+                                            timer: 1500,
+                                            showCancelButton: false,
+                                            showConfirmButton: false
+                                        })
+                                    }
+
+                                }
+                            });
+
+                        } else {
+
+                        }
+                    }
+
+                    $("#btn-update").html('บันทึก');
+                    $("#btn-update").prop('disabled', false);
+
+                },
+                 async getGroup() {
+
+                  let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.groupList = result.data
+
+                                const arr = result.data;
+                            
+                                self.slt_group = '@Session["GROUP_ID"].ToString()';
+
+                                if (self.slt_group == "") {
+                                    self.slt_group = result.data[0].GROUP_ID
+                                }
+
+                                const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
+
+                                const arrSelect = arr[index];
+
+                                if (arrSelect.MENU_1 == 'N') {
+                                    $('#lk-menu-2').hide();
+                                }
+                                if (arrSelect.MENU_2 == 'N') {
+                                    $('#lk-menu-3').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N') {
+                                    $('#lk-menu-1').hide();
+                                }
+                                if (arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-4').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-5').hide();
+                                }
+                                if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-6').hide();
+                                }
+
+                            }
+
+                        }
+                    });
+                },
+                 async selectGroup(gID) {
+                   
+                    await $.ajax({
+                        url: "@Url.Action("Select_GROUP", "lookup")",
+                        type: "POST",
+                        data: { item_group: gID},
+                        success: function (result) {
+                            if (result.success) {
+                                window.open("@Url.Action("Edit", "lookup")","_self")
+                            }
+
+                        }
+                    });
+                }
+
+            },
+            watch: {
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-master').addClass('active');
+
+    // ------------------- BackToTop ------------------- //
+
+    //var mybutton = document.getElementById("toTop");
+
+    //window.onscroll = function () {
+    //    scrollFunction()
+    //};
+
+    //function scrollFunction() {
+
+    //    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    //        mybutton.classList.add("active");
+
+    //    } else {
+    //        mybutton.classList.remove("active");
+    //    }
+    //}
+
+
+
+</script>

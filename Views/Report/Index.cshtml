@@ -1,0 +1,63 @@
+﻿@{
+    ViewBag.Title = "Report";
+}
+
+<style>
+</style>
+<h1>Test</h1>
+<div id="MainApp">
+
+    <h1>Test</h1>
+
+<a href="" onclick="return false;" v-on:click="exports()" >Export</a>
+    
+</div>
+
+
+
+
+<script>
+
+
+
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    createApp({
+        data() {
+            return {
+
+            }
+        },
+        async created() {
+
+            const self = this;
+
+        },
+        async mounted() {
+
+        },
+        methods: {
+            export_text() {
+                var element = document.getElementById('MainApp');
+                var opt = {
+                    margin: 1,
+                    filename: 'myfile.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                // New Promise-based usage:
+                html2pdf().set(opt).from(element).save();
+
+                // Old monolithic-style usage:
+                html2pdf(element, opt);
+            }
+        },
+        watch: {
+        }
+    }).mount('#MainApp')
+
+
+</script>

@@ -1,0 +1,1507 @@
+﻿@{
+    ViewBag.Title = "Waiting Confirm";
+}
+
+@Styles.Render("~/Content/bootstrap-select.min.css")
+@Styles.Render("~/Content/vue3-easy-data-table@1.5.47.css")
+
+<style>
+
+    :root {
+        --font_size_section_titel: 1.2rem;
+        --font_size_sectionl: 1.2rem;
+        --font_size_head_table: 0.8rem;
+        --font_size_body_table: 0.8rem;
+        --font_size_icon: 1.5rem;
+        --font_size_item_title: 1rem;
+        --font_size_icon_item_detail: 1rem;
+    }
+
+    html {
+        min-height: 100%;
+    }
+
+
+
+    body::-webkit-scrollbar-track {
+        border: 1px solid black;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar {
+        width: 10px;
+        background-color: #F5F5F5;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background-color: #000000;
+    }
+
+
+    .backTotop {
+        position: fixed;
+        bottom: -50px;
+        right: 15px;
+        font-size: 40px;
+        color: #fff;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        border-radius: 100%;
+        cursor: pointer;
+        transition: all 0.5s;
+        background: #000000;
+    }
+
+        .backTotop.active {
+            bottom: 20px;
+            transition: all 0.5s;
+        }
+
+    .section-tatble {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;
+        padding: 10px;
+        margin-top: 20px;
+    }
+
+
+    .alertTable.alert_over {
+        font-weight: bold;
+        background: #ff6060;
+    }
+
+    .alertTable.alert_lower {
+        font-weight: bold;
+        background: #fff949;
+    }
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+    }
+
+    .close {
+        color: #fff;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        cursor: pointer;
+    }
+
+    .modal-backdrop {
+        z-index: 0 !important;
+    }
+
+    .dp__main {
+        width: 100%;
+    }
+
+    .dropdown.bootstrap-select {
+        width: 100% !important;
+        border: var(--bs-border-width) solid var(--bs-border-color);
+        border-radius: 7px;
+    }
+
+    button.btn.dropdown-toggle.btn-light {
+        background-color: var(--bs-body-bg);
+        background-clip: padding-box;
+    }
+
+
+    .modal-header {
+        color: #ffffff;
+        background-color: #216583;
+    }
+
+    .customize-table {
+        --easy-table-header-font-size: 14px;
+        --easy-table-header-height: 50px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #2d3a4f;
+        --easy-table-border: 1px solid #445269;
+    }
+
+    .filter-column {
+        display: flex;
+        align-items: center;
+        justify-items: center;
+        position: relative;
+    }
+
+    .filter-menu {
+        padding: 15px 30px;
+        z-index: 1;
+        position: absolute;
+        top: 30px;
+        width: 200px;
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+    }
+
+
+    .select-group {
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+        .select-group .btn-reset-select {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 1;
+            font-size: 20px;
+            height: 100%;
+            width: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .select-group .btn-reset-select i {
+                background-color: #ffffff;
+                border-radius: 100%;
+            }
+</style>
+
+<div id="MainApp">
+
+    <div class="tables-page-head">
+
+        <div class="head-box">
+            <div class="haed-title">Waiting Confirm</div>
+        </div>
+    </div>
+
+    @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
+
+    <div class="section-tatble">
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="select-group">
+                    <Datepicker v-model="date_day"
+                                :enable-time-picker="false"
+                                :clearable="true"
+                                :monthChangeOnScroll="false"
+                                auto-apply
+                                range
+                                multi-calendars
+                                :format="dateFormat_day"
+                                placeholder="กรองวัน Change Point"
+                                @Html.Raw("@update:model-value")="get_list()"
+                                @Html.Raw("@cleared")="get_list()"
+                                >
+                        @*@Html.Raw("@closed")="update_Chart_day()"*@
+                    </Datepicker>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="select-group">
+                    <div class="btn-reset-select" v-if="filter_type.length>0">
+                        <i class="fas fa-times-circle" v-on:click="reset_filter('type'), get_list()"></i>
+                    </div>
+                    <select class="selectpicker" data-live-search="true" id="filter_type" name="filter_type" v-model="filter_type" data-placeholder="กรอง Type" v-on:change="get_list()" multiple>
+                        <option value="1">Man</option>
+                        <option value="2">Machine</option>
+                        <option value="3">Mold/DIE</option>
+                        <option value="4">Method</option>
+                        <option value="5">Part/Mat'l</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="select-group">
+                    <div class="btn-reset-select" v-if="filter_shift.length>0">
+                        <i class="fas fa-times-circle" v-on:click="reset_filter('shift'), get_list()"></i>
+                    </div>
+                    <select class="selectpicker" data-live-search="true" id="filter_shift" name="filter_shift" v-model="filter_shift" data-placeholder="กรอง Shift" v-on:change="get_list()" multiple>
+                        <option value="1">DAY</option>
+                        <option value="2">NIGHT</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="select-group">
+                    <div class="btn-reset-select" v-if="filter_status.length>0">
+                        <i class="fas fa-times-circle" v-on:click="reset_filter('status'), get_list()"></i>
+                    </div>
+                    <select class="selectpicker" data-live-search="true" id="filter_status" name="filter_status" v-model="filter_status" data-placeholder="กรอง Status" v-on:change="get_list()" multiple>
+                        <option value="Y">Confirm</option>
+                        <option value="N">Waiting</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+
+        <easy-data-table :headers="headers"
+                         :items="items"
+                         :sort-by="sortBy"
+                         :sort-type="sortType"
+                         multi-sort
+                         show-index
+                         border-cell
+                         table-class-name="customize-table"
+                         header-text-direction="center"
+                         body-text-direction="center"
+                         class="text-center" />
+
+        <template #item-GNAME_ENG="{ GNAME_ENG, FNAME_ENG }">
+            {{GNAME_ENG}}  {{FNAME_ENG}}
+        </template>
+
+        <template #item-TYPE="{ TYPE }">
+            {{m_control[TYPE]}}
+        </template>
+
+        <template #item-CREATE_DATE_STAMP="{ CREATE_DATE_STAMP, CREATE_DATE }">
+            {{CREATE_DATE}}
+        </template>
+
+        <template #item-CHANGE_POINT_DATE_STAMP="{ CHANGE_POINT_DATE_STAMP, CHANGE_POINT_DATE }">
+            {{CHANGE_POINT_DATE}}
+        </template>
+
+        <template #item-SHIFT="{ SHIFT,TYPE, ID }">
+            {{SHIFT == '1' ? 'DAY' : 'NIGHT'}}
+        </template>
+
+        <template #item-tool="{ ID, TYPE, CALENDAR_ID, RESULT }">
+            <button type="button" class="btn btn-warning btn-sm" v-on:click="Open_Modal(TYPE, CALENDAR_ID, ID, RESULT)">Detail</button>
+        </template>
+
+    </div>
+
+    <div class="modal fade modal-lg" id="change_point_modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="change_point_modal_Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="change_point_modal_Label">Change {{title_modal}}</h5>
+                </div>
+                <div class="modal-body">
+                    <section class="container">
+                        <form class="row">
+
+                            <label for="date" class="col-4 col-form-label"><b>วันที่</b></label>
+                            <div class="col-8 col-form-label">
+                                <Datepicker v-model="date_select" :enable-time-picker="false" :clearable="false"
+                                            :monthChangeOnScroll="false" :format="dateFormat" auto-apply disabled></Datepicker>
+                            </div>
+
+                            <label id="" for="slt_shift" class="col-4 col-form-label"><b>Shift </b></label>
+                            <div id="" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="slt_shift" v-model="slt_shift" disabled data-placeholder="เลือก Shift">
+                                        <option value="1">Day</option>
+                                        <option value="2">Night</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_from" for="befor" class="col-4 col-form-label"><b>คนประจำจุด </b></label>
+                            <div id="b_from" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker" data-live-search="true" id="slt_spot" v-model="slt_spot" disabled data-placeholder="เลือก คนประจำจุด">
+                                        <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
+                                            <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}} </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_to" for="after" class="col-4 col-form-label"><b>คนแทนจุด</b></label>
+                            <div id="b_to" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_instead" v-model="slt_instead" disabled data-placeholder="เลือก คนแทนจุด">
+                                        <optgroup v-for="(items, index) in userList" :label="items.wc_code +':'+ items.wc_name">
+                                            <option v-for="(item,indexL) in items.list" :value="item.itemId">{{item.itemId}} : {{item.gname_tha}} {{item.fname_tha}}</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_mc" for="mc" class="col-4 col-form-label"><b>M/C NO. </b></label>
+                            <div id="b_mc" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_mc_no" v-model="slt_mc_no" disabled data-placeholder="เลือก M/C NO">
+                                        <optgroup v-for="(items, index) in mcsList" :label="items.sizeTon">
+                                            <option v-for="(item) in items.list">{{item}} </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_eidt" for="eidt" class="col-4 col-form-label"><b>จุดที่แก้ไข </b></label>
+                            <div id="b_eidt" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_edit" v-model="slt_edit" disabled data-placeholder="เลือก จุดที่แก้ไข">
+                                        <option v-for="(item) in editList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_part" for="part" class="col-4 col-form-label"><b>Part NO.</b></label>
+                            <div id="b_part" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_part_no" v-model="slt_part_no" disabled data-placeholder="เลือก Part NO">
+                                        <option v-for="(item) in partsList">{{item.ITEM_ID}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <label id="lb_mold" for="mold" class="col-4 col-form-label"><b>Mold NO.</b></label>
+                            <div id="b_mold" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_mold_no" v-model="slt_mold_no" disabled data-placeholder="เลือก Mold NO">
+                                        <option v-for="(item) in moldNOList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <label id="lb_change" for="mold" class="col-4 col-form-label"><b>หัวข้อการเปลี่ยนแปลง</b></label>
+                            <div id="b_change" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_change" v-model="slt_change" disabled data-placeholder="เลือก หัวข้อเปลี่ยนแปลง">
+                                        <option v-for="(item) in changeList" :value="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <label id="lb_process" for="process" class="col-4 col-form-label"><b>Process </b></label>
+                            <div id="b_process" class="col-8 col-form-label">
+                                <div class="input-group" id="">
+                                    <select class="selectpicker " data-live-search="true" id="slt_process" v-model="slt_process" disabled data-placeholder="เลือก Process">
+                                        <option v-for="(item) in processList" :vlaue="item.ITEM_NAME">{{item.ITEM_NAME}} </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-12" style="margin-bottom:10px;" v-if="slt_detail.length>0">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th>รายละเอียด</th>
+                                            <th>ข้อควรระวัง</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in slt_detail">
+                                            <th>{{slt_action[index]}}</th>
+                                            <td>{{slt_warning[index]}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <label for="remark" class="col-4 col-form-label"><b>เพิ่มเติม </b></label>
+                            <div class="col-8 col-form-label">
+                                <textarea class="form-control" placeholder="" id="remark" v-model="slt_remark" disabled></textarea>
+                            </div>
+
+                            <label id="lb_file" for="upload" class="col-4 col-form-label">
+                                <b>รูป/เอกสาร (ถ้ามี)</b>
+                            </label>
+                            <div id="b_file" class="col-8 fileUploads-box">
+
+                                <div v-if="fileList" class="row">
+                                    <div v-for="(image, index) in fileList" class="col-4 upload-boxs">
+
+                                        <div v-if="fileList[index].file_type=='image'" class="upload-item">
+                                            <img class="img-table image-upload" :src="'/src/upload/'+fileList[index].name" :alt="fileList.name" :title="fileList[index].name" onclick="openModalImage(this)" style="cursor: pointer;" />
+                                            <p :title="fileList[index].name">{{fileList[index].name}}</p>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='pdf'" class="upload-item">
+                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" target="_blank" :title="fileList[index].name">
+                                                <img src="~/src/icons/pdf.png" class="image-upload" style="cursor: pointer;" />
+                                            </a>
+                                            <p :title="fileList[index].name">{{fileList[index].name}}</p>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='word'" class="upload-item">
+                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" :title="fileList[index].name" download>
+                                                <img src="~/src/icons/word.png" class="image-upload" style="cursor: pointer;" />
+                                            </a>
+                                            <p :title="fileList[index].name">{{fileList[index].name}}</p>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='excel'" class="upload-item">
+                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" :title="fileList[index].name" download>
+                                                <img src="~/src/icons/xls.png" class="image-upload" style="cursor: pointer;" />
+                                            </a>
+                                            <p :title="fileList[index].name">{{fileList[index].name}}</p>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='powerpoint'" class="upload-item">
+                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" :title="fileList[index].name" download>
+                                                <img src="~/src/icons/ppt.png" class="image-upload" style="cursor: pointer;" />
+                                            </a>
+                                            <p :title="fileList[index].name">{{fileList[index].name}}</p>
+                                        </div>
+
+                                        <div v-if="fileList[index].file_type=='text'" class="upload-item">
+                                            <a :href="'/src/upload/'+fileList[index].name" :alt="fileList[index].name" :title="fileList[index].name" download>
+                                                <img src="~/src/icons/text.png" class="image-upload" style="cursor: pointer;" />
+                                            </a>
+                                            <p>{{fileList[index].name}}</p>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-12">
+                                <hr />
+                            </div>
+
+                            <div class="col-12" style="margin-bottom:10px;" v-if="recipient_list.length>0">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th>Group Name</th>
+                                            <th>Name List</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in recipient_list">
+                                            <th>{{item.ITEM_TITLE}}</th>
+                                            <td>
+                                                <div v-for="(i, v) in item.ITEM_MEMBER.split(',')">{{v+1}}. {{user_option[i]}}</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </form>
+                    </section>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" v-if="is_confirm"  id="btn-cn" v-on:click="confirm_change_point()">Confirm</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cn">ปิด</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@Scripts.Render("~/Scripts/bootstrap-select.min.js")
+@Scripts.Render("~/Scripts/vue3-easy-data-table.umd.js")
+
+
+<script>
+    // ------------------------------ VUE JS ------------------------------ //
+    const { createApp } = Vue
+
+    let DTable = ''
+
+        createApp({
+            data() {
+                return {
+                    headers: [
+                        { text: "Change Point Date", value: "CHANGE_POINT_DATE_STAMP", sortable: true },
+                        { text: "Shift", value: "SHIFT", sortable: true },
+                        { text: "5 M", value: "TYPE", sortable: true },
+                        { text: "Group Name", value: "GROUP_NAME", sortable: true },
+                        { text: "Confirm Date", value: "CONFIRM_DATE", sortable: false },
+                        { text: "Create Date", value: "CREATE_DATE_STAMP", sortable: false },
+                        { text: "Create By", value: "GNAME_ENG", sortable: false },
+                        { text: "Tools", value: "tool", sortable: false },
+                    ],
+                    items: [],
+                    searchValue: '',
+                    sortBy: ["CHANGE_POINT_DATE_STAMP", "SHIFT", "TYPE"],
+                    sortType: ["asc", "asc", "asc"],
+
+                    role: '@Session["ROLE"].ToString()',
+                    status: '@Session["STATUS"].ToString()',
+
+                    confirm_id: '',
+                    slt_id: '',
+                    slt_detail: '',
+                    slt_risk: '',
+                    slt_use: '',
+                    slt_group: '',
+                    slt_category: '',
+
+                    m_control: ['', 'Man', 'Machine', 'Mold/DIE', 'Method', 'Part/Mat\'l'],
+
+                    filter_type: [],
+                    filter_status: ['N'],
+                    filter_shift: [],
+                    categoryList: [],
+                    groupList: [],
+                    filter_category: [],
+
+                    IsAdd: true,
+                    dataTable: null,
+
+                    date_day: null,
+                    dateFormat_day: (date) => {
+                        const day_1 = date[0].getDate();
+                        const month_1 = date[0].getMonth() + 1;
+                        const year_1 = date[0].getFullYear();
+
+                        const day_2 = date[1].getDate();
+                        const month_2 = date[1].getMonth() + 1;
+                        const year_2 = date[1].getFullYear();
+
+                        return `${day_1}/${month_1}/${year_1} - ${day_2}/${month_2}/${year_2}`;
+                    },
+
+
+                    fileList: [],
+                    file_ids: [],
+
+                    images: [],
+                    tempID: [],
+                    fileSize: 0,
+
+
+                    date_select: new Date(),
+                    dateFormat: (date_select) => {
+                        const day = date_select.getDate();
+                        const month = date_select.getMonth() + 1;
+                        const year = date_select.getFullYear();
+                        return `${day}/${month}/${year}`;
+                    },
+                    changeType: '',
+
+                    userList: [],
+                    mcsList: [],
+                    partsList: [],
+                    moldNOList: [],
+                    editList: [],
+                    changeList: [],
+                    processList: [],
+
+                    changePointList: [],
+
+                    manList: [],
+                    mcList: [],
+                    moldList: [],
+                    metList: [],
+                    partList: [],
+                    dataList: [],
+                    dataNameList: [],
+
+                    slt_id: '',
+                    slt_shift: '',
+                    slt_spot: '',
+                    slt_instead: '',
+                    slt_mc_no: '',
+                    slt_edit: '',
+                    slt_part_no: '',
+                    slt_mold_no: '',
+                    slt_change: '',
+                    slt_process: '',
+                    slt_detail: [],
+                    slt_action: [],
+                    slt_warning: [],
+                    slt_group: '',
+                    slt_remark: '',
+
+                    date_print: '',
+
+                    slt_files: [],
+                    modal_type: '',
+                    title_modal: '',
+                    date_page: '',
+                    day_page: '',
+                    month_page: '',
+                    year_page: '',
+                    date_calendar: [],
+                    groupList: [],
+
+                    IsAdd: false,
+                    color_list: [],
+                    root: null,
+                    details_list: [],
+                    details_option: [],
+                    txt_details: [],
+                    txt_risk: [],
+
+                    recipient_option: [],
+                    slt_recipient: [],
+                    recipient_list: [],
+                    show_recipient_list: [],
+
+                    user_option: [],
+
+                    is_confirm: true
+
+
+                }
+            },
+            components: {
+                Datepicker: VueDatePicker,
+                EasyDataTable: window['vue3-easy-data-table'],
+            },
+            mounted() {
+
+                let self = this
+
+            },
+            async created() {
+
+                let self = this
+
+                await self.getGroup()
+                await self.get_list()
+
+                await self.getMoldNO()
+                await self.getProcess()
+                await self.getEdit()
+                await self.getChange()
+                await self.getPart()
+                await self.getMC()
+                await self.getUser()
+
+                await self.get_recipient_option()
+
+                await $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process, #slt_recipient').selectpicker('destroy');
+                await $('#slt_spot,#slt_instead,#slt_mc_no,#slt_edit,#slt_part_no,#slt_mold_no,#slt_change,#slt_process, #slt_recipient').selectpicker('render');
+                await $('#slt_category, #filter_type, #filter_category, #filter_status').selectpicker('destroy');
+                await $('#slt_category, #filter_type, #filter_category, #filter_status').selectpicker('render');
+
+                await $("#btn-change").addClass('active');
+
+
+            },
+            methods: {
+                backTotop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    })
+                },
+                async get_list() {
+
+                    let self = this;
+
+                    let date_start = '';
+                    let date_stop = '';
+                     
+                    if (self.date_day != null) {
+                        const dateStart = await self.date_day[0];
+                        const dateEnd = await self.date_day[1];
+
+                        let yyyy = await dateStart.getFullYear();
+                        let MM = await ('0' + (dateStart.getMonth() + 1)).slice(-2);
+                        let dd = await ('0' + dateStart.getDate()).slice(-2);
+                        date_start = await dd + "-" + MM + "-" + yyyy;
+
+                        yyyy = await dateEnd.getFullYear();
+                        MM = await ('0' + (dateEnd.getMonth() + 1)).slice(-2);
+                        dd = await ('0' + dateEnd.getDate()).slice(-2);
+                        date_stop = await dd + "-" + MM + "-" + yyyy;
+                    }
+                  
+
+                    await $.ajax({
+                        url: '@Url.Action("List_Waiting_Confirm", "Waiting")',
+                        type: "POST",
+                        data: {
+                            date_start: date_start, date_stop: date_stop,
+                            filter_type: self.filter_type.map(d => `'${d}'`).join() ,
+                            filter_shift: self.filter_shift.map(d => `'${d}'`).join() ,
+                            filter_status: self.filter_status.map(d => `'${d}'`).join(),
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                self.items = result.data
+
+                                let i = 0;
+                                self.items.forEach((item) => {
+
+                                    let dateParts = item.CREATE_DATE.split(" ")[0].split("/");
+                                    let day = parseInt(dateParts[0], 10);
+                                    let month = parseInt(dateParts[1], 10);
+                                    let year = parseInt(dateParts[2], 10);
+
+                                    let date = new Date(`${year}-${month}-${day}`);
+                                    let timestamp = date.getTime();
+                                    
+                                    self.items[i].CREATE_DATE_STAMP = timestamp
+
+                                    dateParts = item.CHANGE_POINT_DATE.split("/");
+                                    day = parseInt(dateParts[0], 10);
+                                    month = parseInt(dateParts[1], 10);
+                                    year = parseInt(dateParts[2], 10);
+
+                                    date = new Date(`${year}-${month}-${day}`);
+                                    timestamp = date.getTime();
+
+                                    self.items[i].CHANGE_POINT_DATE_STAMP = timestamp
+
+                                    i++
+
+                                })
+
+                            } else {
+                                self.items = []
+                            }
+                        }
+                    });
+                },
+                 async getGroup() {
+
+                  let self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("SelectItem_GROUP_WC_ByWC", "lookup")",
+                        type: "POST",
+                        data: {},
+                        success: function (result) {
+                            if (result.success) {
+
+                                self.groupList = result.data
+
+                                const arr = result.data;
+
+                                self.slt_group = '@Session["GROUP_ID"].ToString()';
+
+                                if (self.slt_group == "") {
+                                    self.slt_group = result.data[0].GROUP_ID
+                                }
+
+                                const index = arr.map(object => object.GROUP_ID).indexOf(self.slt_group);
+
+                                const arrSelect = arr[index];
+
+                                if (arrSelect.MENU_1 == 'N') {
+                                    $('#lk-menu-2').hide();
+                                }
+                                if (arrSelect.MENU_2 == 'N') {
+                                    $('#lk-menu-3').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N') {
+                                    $('#lk-menu-1').hide();
+                                }
+                                if (arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-4').hide();
+                                }
+                                if (arrSelect.MENU_3 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-5').hide();
+                                }
+                                if (arrSelect.MENU_1 == 'N' && arrSelect.MENU_2 == 'N' && arrSelect.MENU_4 == 'N' && arrSelect.MENU_5 == 'N') {
+                                    $('#lk-menu-6').hide();
+                                }
+
+                            }
+
+                        }
+                     });
+
+                     await $('#slt_group').selectpicker('destroy');
+                     await $('#slt_group').selectpicker('render');
+                     await $("#slt_group").selectpicker("val", self.slt_group)
+
+                },
+                async selectGroup(gID) {
+
+                    await $.ajax({
+                        url: "@Url.Action("Select_GROUP", "lookup")",
+                        type: "POST",
+                        data: { item_group: gID},
+                        success: function (result) {
+                            if (result.success) {
+                                window.open("@Url.Action("Index", "Waiting")","_self")
+                            }
+
+                        }
+                    });
+                },
+                reset_filter(type) {
+                    const self = this
+
+                    switch (type) {
+                        case 'type':
+                            self.filter_type = [];
+                            $("#filter_type").selectpicker("val", '')
+                            break;
+                        case 'shift':
+                            self.filter_shift = [];
+                            $("#filter_shift").selectpicker("val", '')
+                            break;
+                        case 'status':
+                            self.filter_status = [];
+                            $("#filter_shift").selectpicker("val", '')
+                            break;
+                    }
+
+                },
+                async set_risk() {
+
+                    const self = this;
+
+                    self.slt_action = await []
+                    self.slt_warning = await []
+
+                    await self.slt_detail.forEach((v, i) => {
+                        index = self.details_list.findIndex(item => item.ITEM_ID === v);
+                        self.slt_action.push(self.details_list[index].ITEM_DETAIL)
+                        self.slt_warning.push(self.details_list[index].ITEM_RISK)
+                    })
+
+                },
+                async set_recipient() {
+
+                    const self = this;
+
+                    self.recipient_list = await []
+
+                    await self.slt_recipient.forEach((v, i) => {
+                        index = self.recipient_option.findIndex(item => item.ITEM_ID === v);
+                        self.recipient_list.push(self.recipient_option[index])
+                    })
+
+                },
+                onFileChange(e) {
+
+                    var files = e.target.files || e.dataTransfer.files;
+                    if (!files.length) return;
+                    this.createImage(files);
+                },
+                async createImage(files) {
+                    var self = this;
+
+                    let fd;
+                   let file;
+
+                   $("b_file").hide();
+                   $("#btn-cn").html('<i class="fas fa-sync fa-spin"></i>');
+                   $("#btn-s").html('<i class="fas fa-sync fa-spin"></i>');
+
+                   $("#btn-cn").prop('disabled', true);
+                   $("#btn-s").prop('disabled', true);
+
+                    for (var index = 0; index < files.length; index++) {
+                        var reader = new FileReader();
+
+                        self.fileSize += parseFloat(files[index].size) > 0 ? (parseFloat(files[index].size) / (1024 * 1024)) : 0;
+
+                        if (parseFloat(self.fileSize) < 3) {
+
+                            self.fileList.push(files[index]);
+
+                            if ((files[index].type).split("/")[0] === "image") {
+                                files[index].file_type = 'image';
+                            }
+
+                            if ((files[index].type).split("/")[1] === "pdf") {
+                                files[index].file_type = 'pdf';
+                            }
+
+                            if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+                                files[index].file_type = 'excel';
+                            }
+
+                            if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.presentationml.presentation") {
+                                files[index].file_type = 'powerpoint';
+                            }
+
+                            if ((files[index].type).split("/")[1] === "vnd.openxmlformats-officedocument.wordprocessingml.document") {
+                                files[index].file_type = 'word';
+                            }
+
+                            if ((files[index].type).split("/")[0] === "text") {
+                                files[index].file_type = 'text';
+                            }
+
+                            fd = new FormData();
+                            file = $('#formFileMultiple')[0].files;
+
+                            fd.append('file', file[index]);
+                            fd.append('type', file[index].file_type);
+                            fd.append('size', ((file[index].size / 1024) / 1024).toFixed(4));
+                            fd.append('id', self.slt_id);
+
+                            await $.ajax({
+                                url: '@Url.Action("UploadFile", "lookup")',
+                                type: 'POST',
+                                data: fd,
+                                dataType: 'json',
+                                contentType: false,
+                                processData: false,
+                                success: async function (response) {
+                                    await self.tempID.push(response.data[0]);
+                                    await self.file_ids.push(response.data[0].ITEM_ID)
+                                    await self.getFileList(response.data[0])
+                                }
+                            });
+
+                        } else {
+                            self.fileSize -= parseFloat(files[index].size) > 0 ? (parseFloat(files[index].size) / (1024 * 1024)) : 0;
+
+                            swal({
+                                title: "แจ้งเตือน",
+                                text: 'ขนาดไฟล์รวมมีขนาดเกิน 3 MB',
+                                type: "warning",
+                                timer: 2000,
+                                showCancelButton: false,
+                                showConfirmButton: false
+                            })
+                        }
+
+                    }
+
+                   $("b_file").delay(1500).show();
+                   $("#btn-cn").html('ยกเลิก');
+                   $("#btn-s").html('บันทึก');
+
+                   $("#btn-cn").prop('disabled', false);
+                   $("#btn-s").prop('disabled', false);
+
+                   $("#formFileMultiple").val(null);
+
+                },
+                async getFileList(id) {
+
+                    const self = this;
+
+                    if (self.IsAdd) {
+                        await $.ajax({
+                            url: "@Url.Action("SelectItem_Files_by_in_file_id", "lookup")",
+                            type: "POST",
+                            data: { item_id: self.file_ids.map(d => `'${d}'`).join() },
+                            success: function (result) {
+                                if (result.success) {
+
+                                    self.fileList = []
+
+                                    for (let i = 0; i < result.data.length; i++) {
+                                        self.fileList.push(
+                                            {
+                                                id: result.data[i].ITEM_ID,
+                                                name: result.data[i].ITEM_NAME,
+                                                file_type: result.data[i].ITEM_FILE_TYPE,
+                                                size: result.data[i].ITEM_FILE_SIZE,
+                                            })
+                                    }
+
+                                }
+
+                            }
+                        });
+                    } else {
+                        await $.ajax({
+                            url: "@Url.Action("SelectItem_Files_by_changepoint_id", "lookup")",
+                            type: "POST",
+                             data: { item_id: id },
+                            success: function (result) {
+                                if (result.success) {
+
+                                    self.fileList = []
+
+                                    for (let i = 0; i < result.data.length; i++) {
+                                        self.fileList.push(
+                                            {
+                                                id: result.data[i].ITEM_ID,
+                                                name: result.data[i].ITEM_NAME,
+                                                file_type: result.data[i].ITEM_FILE_TYPE,
+                                                size: result.data[i].ITEM_FILE_SIZE,
+                                            })
+                                    }
+
+                                }
+
+                            }
+                        });
+                    }
+                },
+                 async get_detail_risk(type) {
+
+                     const self = this;
+
+                     await $.ajax({
+                        url: "@Url.Action("Option_Details", "lookup")",
+                        type: "POST",
+                         data: { filter_type: type },
+                        success: async function (result) {
+                            if (result.success) {
+
+                                const inputData = await result.data
+
+                                self.details_list = await result.data
+
+                                const transformedData = await {};
+
+                                await inputData.forEach(item => {
+                                    const id = item.ITEM_ID;
+                                    const detail = item.ITEM_DETAIL;
+                                    const risk = item.ITEM_RISK;
+                                    const category = item.ITEM_CATEGORY_NAME;
+
+                                    if (category in transformedData) {
+                                        transformedData[category].list.push(
+                                            {
+                                                id: id,
+                                                detail: detail,
+                                                risk: risk,
+                                            }
+                                        );
+                                    } else {
+                                        transformedData[category] = {
+                                            category: category,
+                                            list: [
+                                                {
+                                                    id: id,
+                                                    detail: detail,
+                                                    risk: risk,
+                                                }
+                                            ]
+                                        };
+                                    }
+                                });
+
+                                self.details_option = await Object.values(transformedData);
+                            
+                                 await $('#txt_details').selectpicker('destroy');
+                                await $('#txt_details').selectpicker('render');
+
+                            }
+
+                        }
+                     });
+
+                },
+                 async getProcess() {
+
+                     const self = this;
+
+                     await $.ajax({
+                        url: "@Url.Action("Option_Process", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.processList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getMoldNO() {
+
+                    const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Mold_NO", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.moldNOList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getEdit() {
+
+                     const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Edit", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.editList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getChange() {
+
+                    const self = this;
+
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Change", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.changeList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getPart() {
+
+                     const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Part", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.partsList = result.data
+                            }
+
+                        }
+                     });
+
+                },
+                async getMC() {
+
+                     const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_MC", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+
+                                const inputData = result.data
+
+                                const transformedData = {};
+
+                                inputData.forEach(item => {
+                                    const sizeTon = item.ITEM_SIZETON;
+                                    const itemId = item.ITEM_NAME;
+
+                                    if (sizeTon in transformedData) {
+                                        transformedData[sizeTon].list.push(itemId);
+                                    } else {
+                                        transformedData[sizeTon] = {
+                                            sizeTon: sizeTon,
+                                            list: [itemId]
+                                        };
+                                    }
+                                });
+
+                                self.mcsList = Object.values(transformedData);
+
+                            }
+
+                        }
+                    });
+                },
+                async getUser() {
+
+                     const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_EMP", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+
+                                const inputData = result.data
+
+                                self.dataNameList = result.data
+
+                                const transformedData = {};
+
+                                inputData.forEach(item => {
+
+                                    self.user_option[item.EMP_NO] = `${item.GNAME_TH} ${item.FNAME_TH}`
+
+                                    const itemId = item.EMP_NO;
+                                    const wc_code = item.WC_CODE;
+                                    const wc_name = item.WC_NAME;
+
+                                    const gname_eng = item.GNAME_ENG;
+                                    const fname_eng = item.FNAME_ENG;
+                                    const gname_tha = item.GNAME_TH;
+                                    const fname_tha = item.FNAME_TH;
+
+                                    if (wc_code in transformedData) {
+                                        transformedData[wc_code].list.push(
+                                            {
+                                                itemId: itemId,
+                                                gname_eng: gname_eng,
+                                                fname_eng: fname_eng,
+                                                gname_tha: gname_tha,
+                                                fname_tha: fname_tha,
+                                            }
+                                        );
+                                    } else {
+                                        transformedData[wc_code] = {
+                                            wc_code: wc_code,
+                                            wc_name: wc_name,
+                                            list: [
+                                                {
+                                                    itemId: itemId,
+                                                    gname_eng: gname_eng,
+                                                    fname_eng: fname_eng,
+                                                    gname_tha: gname_tha,
+                                                    fname_tha: fname_tha,
+                                                }
+                                            ]
+                                        };
+                                    }
+                                });
+
+                                self.userList = Object.values(transformedData);
+
+                            }
+                        }
+                     });
+                },
+                async Open_Modal(type, calendar_id, id, result) {
+
+                    const self = this
+                    let el = document.querySelector('#change_point_modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+                    self.changeType = type
+
+                    let edit_item = []
+                    let item_info = []
+
+                    self.modal_type = type
+
+                    $('[id^="lb_"]').hide();
+                    $('[id^="b_"]').hide();
+
+                    self.get_detail_risk(type)
+
+                    switch (type) {
+                        case '1':
+                            $('[id="lb_from"]').show();
+                            $('[id="lb_to"]').show();
+                            $('[id="lb_mc"]').show();
+                            $('[id="lb_process"]').show();
+
+                            $('[id="b_from"]').show();
+                            $('[id="b_to"]').show();
+                            $('[id="b_mc"]').show();
+                            $('[id="b_process"]').show();
+
+                            self.title_modal = 'Man';
+                            break;
+                        case '2':
+                            $('[id="lb_eidt"]').show();
+                            $('[id="lb_mc"]').show();
+                            $('[id="lb_file"]').show();
+
+                            $('[id="b_eidt"]').show();
+                            $('[id="b_mc"]').show();
+                            $('[id="b_file"]').show();
+
+                            self.title_modal = 'M/C';
+                            break;
+                        case '3':
+                            $('[id="lb_mold"]').show();
+                            $('[id="lb_part"]').show();
+                            $('[id="lb_file"]').show();
+
+                            $('[id="b_mold"]').show();
+                            $('[id="b_part"]').show();
+                            $('[id="b_file"]').show();
+
+                            self.title_modal = 'Mold/DIE';
+                            break;
+                        case '4':
+                            $('[id="lb_mc"]').show();
+                            $('[id="lb_part"]').show();
+                            $('[id="lb_file"]').show();
+
+                            $('[id="b_mc"]').show();
+                            $('[id="b_part"]').show();
+                            $('[id="b_file"]').show();
+
+                            self.title_modal = 'Method';
+                            break;
+                        case '5':
+                            $('[id="lb_mc"]').show();
+                            $('[id="lb_part"]').show();
+                            $('[id="lb_change"]').show();
+                            $('[id="lb_file"]').show();
+
+                            $('[id="b_mc"]').show();
+                            $('[id="b_part"]').show();
+                            $('[id="b_change"]').show();
+                            $('[id="b_file"]').show();
+
+                            self.title_modal = "Part/Mat'l";
+                            break;
+                    }
+
+                    self.is_confirm = result == 'N' ? true : false;
+                    self.IsAdd = false
+
+                    self.confirm_id = id
+                     await $.ajax({
+                        url: "@Url.Action("ListItem_ChangePoint_Item", "lookup")",
+                        type: "POST",
+                         data: { item_id: calendar_id },
+                        success: async function (result) {
+                            if (result.success) {
+
+                                item_info = result.data[0];
+
+                                self.slt_id = item_info.ID
+                                self.slt_shift = item_info.SHIFT
+                                self.slt_remark = item_info.REMARK
+                                self.slt_spot = item_info.MAN_SPOT
+                                self.slt_instead = item_info.MAN_INSTEAD
+                                self.slt_edit = item_info.EDIT_POINT
+                                self.slt_mc_no = item_info.MC_NO
+                                self.slt_mold_no = item_info.MOLD_NO
+                                self.slt_part_no = item_info.PART_NO
+                                self.slt_process = item_info.PROCESS_POINT
+                                self.slt_change = item_info.CHANGE
+                                self.slt_recipient = item_info.RECIPIENT_ID != '' ? item_info.RECIPIENT_ID.split(',') : [];
+                                self.fileList = []
+                                self.images = []
+
+                                self.slt_detail = item_info.DETAILS != '' ? item_info.DETAILS.split(',') : [];
+                                self.slt_action = item_info.ACTION != '' ? item_info.ACTION.split(',') : [];
+                                self.slt_warning = item_info.WARNINGS != '' ? item_info.WARNINGS.split(',') : [];
+
+                                $("#formFileMultiple").val(null);
+
+                                await self.getFileList(self.slt_id)
+                                await self.set_recipient()
+                                await $("#slt_mold_no").selectpicker("val", self.slt_mold_no)
+                                await $("#slt_part_no").selectpicker("val", self.slt_part_no)
+                                await $("#slt_edit").selectpicker("val", self.slt_edit)
+                                await $("#slt_process").selectpicker("val", self.slt_process)
+                                await $("#slt_spot").selectpicker("val", self.slt_spot)
+                                await $("#slt_instead").selectpicker("val", self.slt_instead)
+                                await $("#slt_mc_no").selectpicker("val", self.slt_mc_no)
+                                await $("#slt_change").selectpicker("val", self.slt_change)
+
+                                await $("#txt_details").selectpicker("val", self.slt_detail)
+                                await $("#txt_risks").selectpicker("val", self.slt_warning)
+                                await $("#slt_recipient").selectpicker("val", self.slt_recipient)
+                                await $("#slt_shift").selectpicker("val", item_info.SHIFT)
+
+                            } else {
+                            }
+                        }
+                    });
+
+
+                    await  modal.show()
+
+                },
+                async get_recipient_option() {
+
+                     const self = this;
+
+                    await $.ajax({
+                        url: "@Url.Action("Option_Approve_Member", "lookup")",
+                        type: "POST",
+                        data: { },
+                        success: function (result) {
+                            if (result.success) {
+                                self.recipient_option = result.data
+                            }
+
+                        }
+                    });
+                },
+                async confirm_change_point() {
+
+                    const self = this;
+                   
+                    let el = document.querySelector('#change_point_modal');
+                    let modal = bootstrap.Modal.getOrCreateInstance(el);
+
+                     let fn = function (isConfirm) {
+                         if (isConfirm) {
+                             $.ajax({
+                                 url: "@Url.Action("Confirm_Change_Point", "Waiting")",
+                                 type: "POST",
+                                 data: { item_id: self.confirm_id  },
+                                 success: function (result) {
+                                     if (result.success) {
+                                         swal({
+                                             title: "Alert",
+                                             text: result.Message,
+                                             type: "success",
+                                             timer: 1000,
+                                             showCancelButton: false,
+                                             showConfirmButton: false
+                                         })
+                                         self.get_list();
+                                          modal.hide()
+                                         count_waiting()
+                                     } else {
+                                         swal({
+                                             title: "Alert",
+                                             text: result.responseText,
+                                             type: "warning",
+                                             timer: 1000,
+                                             showCancelButton: false,
+                                             showConfirmButton: false
+                                         })
+                                     }
+                                 }
+                             });
+
+                         } 
+                    }
+
+                    await alertBoxConfirm("แจ้งเตือน", "คุณต้อง Confirm Change Point ใช่หรือไม่ ?", "", fn)
+                }
+
+
+            },
+            watch: {
+            }
+    }).mount('#MainApp')
+
+    $('#nav-link-master').addClass('active');
+
+    // ------------------- BackToTop ------------------- //
+
+    //var mybutton = document.getElementById("toTop");
+
+    //window.onscroll = function () {
+    //    scrollFunction()
+    //};
+
+    //function scrollFunction() {
+
+    //    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    //        mybutton.classList.add("active");
+
+    //    } else {
+    //        mybutton.classList.remove("active");
+    //    }
+    //}
+
+
+
+</script>
