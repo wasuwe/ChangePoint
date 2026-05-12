@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8" />
@@ -18,624 +18,499 @@
     @Scripts.Render("~/Scripts/fontawesome/fontawesome.min.js")
     @Scripts.Render("~/Scripts/DataTables/jquery.dataTables.min.js")
     @Scripts.Render("~/Scripts/DataTables/dataTables.bootstrap5.min.js")
-
     @Scripts.Render("~/Scripts/vue@3.2.47/dist/vue.global.js")
-
     @Scripts.Render("~/Scripts/vue-datepicker.js")
-
     @Scripts.Render("~/Scripts/dselect.js")
 
     <link rel="shortcut icon" type="image/x-icon" href="~/src/icons/calendar2.png" />
 
     <style>
+        :root {
+            --cp-primary: #1e293b;
+            --cp-accent:  #3b82f6;
+            --cp-accent-hover: #2563eb;
+            --cp-surface: #f1f5f9;
+            --cp-card: #ffffff;
+            --cp-border: #e2e8f0;
+            --cp-text: #1e293b;
+            --cp-text-muted: #64748b;
+            --cp-nav-height: 60px;
+            --color_man:  #22c55e;
+            --color_mc:   #ef4444;
+            --color_mold: #a855f7;
+            --color_met:  #3b82f6;
+            --color_part: #06b6d4;
+        }
+
+        * { box-sizing: border-box; }
 
         body {
-            font-family: var(--bs-body-font-family) !important;
-        }
-
-        .LoginBox {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f2f2f2;
-        }
-
-        .loginForm {
-            width: 350px;
-            /*height: 300px;*/
-            /*border: solid 3px #eeeeee;*/
-            padding: 90px 55px 33px;
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 5px 10px 0 rgb(0 0 0 / 10%);
-            background: #fff;
-            border-radius: 10px;
-        }
-
-        .LoginHR {
-            width: 100%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .LoginHR hr {
-                width: 100%;
-            }
-
-            .LoginHR label {
-                position: absolute;
-                background-color: #ffffff;
-                padding: 0px 8px;
-                font-weight: bold;
-            }
-
-
-        .LoginTitle {
-            margin-bottom: 20px;
-            font-size: 30px;
-            font-weight: bold;
-            display: flex;
-        }
-
-            .LoginTitle .LoginVisitor {
-                width: 0px;
-                overflow: hidden;
-                transition: all 0.45s;
-            }
-
-                .LoginTitle .LoginVisitor.active {
-                    width: 140px;
-                }
-
-            .LoginTitle .LoginMember {
-                width: 0px;
-                overflow: hidden;
-                transition: all 0.45s;
-            }
-
-                .LoginTitle .LoginMember.active {
-                    width: 130px;
-                }
-
-        .LoginInput {
-            display: flex;
-            grid-gap: 15px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-            .LoginInput.password {
-                grid-gap: 20px;
-            }
-
-            .LoginInput input {
-                width: 100%
-            }
-
-        .LoginButton {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            flex-direction: column;
-            grid-gap: 10px;
-            margin-bottom: 10px;
-            margin: 10px 0;
-        }
-
-            .LoginButton button {
-                width: 100%;
-            }
-
-        .ForgotPassowrd {
-            font-size: 13px;
-        }
-
-            .ForgotPassowrd a {
-                color: #838383;
-            }
-
-        .btnSwitch-2 {
-            color: rgb(255, 184, 76);
-        }
-
-        .btnSwitch-1 {
-            color: rgb(43, 52, 103);
-        }
-
-        .btnSwitch-1, .btnSwitch-2 {
-            position: absolute;
-            right: 149px;
-            top: 35px;
-            border: 2px solid;
-            padding: 5px;
-            border-radius: 100%;
-            height: 50px;
-            width: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            background-color: #ffffff;
-            font-size: 30px;
-        }
-
-
-
-        /*.headbar-between {
-            justify-content: space-between;
-        }*/
-        .headbar-search {
-            grid-gap: 5px;
-        }
-
-        .btn-default {
-            background: #eee;
-        }
-
-            .btn-default:hover {
-                background: #d3d3d3 !important;
-            }
-
-
-        .MenuBox {
-            display: flex;
-            flex-wrap: wrap;
-            grid-gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-            .MenuBox .MenuItem {
-                height: 150px;
-                border: solid 1px #00000e;
-                width: 24%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 8px;
-                background: #eee;
-                font-size: 40px;
-            }
-
-        footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: #919191;
-            padding: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--cp-surface);
+            color: var(--cp-text);
             margin: 0;
         }
 
-            footer p {
-                margin: 0;
-                font-size: 15px;
-            }
+        /* ── Navbar ── */
+        .cp-navbar {
+            height: var(--cp-nav-height);
+            background: var(--cp-primary);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            gap: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+        }
 
-        /*---------- table Page ----------*/
+        .cp-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            flex-shrink: 0;
+            margin-right: 24px;
+        }
+        .cp-brand i { color: var(--cp-accent); font-size: 1.3rem; }
+        .cp-brand:hover { color: #e2e8f0; }
+
+        .cp-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .cp-nav-link {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 7px;
+            font-size: .875rem;
+            font-weight: 500;
+            transition: background .15s, color .15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .cp-nav-link:hover, .cp-nav-link.active {
+            background: rgba(255,255,255,.1);
+            color: #fff;
+        }
+        .cp-nav-link i { font-size: .85rem; opacity: .8; }
+
+        /* dropdown */
+        .cp-dropdown { position: relative; }
+        .cp-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: #fff;
+            border: 1px solid var(--cp-border);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.12);
+            min-width: 220px;
+            padding: 6px;
+            z-index: 2000;
+            animation: dropIn .15s ease;
+        }
+        @keyframes dropIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .cp-dropdown:hover .cp-dropdown-menu,
+        .cp-dropdown:focus-within .cp-dropdown-menu { display: block; }
+
+        .cp-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 7px;
+            color: var(--cp-text);
+            text-decoration: none;
+            font-size: .855rem;
+            transition: background .12s;
+        }
+        .cp-dropdown-item:hover { background: var(--cp-surface); color: var(--cp-accent); }
+        .cp-dropdown-item i { width: 16px; text-align: center; color: var(--cp-text-muted); }
+        .cp-dropdown-divider { height: 1px; background: var(--cp-border); margin: 4px 6px; }
+
+        /* right side */
+        .cp-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .cp-clock {
+            color: #94a3b8;
+            font-size: .8rem;
+            font-variant-numeric: tabular-nums;
+            margin-right: 4px;
+        }
+
+        .cp-bell {
+            position: relative;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            text-decoration: none;
+            padding: 6px 8px;
+            border-radius: 7px;
+            transition: background .15s, color .15s;
+        }
+        .cp-bell:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .cp-bell-badge {
+            display: none;
+            position: absolute;
+            top: 2px; right: 2px;
+            background: #ef4444;
+            color: #fff;
+            font-size: .6rem;
+            font-weight: 700;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            padding: 0 3px;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .cp-user-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.06);
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: .855rem;
+            font-weight: 500;
+            transition: background .15s;
+        }
+        .cp-user-btn:hover { background: rgba(255,255,255,.12); }
+        .cp-user-avatar {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .75rem; font-weight: 700;
+        }
+        .avatar-admin  { background: #3b82f6; color: #fff; }
+        .avatar-member { background: #f59e0b; color: #fff; }
+        .avatar-visitor{ background: #6366f1; color: #fff; }
+
+        /* ── Body wrapper ── */
+        .cp-body {
+            padding: 20px 24px 40px;
+            min-height: calc(100vh - var(--cp-nav-height));
+        }
+
+        /* ── Page card ── */
+        .cp-card {
+            background: var(--cp-card);
+            border-radius: 14px;
+            box-shadow: 0 1px 6px rgba(0,0,0,.07);
+            overflow: hidden;
+        }
+        .cp-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--cp-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .cp-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--cp-text);
+            margin: 0;
+        }
+
+        /* ── Type badges ── */
+        .badge-man  { background: color-mix(in srgb, var(--color_man) 15%, white);  color: color-mix(in srgb, var(--color_man) 70%, #000);  border: 1px solid color-mix(in srgb, var(--color_man) 30%, white); }
+        .badge-mc   { background: color-mix(in srgb, var(--color_mc)  15%, white);  color: color-mix(in srgb, var(--color_mc)  70%, #000);  border: 1px solid color-mix(in srgb, var(--color_mc)  30%, white); }
+        .badge-mold { background: color-mix(in srgb, var(--color_mold)15%, white);  color: color-mix(in srgb, var(--color_mold)70%, #000);  border: 1px solid color-mix(in srgb, var(--color_mold)30%, white); }
+        .badge-met  { background: color-mix(in srgb, var(--color_met) 15%, white);  color: color-mix(in srgb, var(--color_met) 70%, #000);  border: 1px solid color-mix(in srgb, var(--color_met) 30%, white); }
+        .badge-part { background: color-mix(in srgb, var(--color_part)15%, white);  color: color-mix(in srgb, var(--color_part)70%, #000);  border: 1px solid color-mix(in srgb, var(--color_part)30%, white); }
+
+        .cp-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        /* ── Login page ── */
+        .cp-login-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+        .cp-login-card {
+            width: 380px;
+            background: #fff;
+            border-radius: 20px;
+            padding: 48px 40px 36px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
+            position: relative;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+
+        /* ── Utilities ── */
+        .btn-default {
+            background: #eee;
+        }
+        .btn-default:hover { background: #d3d3d3 !important; }
+
+        .form-switch .form-check-input { width: 4em; height: 2em; margin: 0; margin-right: 20px; }
+
+        .dselect-wrapper { border: unset; padding: 0; }
+
+        tbody a { text-decoration: unset !important; color: #000; }
+
         .tables-page-head {
-            margin-top: 30px;
-            margin-bottom: 30px;
+            margin-top: 20px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
         }
+        .tables-page-head .haed-title { font-size: 1.5rem; font-weight: 700; }
+        .tables-page-head .haed-fn a { font-size: 30px; color: #47c513; transition: all .4s; }
+        .tables-page-head .haed-fn a:hover i { transform: scale(1.2); }
 
-            .tables-page-head .haed-title {
-                font-size: 35px;
-                font-weight: bold;
-            }
-
-            .tables-page-head .haed-fn a {
-                font-size: 30px;
-                color: #47c513;
-                transition: all 0.4s;
-            }
-
-                .tables-page-head .haed-fn a i {
-                    transition: all 0.4s;
-                }
-
-                .tables-page-head .haed-fn a:hover i {
-                    transform: scale(1.2)
-                }
-
-
-        tbody a {
-            text-decoration: unset !important;
-            color: #000000;
+        .section-tatble {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07);
+            padding: 16px;
+            margin-top: 16px;
         }
 
-        .form-switch .form-check-input {
-            width: 4em;
-            height: 2em;
-            margin: 0;
-            margin-right: 20px;
+        .dropdown.bootstrap-select {
+            width: 100% !important;
+            border: var(--bs-border-width) solid var(--bs-border-color);
+            border-radius: 7px;
+        }
+        button.btn.dropdown-toggle.btn-light {
+            background-color: var(--bs-body-bg);
+            background-clip: padding-box;
         }
 
-        #IsUse {
-            position: absolute;
-            right: 0;
-            top: 10px;
-        }
+        .title-name { min-width: 100px; }
 
-        /*---------- table Page ----------*/
-
-        .cancel.btn.btn-lg.btn-default {
-            color: #fff !important;
-            background-color: #6c757d !important;
-            border-color: #6c757d !important;
-        }
-
-        .title-name {
-            min-width: 100px;
-        }
-
-        .dselect-wrapper {
-            border: unset;
-            padding: 0;
-        }
-
-        div#MyClockDisplay {
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: bold;
-        }
-
-        #unread-msg {
+        /* hamburger for mobile */
+        .cp-hamburger {
             display: none;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+            padding: 4px 8px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .cp-nav-links { display: none; }
+            .cp-hamburger { display: block; }
+            .cp-body { padding: 12px 12px 32px; }
         }
     </style>
-
 </head>
-<body id="body">
-    @if (ViewBag.Data.IsLayout)
-    {
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background: #2B303A !important; box-shadow: rgb(0 0 0 / 35%) 0px 5px 15px;">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="@Url.Action("index","home")"><i class="fas fa-calendar-alt"></i> ChangePoint</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigaton">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse headbar-between justify-content-between " id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link " id="nav-link-detail" aria-current="page" href="@Url.Action("detail","home")">Detail</a>
-                        </li>
+<body>
 
-                        @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="nav-link-master" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Master Data
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="nav-link-master">
-                                    <li id="lk-menu-1"><a class="dropdown-item" href="@Url.Action("Mold_NO","lookup")">Mold NO.</a></li>
-                                    <li id="lk-menu-2"><a class="dropdown-item" href="@Url.Action("Process","lookup")">Process</a></li>
-                                    <li id="lk-menu-3"><a class="dropdown-item" href="@Url.Action("Edit","lookup")">จุดที่แก้ไข [M/C]</a></li>
-                                    <li id="lk-menu-4"><a class="dropdown-item" href="@Url.Action("Change","lookup")">หัวข้อการเปลี่ยนแปลง [Part/Mat'l]</a></li>
-                                    <li id="lk-menu-5"><a class="dropdown-item" href="@Url.Action("Part","lookup")">Part</a></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Machine","lookup")">Machine</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Detail","lookup")">Detail</a></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Detail_Category","lookup")">Detail Category</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Dashboard","lookup")">Dashboard Setting</a></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Colors","lookup")">Colors Setting</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Colors","lookup")">@*Approve Route*@</a></li>
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Approve_Member","lookup")">Group Member</a></li> @*recipient*@
-                                    <li id="lk-menu-6"><a class="dropdown-item" href="@Url.Action("Check_Sheet","lookup")">@*Check Sheet*@</a></li>
-                                </ul>
-                            </li>
-                        }
+@if (ViewBag.Data.IsLayout)
+{
+    <nav class="cp-navbar">
+        <a class="cp-brand" href="@Url.Action("index","home")">
+            <i class="fas fa-calendar-check"></i>
+            ChangePoint
+        </a>
 
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="nav-link-report" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Report
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="nav-link-master">
-                                <li id="lk-menu-1"><a class="dropdown-item" href="@Url.Action("Summary","Report")">Summary</a></li>
-                                <li id="lk-menu-1"><a class="dropdown-item" href="@Url.Action("Export","Report")">Export</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <div id="MyClockDisplay" class="clock" onload="showTime()">
-                        <i class="far fa-clock"></i>
-                    </div>
-
-
-                    @if (ViewBag.Data.IsLogin)
-                    {
-                        <div class="d-flex justify-content align-items-center" style="grid-gap: 15px;">
-                            <ul class="navbar-nav">
-                                @*<li class="nav-item">
-            <a class="nav-link position-relative" id="nav-link-approved" aria-current="page" href="@Url.Action("detail","home")">
-                <i class="fas fa-bell"></i>
-                <span class="position-absolute top-5 start-80 translate-middle badge rounded-pill bg-danger">
-                    9
-                    <span class="visually-hidden">unread messages</span>
-                </span>
+        <div class="cp-nav-links" id="navLinks">
+            <a class="cp-nav-link" id="nav-link-detail" href="@Url.Action("detail","home")">
+                <i class="fas fa-list-alt"></i> รายการ
             </a>
-        </li>*@
 
+            @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+            {
+                <div class="cp-dropdown">
+                    <a class="cp-nav-link" href="#" id="nav-link-master">
+                        <i class="fas fa-database"></i> Master Data <i class="fas fa-chevron-down" style="font-size:.7rem;margin-left:2px;"></i>
+                    </a>
+                    <div class="cp-dropdown-menu">
+                        <a class="cp-dropdown-item" id="lk-menu-3" href="@Url.Action("Mold_NO","lookup")"><i class="fas fa-circle"></i> Mold NO.</a>
+                        <a class="cp-dropdown-item" id="lk-menu-2" href="@Url.Action("Process","lookup")"><i class="fas fa-project-diagram"></i> Process</a>
+                        <a class="cp-dropdown-item" id="lk-menu-3" href="@Url.Action("Edit","lookup")"><i class="fas fa-tools"></i> จุดที่แก้ไข [M/C]</a>
+                        <a class="cp-dropdown-item" id="lk-menu-4" href="@Url.Action("Change","lookup")"><i class="fas fa-exchange-alt"></i> หัวข้อการเปลี่ยนแปลง</a>
+                        <a class="cp-dropdown-item" id="lk-menu-5" href="@Url.Action("Part","lookup")"><i class="fas fa-puzzle-piece"></i> Part</a>
+                        <a class="cp-dropdown-item" id="lk-menu-6" href="@Url.Action("Machine","lookup")"><i class="fas fa-cog"></i> Machine</a>
+                        <div class="cp-dropdown-divider"></div>
+                        <a class="cp-dropdown-item" href="@Url.Action("Detail","lookup")"><i class="fas fa-file-alt"></i> Detail</a>
+                        <a class="cp-dropdown-item" href="@Url.Action("Detail_Category","lookup")"><i class="fas fa-tags"></i> Detail Category</a>
+                        <div class="cp-dropdown-divider"></div>
+                        <a class="cp-dropdown-item" href="@Url.Action("Dashboard","lookup")"><i class="fas fa-chart-bar"></i> Dashboard Setting</a>
+                        <a class="cp-dropdown-item" href="@Url.Action("Colors","lookup")"><i class="fas fa-palette"></i> Colors Setting</a>
+                        <div class="cp-dropdown-divider"></div>
+                        <a class="cp-dropdown-item" href="@Url.Action("Approve_Member","lookup")"><i class="fas fa-users"></i> Group Member</a>
+                        <a class="cp-dropdown-item" href="@Url.Action("Check_Sheet","lookup")"><i class="fas fa-clipboard-check"></i> Check Sheet</a>
+                    </div>
+                </div>
+            }
 
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="nav-link-admin" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-
-                                        @if (Session["STATUS"].ToString() == "V")
-                                        {
-                                            <i style="color: rgb(153, 168, 255);" class="fas fa-user"></i>
-                                        }
-                                        else if (Session["STATUS"].ToString() == "M")
-                                        {
-                                            <i style="color: rgb(255, 184, 76);" class="fas fa-star"></i>
-                                        }
-                                        else
-                                        {
-                                            <i style="color: rgb(255, 255, 255);" class="fas fa-eye"></i>
-                                        }
-
-                                        <label class="title-name">
-                                            @Session["GNAME_ENG"] @Session["FNAME_ENG"]
-                                        </label>
-
-                                    </a>
-                                    <ul class="dropdown-menu" style="" aria-labelledby="nav-link-admin">
-                                        @if (Session["ROLE"].ToString() == "A")
-                                        {
-                                            <li><a class="dropdown-item" href="@Url.Action("Member", "lookup")">Member</a></li>
-                                            <li><a class="dropdown-item" href="@Url.Action("Group", "lookup")">Group</a></li>
-                                            <li><hr class="dropdown-divider"></li>
-                                        }
-                                        @if (false)
-                                        {
-                                            <li><a class="dropdown-item" href="@Url.Action("Dashboard", "Home", new { id = "21"})">Dashboard</a></li>
-                                        }
-                                        <li><a class="dropdown-item" href="@Url.Action("logout", "login")">Logout</a></li>
-                                    </ul>
-                                </li>
-
-                                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link position-relative" id="nav-link-approved" aria-current="page" href="@Url.Action("Index","Waiting")">
-                                            <i class="fas fa-bell"></i>
-                                            <span class="position-absolute top-5 start-80 translate-middle badge rounded-pill bg-danger" id="unread-msg">
-                                            </span>
-                                        </a>
-                                    </li>
-                                }
-
-                            </ul>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex justify-content align-items-center" style="grid-gap: 15px;">
-                            <div style="color: white;">
-                                <a class="nav-link" href="#" id="Logout">Login</a>
-                            </div>
-
-                        </div>
-                    }
-
+            <div class="cp-dropdown">
+                <a class="cp-nav-link" href="#" id="nav-link-report">
+                    <i class="fas fa-chart-line"></i> Report <i class="fas fa-chevron-down" style="font-size:.7rem;margin-left:2px;"></i>
+                </a>
+                <div class="cp-dropdown-menu">
+                    <a class="cp-dropdown-item" href="@Url.Action("Summary","Report")"><i class="fas fa-file-invoice"></i> Summary</a>
+                    <a class="cp-dropdown-item" href="@Url.Action("Export","Report")"><i class="fas fa-file-export"></i> Export</a>
                 </div>
             </div>
-        </nav>
-    }
-
-
-
-    @*<div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                        <li>@Html.ActionLink("About", "About", "Home")</li>
-                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    </ul>
-                </div>
-            </div>
-        </div>*@
-
-
-    @if (ViewBag.Data.IsLayout)
-    {
-        <div class="container-fluid body-content">
-            @RenderBody()
         </div>
-        @*<footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>*@
-    }
-    else
-    {
+
+        <div class="cp-nav-right">
+            <span class="cp-clock" id="MyClockDisplay"><i class="far fa-clock"></i></span>
+
+            @if (ViewBag.Data.IsLogin)
+            {
+                @if (ViewBag.Data.ROLE != "V" && ViewBag.Data.ROLE != "G")
+                {
+                    <a class="cp-bell" id="nav-link-approved" href="@Url.Action("Index","Waiting")">
+                        <i class="fas fa-bell"></i>
+                        <span class="cp-bell-badge" id="unread-msg" style="display:none;"></span>
+                    </a>
+                }
+
+                <div class="cp-dropdown">
+                    <div class="cp-user-btn">
+                        @{
+                            string avatarClass = "avatar-visitor";
+                            string avatarIcon  = "👁";
+                            if (Session["STATUS"] != null) {
+                                if (Session["STATUS"].ToString() == "M") { avatarClass = "avatar-member"; avatarIcon = "★"; }
+                                else if (Session["ROLE"] != null && Session["ROLE"].ToString() == "A") { avatarClass = "avatar-admin"; avatarIcon = "A"; }
+                            }
+                        }
+                        <span class="cp-user-avatar @avatarClass">
+                            @if (Session["STATUS"] != null && Session["STATUS"].ToString() == "M") {<text>★</text>}
+                            else if (Session["STATUS"] != null && Session["STATUS"].ToString() == "V") {<text>V</text>}
+                            else {<text>G</text>}
+                        </span>
+                        <span class="title-name">@Session["GNAME_ENG"] @Session["FNAME_ENG"]</span>
+                        <i class="fas fa-chevron-down" style="font-size:.65rem;opacity:.6;"></i>
+                    </div>
+                    <div class="cp-dropdown-menu" style="right:0;left:auto;">
+                        @if (Session["ROLE"] != null && Session["ROLE"].ToString() == "A")
+                        {
+                            <a class="cp-dropdown-item" href="@Url.Action("Member","lookup")"><i class="fas fa-user-cog"></i> Member</a>
+                            <a class="cp-dropdown-item" href="@Url.Action("Group","lookup")"><i class="fas fa-layer-group"></i> Group</a>
+                            <div class="cp-dropdown-divider"></div>
+                        }
+                        <a class="cp-dropdown-item" href="@Url.Action("logout","login")" style="color:#ef4444;">
+                            <i class="fas fa-sign-out-alt" style="color:#ef4444;"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a class="cp-nav-link" href="#" id="Logout"><i class="fas fa-sign-in-alt"></i> Login</a>
+            }
+        </div>
+    </nav>
+
+    <div class="cp-body">
         @RenderBody()
+    </div>
+}
+else
+{
+    @RenderBody()
+}
+
+<script>
+    // Clock
+    function showTime() {
+        var d = new Date();
+        var h = String(d.getHours()).padStart(2,'0');
+        var m = String(d.getMinutes()).padStart(2,'0');
+        var s = String(d.getSeconds()).padStart(2,'0');
+        var el = document.getElementById("MyClockDisplay");
+        if (el) el.textContent = h + ":" + m + ":" + s;
+        setTimeout(showTime, 1000);
     }
 
-
-
-
-    <script>
-        
-        async function count_waiting() {
-            await $.ajax({
+    async function count_waiting() {
+        await $.ajax({
             url: "@Url.Action("Count_Waiting_Confirm", "Waiting")",
             type: "POST",
-            data: { },
+            data: {},
             success: function (result) {
-                    if (result.data[0].RESULT > 0) {
-                    $('#unread-msg').delay(500).html(result.data[0].RESULT)
-                        $('#unread-msg').delay(500).fadeIn()
-                    } else {
-                    $('#unread-msg').delay(500).fadeOut()
+                var badge = document.getElementById('unread-msg');
+                if (!badge) return;
+                if (result.data && result.data[0].RESULT > 0) {
+                    badge.textContent = result.data[0].RESULT;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
                 }
-                }
-            });
-        }
-
-
-        function showTime() {
-            var date = new Date();
-            var h = date.getHours(); // 0 - 23
-            var m = date.getMinutes(); // 0 - 59
-            var s = date.getSeconds(); // 0 - 59
-            var session = "AM";
-
-            if (h == 0) {
-                h = 12;
             }
-
-            if (h > 12) {
-                h = h - 12;
-                session = "PM";
-            }
-
-            h = (h < 10) ? "0" + h : h;
-            m = (m < 10) ? "0" + m : m;
-            s = (s < 10) ? "0" + s : s;
-
-            var time = h + ":" + m + ":" + s + " " + session;
-            document.getElementById("MyClockDisplay").innerText = time;
-            document.getElementById("MyClockDisplay").textContent = time;
-
-            setTimeout(showTime, 1000);
-
-        }
-
-        if ('@ViewBag.Data.IsLayout' == 'True' )
-        {
-            showTime();
-            count_waiting();
-
-        }
-
-         $("#btn_search").click(function () {
-            let searchTxt = $("#txt_search").val();
-
-            $.ajax({
-                url: "@Url.Action("searchTxt", "home")",
-                type: "POST",
-                data: { searchTxt: searchTxt },
-                success: function (result) {
-
-                    alertBox("Alert", "Search : " + result.responseText, "success")
-
-                }
-             })
-         });
-
-        $("#Logout").click(function () {
-            let searchTxt = $("#txt_search").val();
-
-            $.ajax({
-                url: "@Url.Action("logout", "login")",
-                type: "POST",
-                data: {},
-                success: function (result) {
-
-                    window.open("@Url.Action("index", "login")","_self")
-
-                }
-            });
         });
+    }
 
-     //----------------------------- Sweet Alert --------------------------------------//
+    if ('@ViewBag.Data.IsLayout' == 'True') {
+        showTime();
+        count_waiting();
+    }
 
-        function alertBox(title = "", text = "", icon = "success", customsClass = "", fn = "") {
+    $("#Logout").click(function () {
+        $.ajax({
+            url: "@Url.Action("logout","login")",
+            type: "POST",
+            data: {},
+            success: function () { window.open("@Url.Action("index","login")","_self"); }
+        });
+    });
 
-            //type : warning, error, success, info
+    // ── Sweet Alert helpers ── //
+    function alertBox(title, text, icon, customsClass, fn) {
+        title = title || ""; text = text || ""; icon = icon || "success"; customsClass = customsClass || ""; fn = fn || "";
+        swal({ title, text, type: icon, customClass: customsClass, showCancelButton: false, showConfirmButton: true }, fn);
+    }
+    function alertBoxTime(title, text, icon, time, customsClass, fn) {
+        title = title || ""; text = text || ""; icon = icon || "success"; time = time || 1100;
+        swal({ title, text, type: icon, customClass: customsClass || "", timer: time, showCancelButton: false, showConfirmButton: false }, fn || "");
+    }
+    function alertBoxConfirm(title, text, customsClass, fn) {
+        title = title || ""; text = text || "";
+        swal({ title, text, type: "warning", customClass: customsClass || "", showCancelButton: true, confirmButtonText: "Yes", cancelButtonText: "No", closeOnConfirm: false, closeOnCancel: true }, fn);
+    }
+</script>
 
-            swal({
-                title: title,
-                text: text,
-                type: icon,
-                customClass: customsClass,
-                showCancelButton: false,
-                showConfirmButton: true
-            }, fn);
-        }
-
-        function alertBoxTime(title = "", text = "", icon = "success", time = 1100, customsClass = "", fn = "") {
-
-            //type : warning, error, success, info
-
-            //[your function] = function (isConfirm) {
-            //    if (isConfirm) {
-            //        swal({
-            //            title: "Alert",
-            //            text: "Success",
-            //            type: "success",
-            //            timer: 1000,
-            //            showCancelButton: false,
-            //            showConfirmButton: false
-            //        })
-            //    } else {
-
-            //    }
-            //}
-
-            swal({
-                title: title,
-                text: text,
-                type: icon,
-                customClass: customsClass,
-                timer: time,
-                showCancelButton: false,
-                showConfirmButton: false
-            }, fn);
-        }
-
-        function alertBoxConfirm(title = "", text = "", customsClass = "", fn = "") {
-
-            //[your function] = function (isConfirm) {
-            //    if (isConfirm) {
-            //        swal({
-            //            title: "Alert",
-            //            text: "Success",
-            //            type: "success",
-            //            timer: 1000,
-            //            showCancelButton: false,
-            //            showConfirmButton: false
-            //        })
-            //    } else {
-
-            //    }
-            //}
-             swal({
-                title: title,
-                text: text,
-                type: "warning",
-                customClass: customsClass,
-                showCancelButton: true,
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-                closeOnConfirm: false,
-                 closeOnCancel: true
-            }, fn );
-        }
-
-     //----------------------------- Sweet Alert --------------------------------------//
-
-    </script>
-
-    @RenderSection("scripts", required: false)
+@RenderSection("scripts", required: false)
 </body>
 </html>

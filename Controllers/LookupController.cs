@@ -2030,6 +2030,92 @@ namespace Change_Point.Controllers
             }
 
         }
+        public ActionResult ListItem_ChangePoint_My()
+        {
+            OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["htmfg2t"].ConnectionString);
+
+            try
+            {
+                List<CHANGE_POINT> result = new List<CHANGE_POINT>();
+
+                OracleCommand cmd = new OracleCommand();
+
+                var gT = Session["GROUP_ID"].ToString();
+                var empNo = Session["EMP_NO"].ToString();
+
+                string command =
+                    "SELECT CP_CALENDAR.*, " +
+                    "e1.GNAME_ENG as GNAME_ENG_CREATE, e1.FNAME_ENG as FNAME_ENG_CREATE, " +
+                    "e2.GNAME_ENG as GNAME_ENG_UPDATE, e2.FNAME_ENG as FNAME_ENG_UPDATE " +
+                    "FROM CP_CALENDAR " +
+                    "LEFT JOIN CENTER_TM_EMPLOYEE e1 ON CP_CALENDAR.CREATE_BY = e1.EMP_NO " +
+                    "LEFT JOIN CENTER_TM_EMPLOYEE e2 ON CP_CALENDAR.UPDATE_BY = e2.EMP_NO " +
+                    "WHERE CP_CALENDAR.STATUS_TYPE <> 'hide' " +
+                    "AND CP_CALENDAR.GROUP_ID = '" + gT + "' " +
+                    "AND CP_CALENDAR.CREATE_BY = '" + empNo + "' " +
+                    "ORDER BY CP_CALENDAR.DATE_CHANGE DESC";
+
+                cmd.Connection = conn;
+                cmd.CommandText = command;
+                cmd.CommandType = CommandType.Text;
+
+                conn.Open();
+
+                using (OracleDataReader dtreader = cmd.ExecuteReader())
+                {
+                    while (dtreader.Read())
+                    {
+                        DateTime create_date = Convert.ToDateTime(dtreader["CREATE_DATE"]);
+                        var create_by = dtreader["CREATE_BY"].ToString();
+                        var update_by = dtreader["UPDATE_BY"].ToString();
+                        DateTime update_date = string.IsNullOrEmpty(update_by) ? create_date : Convert.ToDateTime(dtreader["UPDATE_DATE"]);
+
+                        result.Add(new CHANGE_POINT
+                        {
+                            ID = dtreader["ID"].ToString(),
+                            SHIFT = dtreader["SHIFT"].ToString(),
+                            SHIFT_TEAM = dtreader["SHIFT_TEAM"].ToString(),
+                            DATE_CHANGE = dtreader["DATE_CHANGE"].ToString(),
+                            MAN_SPOT = dtreader["MAN_SPOT"].ToString(),
+                            MAN_INSTEAD = dtreader["MAN_INSTEAD"].ToString(),
+                            MC_NO = dtreader["MC_NO"].ToString(),
+                            EDIT_POINT = dtreader["EDIT_POINT"].ToString(),
+                            PART_NO = dtreader["PART_NO"].ToString(),
+                            MOLD_NO = dtreader["MOLD_NO"].ToString(),
+                            CHANGE = dtreader["CHANGE"].ToString(),
+                            PROCESS_POINT = dtreader["PROCESS_POINT"].ToString(),
+                            DETAILS = dtreader["DETAILS"].ToString(),
+                            WARNINGS = dtreader["WARNINGS"].ToString(),
+                            STATUS_TYPE = dtreader["STATUS_TYPE"].ToString(),
+                            REMARK = dtreader["REMARK"].ToString(),
+                            ACTION = dtreader["ACTION"].ToString(),
+                            INFORMED = dtreader["INFORMED"].ToString(),
+                            RECIPIENT_ID = dtreader["RECIPIENT"].ToString(),
+                            MAN_SPOT_NAME_THA = dtreader["MAN_SPOT_NAME_THA"].ToString(),
+                            MAN_INSTEAD_NAME_THA = dtreader["MAN_INSTEAD_NAME_THA"].ToString(),
+                            CREATE_BY = create_by,
+                            CREATE_DATE = create_date.ToString("dd/MM/yy HH:mm"),
+                            UPDATE_BY = string.IsNullOrEmpty(update_by) ? create_by : update_by,
+                            UPDATE_DATE = update_date.ToString("dd/MM/yy HH:mm"),
+                            GNAME_ENG_CREATE = dtreader["GNAME_ENG_CREATE"].ToString(),
+                            FNAME_ENG_CREATE = dtreader["FNAME_ENG_CREATE"].ToString(),
+                            GNAME_ENG_UPDATE = dtreader["GNAME_ENG_UPDATE"].ToString(),
+                            FNAME_ENG_UPDATE = dtreader["FNAME_ENG_UPDATE"].ToString(),
+                        });
+                    }
+                    return Json(new { data = result, success = true }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, responseText = "Error: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Dispose();
+                conn.Close();
+            }
+        }
         public ActionResult ListItem_ChangePoint_Item(string item_id)
         {
             OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["htmfg2t"].ConnectionString);

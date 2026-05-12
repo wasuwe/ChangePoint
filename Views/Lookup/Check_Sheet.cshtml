@@ -149,9 +149,61 @@
     }
     .item-header-1 {
         font-weight: bold;
-        font-size: 20px
+        font-size: 20px;
     }
-    
+
+    /* ── Modern overrides ── */
+    #MainApp { display: none; }
+
+    .tables-page-head .haed-title { font-size:1.5rem;font-weight:700; }
+
+    .tables-page-head {
+        display:flex;align-items:center;justify-content:space-between;
+        margin-bottom:20px;
+    }
+    .tables-page-head .head-box { display:flex;align-items:center;gap:12px;flex-wrap:wrap; }
+
+    .haed-fn a { font-size:1.5rem;color:#22c55e; }
+
+    /* Add button override */
+    .tables-page-head .haed-fn a { font-size:1.8rem; }
+
+    .section-tatble {
+        background:#fff;
+        border-radius:14px;
+        box-shadow:0 2px 14px rgba(0,0,0,.07);
+        padding:16px;
+        margin-top:0;
+    }
+
+    .modal-header {
+        background: #1e293b !important;
+        color: #fff !important;
+        border-bottom: none !important;
+    }
+
+    .customize-table {
+        --easy-table-header-font-size: 13px;
+        --easy-table-header-height: 44px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #1e293b;
+        --easy-table-border: 1px solid #e2e8f0;
+        --easy-table-row-hover-background-color: #f0f9ff;
+    }
+
+    .select-group { min-width:180px; }
+
+    /* Check sheet item rows */
+    .check-item-header-row th { background:#f8fafc;font-size:.85rem;font-weight:700; }
+    .check-item-sub-row { padding-left:20px; }
+
+    /* Status badges in table */
+    .status-use   { display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:3px 10px;font-size:.75rem;font-weight:600; }
+    .status-unuse { display:inline-flex;align-items:center;gap:5px;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:20px;padding:3px 10px;font-size:.75rem;font-weight:600; }
+
+    .col-form-label { display:flex;align-items:flex-start;flex-direction:column;margin-bottom:5px; }
+    .dp__main { width:100%; }
+
 </style>
 
 <div id="MainApp">
@@ -159,7 +211,7 @@
     <div class="tables-page-head">
 
         <div class="head-box">
-            <div class="haed-title">Master : Check Sheet</div>
+            <div class="haed-title"><i class="fas fa-clipboard-check" style="color:#3b82f6;margin-right:8px;font-size:1.1rem;"></i>Check Sheet</div>
             <div class="select-group">
                 <select class="selectpicker"  data-placeholder="Select Group" data-live-search="true" id="slt_group" name="slt_group" v-model="slt_group" v-on:change="selectGroup(slt_group)">
                     <option v-for="(item,index) in groupList" :value="item.GROUP_ID">{{item.GROUP_NAME}}</option>
@@ -219,8 +271,11 @@
          aria-labelledby="Item_modal_Label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="Item_modal_Label">{{IsAdd==true ? 'Add Item' : 'Edit item'}}</h5>
+                <div class="modal-header" style="background:#1e293b;color:#fff;padding:16px 20px;">
+                    <h5 class="modal-title" id="Item_modal_Label" style="font-size:1rem;font-weight:700;">
+                        <i class="fas fa-clipboard-check" style="margin-right:8px;color:#3b82f6;"></i>
+                        {{IsAdd==true ? 'สร้าง Check Sheet' : 'แก้ไข Check Sheet'}}
+                    </h5>
                 </div>
                 <div class="modal-body">
 
@@ -340,11 +395,12 @@
                     </section>
 
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                    <button type="button" class="btn btn-primary" id="btn_save"
-                            v-on:click="saveItem()">
-                        บันทึก
+                <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:12px 20px;gap:8px;">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> ยกเลิก
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" id="btn_save" v-on:click="saveItem()">
+                        <i class="fas fa-save"></i> บันทึก
                     </button>
                 </div>
             </div>
@@ -358,7 +414,8 @@
 
 
 <script>
-    // ------------------------------ VUE JS ------------------------------ //
+    $("#MainApp").delay(300).fadeIn(400);
+
     const { createApp } = Vue
 
         createApp({

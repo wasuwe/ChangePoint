@@ -57,16 +57,7 @@ namespace Change_Point.Controllers
 
             ViewBag.Data = ARR;
 
-            if (Id == "21")
-            {
-                return View("~/Views/Dashboard/Group_ver1.cshtml");
-            }
-            else
-            {
-                return View();
-            }
-
-            //return View();
+            return View();
         }
 
         public ActionResult Get_Result_Dashboard_Today(string date_select1, string date_select2, string group_id)

@@ -1,9 +1,7 @@
 ﻿@{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "รายการ Change Point";
 }
 
-<!-- Add the evo-calendar.css for styling -->
-@Styles.Render("~/Content/evo-calendar.min.css")
 @Styles.Render("~/Content/bootstrap-select.min.css")
 
 @*@Styles.Render("~/Content/select2.min.css")
@@ -462,8 +460,155 @@
         display: flex;
         flex-direction: column;
     }
-  
+
+    /* ── Modern overrides ── */
+    :root {
+        --color_man:  #22c55e;
+        --color_mc:   #ef4444;
+        --color_mold: #a855f7;
+        --color_met:  #3b82f6;
+        --color_part: #06b6d4;
+    }
+
+    #MainApp { display: none; }
+
+    /* Header toolbar */
+    .header-box {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.07);
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        border-bottom: none !important;
+    }
+
+    /* Section title bars */
+    .title-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: .9rem;
+        letter-spacing: .05em;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #fff;
+        width: auto;
+        box-shadow: none !important;
+        border: none !important;
+        margin-bottom: 12px;
+    }
+    .title-box.title-man  { background: var(--color_man);  }
+    .title-box.title-mc   { background: var(--color_mc);   }
+    .title-box.title-mold { background: var(--color_mold); }
+    .title-box.title-met  { background: var(--color_met);  }
+    .title-box.title-part { background: var(--color_part); }
+
+    /* Section table cards */
+    .table-box {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.07);
+        padding: 0;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    /* Add CP button */
+    .btn-add {
+        width: auto !important;
+        opacity: 0;
+        background: #3b82f6 !important;
+        border: none !important;
+        border-radius: 9px !important;
+        color: #fff !important;
+        fill: #fff !important;
+        box-shadow: 0 2px 8px rgba(59,130,246,.35) !important;
+        padding: 0 18px !important;
+        height: 38px !important;
+        font-size: .88rem !important;
+        transition: opacity .4s, background .15s !important;
+    }
+    .btn-add.active { opacity: 1 !important; }
+    .btn-add button { color: #fff !important; fill: #fff !important; }
+    .btn-add:hover { background: #2563eb !important; border-color: transparent !important; color: #fff !important; }
+
+    /* Modal header */
+    .modal-header {
+        background: #1e293b !important;
+        color: #fff !important;
+        border-bottom: none !important;
+    }
+
+    /* No data */
+    .no-data-box {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.07);
+        padding: 40px 20px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    .no-data-box i { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+
+    /* Recipient boxes */
+    .head-recipient {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px 10px 0 0 !important;
+        font-size: 1.1rem !important;
+        font-weight: 700 !important;
+        color: #1e293b;
+        padding: 10px 16px !important;
+    }
+    .name-list {
+        border: 1px solid #e2e8f0 !important;
+        border-top: none !important;
+        border-radius: 0 0 10px 10px !important;
+        font-size: .9rem !important;
+        padding: 8px 16px !important;
+    }
+
+    .inspector-chip-sm {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: #f1f5f9; border: 1px solid #e2e8f0;
+        border-radius: 6px; padding: 3px 9px;
+        font-size: .78rem; margin: 2px;
+    }
+
+    .dp__main { width: 100%; }
+
+    img.image-upload { width:100%;height:50px;object-fit:contain; }
+    .upload-item { position:relative;text-align:center; }
+    .upload-item .removeItem { border:none;background:none;color:red;font-size:18px;position:absolute;right:0;top:0; }
+    .upload-boxs { margin-top:16px; }
+    .upload-boxs p { text-overflow:ellipsis;overflow:hidden;width:120px;height:1.2em;white-space:nowrap;font-size:.72rem; }
+
+    .form-label-cp { font-size:.8rem;font-weight:600;color:#475569;margin-bottom:4px;display:block; }
+    .form-label-cp .th { font-weight:400;color:#94a3b8;font-size:.74rem;margin-left:4px; }
+    .detail-wrap { border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-top:8px; }
+    .detail-wrap table { margin:0;font-size:.8rem; }
+    .detail-wrap thead th { background:#f8fafc;font-weight:600;font-size:.75rem; }
+    .inspector-chip { display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:.78rem;margin:3px 3px 3px 0; }
+    .modal-backdrop { z-index:0 !important; }
+
+    #imgLightbox { display:none;position:fixed;z-index:9999;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);align-items:center;justify-content:center; }
+    #imgLightbox.open { display:flex; }
+    #imgLightbox img { max-width:90vw;max-height:85vh;border-radius:8px; }
+    #imgLightbox .lb-close { position:absolute;top:16px;right:20px;color:#fff;font-size:2rem;cursor:pointer; }
+
+    .section-to-print { visibility:hidden; margin-bottom:15px; }
+    @Html.Raw("@media print") {
+        body * { visibility:hidden;height:0;margin:0;font-size:14px !important; }
+        @Html.Raw("@page") { size:A4 landscape; }
+        .section-to-print, .section-to-print * { visibility:visible;height:auto; }
+        .section-to-print-hide { display:none; }
+    }
 </style>
+<div id="imgLightbox"><span class="lb-close" onclick="document.getElementById('imgLightbox').classList.remove('open')">&times;</span><img id="lbImg" src="" alt="" /></div>
 
 <div class="container-fluid " id="MainApp">
     <!-- Add more images as needed -->
@@ -547,8 +692,8 @@
 
     <div class="body-content section-to-print-hide" id="">
 
-        <div class="no-data-box" v-if="manList.length == 0 && mcList.length == 0 && moldList.length == 0 && metList.length == 0 && partList.length == 0">
-            No change points found at this time.  <br>
+        <div class="no-data-box" v-if="manList.length==0&&mcList.length==0&&moldList.length==0&&metList.length==0&&partList.length==0">
+            <i class="fas fa-calendar-times"></i>
             ไม่พบ Change Point ในวันนี้
         </div>
 
@@ -2019,7 +2164,6 @@
 
 </div>
 
-@Scripts.Render("~/Scripts/evo-calendar.min.js")
 @Scripts.Render("~/Scripts/bootstrap-select.min.js")
 
 @Scripts.Render("~/Scripts/vue3-easy-data-table.umd.js")

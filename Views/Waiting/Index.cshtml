@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Waiting Confirm";
+    ViewBag.Title = "รออนุมัติ";
 }
 
 @Styles.Render("~/Content/bootstrap-select.min.css")
@@ -177,15 +177,96 @@
                 background-color: #ffffff;
                 border-radius: 100%;
             }
+
+    /* ── Modern overrides ── */
+    :root {
+        --color_man:  #22c55e;
+        --color_mc:   #ef4444;
+        --color_mold: #a855f7;
+        --color_met:  #3b82f6;
+        --color_part: #06b6d4;
+    }
+    #MainApp { display:none; }
+
+    .tables-page-head .haed-title { font-size:1.5rem;font-weight:700; }
+
+    .section-tatble {
+        background:#fff;
+        border-radius:14px;
+        box-shadow:0 2px 14px rgba(0,0,0,.07);
+        padding:16px;
+        margin-top:16px;
+    }
+
+    /* Approval status chips */
+    .badge-confirm { display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:20px;padding:4px 12px;font-size:.78rem;font-weight:600; }
+    .badge-waiting { display:inline-flex;align-items:center;gap:5px;background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:20px;padding:4px 12px;font-size:.78rem;font-weight:600; }
+
+    /* Modal header */
+    .modal-header {
+        background: #1e293b !important;
+        color: #fff !important;
+        border-bottom: none !important;
+    }
+
+    /* Approve/Reject buttons in modal */
+    .btn-approve {
+        background: #22c55e !important;
+        border-color: #22c55e !important;
+        color: #fff !important;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    .btn-approve:hover { background:#16a34a !important; border-color:#16a34a !important; }
+    .btn-reject {
+        background: #ef4444 !important;
+        border-color: #ef4444 !important;
+        color: #fff !important;
+        font-weight: 600;
+        border-radius: 8px;
+    }
+    .btn-reject:hover { background:#dc2626 !important; border-color:#dc2626 !important; }
+
+    /* Type badge colors in table */
+    .type-man  { color:var(--color_man);  font-weight:700; }
+    .type-mc   { color:var(--color_mc);   font-weight:700; }
+    .type-mold { color:var(--color_mold); font-weight:700; }
+    .type-met  { color:var(--color_met);  font-weight:700; }
+    .type-part { color:var(--color_part); font-weight:700; }
+
+    .form-label-cp { font-size:.8rem;font-weight:600;color:#475569;margin-bottom:4px;display:block; }
+    .form-label-cp .th { font-weight:400;color:#94a3b8;font-size:.74rem;margin-left:4px; }
+    .detail-wrap { border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;margin-top:8px; }
+    .detail-wrap table { margin:0;font-size:.8rem; }
+    .detail-wrap thead th { background:#f8fafc;font-weight:600;font-size:.75rem; }
+    .modal-backdrop { z-index:0 !important; }
+    img.image-upload { width:100%;height:50px;object-fit:contain; }
+    .upload-item { position:relative;text-align:center; }
+    .upload-item .removeItem { border:none;background:none;color:red;font-size:18px;position:absolute;right:0;top:0; }
+    .upload-boxs { margin-top:16px; }
+    .upload-boxs p { text-overflow:ellipsis;overflow:hidden;width:120px;height:1.2em;white-space:nowrap;font-size:.72rem; }
+    .dp__main { width:100%; }
+    .dropdown.bootstrap-select { width:100% !important; border:var(--bs-border-width) solid var(--bs-border-color); border-radius:7px; }
+
+    .customize-table {
+        --easy-table-header-font-size: 13px;
+        --easy-table-header-height: 44px;
+        --easy-table-header-font-color: #ffffff;
+        --easy-table-header-background-color: #1e293b;
+        --easy-table-border: 1px solid #e2e8f0;
+        --easy-table-row-hover-background-color: #f0f9ff;
+    }
 </style>
 
 <div id="MainApp">
 
     <div class="tables-page-head">
-
         <div class="head-box">
-            <div class="haed-title">Waiting Confirm</div>
+            <div class="haed-title"><i class="fas fa-bell" style="color:#3b82f6;font-size:1.2rem;margin-right:8px;"></i>รออนุมัติ</div>
         </div>
+        <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("index","home")">
+            <i class="fas fa-arrow-left"></i> กลับหน้าหลัก
+        </a>
     </div>
 
     @*<i v-on:click="backTotop" id="toTop" class="fas fa-arrow-alt-circle-up backTotop"></i>*@
@@ -297,8 +378,11 @@
          aria-labelledby="change_point_modal_Label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="change_point_modal_Label">Change {{title_modal}}</h5>
+                <div class="modal-header" style="background:#1e293b;color:#fff;">
+                    <h5 class="modal-title" id="change_point_modal_Label">
+                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--color_met);margin-right:8px;"></span>
+                        Change Point — {{title_modal}}
+                    </h5>
                 </div>
                 <div class="modal-body">
                     <section class="container">
@@ -501,9 +585,13 @@
                         </form>
                     </section>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" v-if="is_confirm"  id="btn-cn" v-on:click="confirm_change_point()">Confirm</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-cn">ปิด</button>
+                <div class="modal-footer" style="border-top:1px solid #e2e8f0;padding:12px 20px;gap:8px;">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> ปิด
+                    </button>
+                    <button type="button" class="btn btn-approve btn-sm" v-if="is_confirm" id="btn-cn" v-on:click="confirm_change_point()">
+                        <i class="fas fa-check-circle"></i> Confirm อนุมัติ
+                    </button>
                 </div>
             </div>
         </div>
@@ -516,7 +604,8 @@
 
 
 <script>
-    // ------------------------------ VUE JS ------------------------------ //
+    $("#MainApp").delay(300).fadeIn(400);
+
     const { createApp } = Vue
 
     let DTable = ''
