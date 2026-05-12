@@ -1,185 +1,112 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
+using System.Diagnostics;
 using System.Web.Mvc;
-using System.Data;
-using System.Data.Common;
-using System.Data.OleDb;
-using Oracle.ManagedDataAccess.Client;
 using System.Web.Services;
-using System.Configuration;
-
-using Change_Point.Models;
+using Dapper;
+using Change_Point.Infrastructure;
+using Change_Point.Repositories.Implementations;
+using Change_Point.Repositories.Interfaces;
 
 namespace Change_Point.Controllers
 {
     public class DashboardController : Controller
     {
-        Home ARR = new Home();
-        // GET: Dashboard
+        private readonly ILookupRepository _lookupRepo = new LookupRepository();
 
-        public class COUNT_DASHBOARD
-        {
-            public string TITLE { get; set; }
-            public string RESULT_OK { get; set; }
-            public string RESULT_NG { get; set; }
-            public string RESULT_TOTAL { get; set; }
-        }
+        private readonly string _cp = GlobalConfig.CpSchema;
 
-        public class DASHBOARD_SETTING
-        {
-            public string PRIORITY { get; set; }
-            public string TITLE { get; set; }
-            public string TIME { get; set; }
-            public string TYPE { get; set; }
-        }
+        private const string ErrMsg = "พบปัญหา \n กรุณาติดต่อแอดมิน";
 
         [WebMethod(EnableSession = true)]
-
-        public ActionResult Index(string Id, Boolean IsLogin = false )
+        public ActionResult Index(string Id, bool IsLogin = false)
         {
-
-            ARR.IsLayout = false;
-            ARR.IsLogin = IsLogin;
-            ARR.param_id = Id;
-
-            ViewBag.Data = ARR;
+            ViewBag.ParamId  = Id;
+            ViewBag.IsLogin  = IsLogin;
             return View();
         }
 
-        public ActionResult Group(string Id, Boolean IsLogin = false)
+        public ActionResult Group(string Id, bool IsLogin = false)
         {
-
-            ARR.IsLayout = false;
-            ARR.IsLogin = IsLogin;
-            ARR.param_id = Id;
-
-            ViewBag.Data = ARR;
-
+            ViewBag.ParamId  = Id;
+            ViewBag.IsLogin  = IsLogin;
             return View();
         }
 
+        /// <summary>
+        /// Returns OK/NG/Total counts grouped by status_type for a given group and date range.
+        /// date_select1 and date_select2 are in dd-MM-yyyy format.
+        /// group_id is passed as a query parameter (supports dashboard screens that specify a group).
+        /// </summary>
         public ActionResult Get_Result_Dashboard_Today(string date_select1, string date_select2, string group_id)
         {
-            OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["htmfg2t"].ConnectionString);
-
             try
             {
-                List<COUNT_DASHBOARD> result = new List<COUNT_DASHBOARD>();
+                if (!int.TryParse(group_id, out int gid))
+                    return Json(new { success = false, message = "Invalid group_id" }, JsonRequestBehavior.AllowGet);
 
-                OracleCommand cmd = new OracleCommand();
+                if (!DateTime.TryParseExact(date_select1, "dd-MM-yyyy",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None, out DateTime dStart))
+                    dStart = DateTime.Today;
 
-                string command = "";
+                if (!DateTime.TryParseExact(date_select2, "dd-MM-yyyy",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None, out DateTime dEnd))
+                    dEnd = DateTime.Today;
 
-                command = "SELECT STATUS_TYPE, " +
-                    "COUNT(CASE WHEN INFORMED = 'Y' THEN 1 ELSE NULL END) as RESULT_OK, " +
-                    "COUNT(CASE WHEN INFORMED = 'N' THEN 1 ELSE NULL END) as RESULT_NG, " +
-                    "COUNT(CASE WHEN INFORMED = 'N' OR INFORMED = 'Y' THEN 1 ELSE NULL END) as RESULT_TOTAL " +
-                    "FROM CP_CALENDAR " +
-                    "WHERE DATE_CHANGE >= to_timestamp('" + date_select1 + " 00:00:00', 'dd-mm-yyyy hh24:mi:ss') " +
-                    "and DATE_CHANGE <= to_timestamp('" + date_select2 + " 23:59:59', 'dd-mm-yyyy hh24:mi:ss') " +
-                    "AND GROUP_ID = '" + group_id + "' " +
-                    "GROUP BY STATUS_TYPE ";
+                var sql = $@"
+                    SELECT status_type AS title,
+                           COUNT(CASE WHEN informed = TRUE  THEN 1 END) AS result_ok,
+                           COUNT(CASE WHEN informed = FALSE THEN 1 END) AS result_ng,
+                           COUNT(*) AS result_total
+                    FROM {_cp}.cp_calendar
+                    WHERE group_id    = @gid
+                      AND status_type <> 'hide'
+                      AND date_change >= @dStart
+                      AND date_change <= @dEnd
+                    GROUP BY status_type";
 
-                cmd.Connection = conn;
-                cmd.CommandText = command;
-                cmd.CommandType = CommandType.Text;
-
-                conn.Open();
-
-                using (OracleDataReader dtreader = cmd.ExecuteReader())
+                using (var conn = PostgreSqlDbConnection.GetConnection())
                 {
-                    if (dtreader.HasRows)
+                    var rows = conn.Query(sql, new
                     {
-                        while (dtreader.Read())
-                        {
+                        gid,
+                        dStart = dStart.Date,
+                        dEnd   = dEnd.Date.AddDays(1).AddSeconds(-1)
+                    });
 
-                            result.Add(new COUNT_DASHBOARD
-                            {
-                                TITLE = dtreader["STATUS_TYPE"].ToString(),
-                                RESULT_OK = dtreader["RESULT_OK"].ToString(),
-                                RESULT_NG = dtreader["RESULT_NG"].ToString(),
-                                RESULT_TOTAL = dtreader["RESULT_TOTAL"].ToString(),
-                            });
-                        }
-                        return Json(new { data = result, success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
-                    }
-                    else
+                    var data = System.Linq.Enumerable.Select(rows, r => new
                     {
-                        return Json(new { success = false, responseText = "" }, JsonRequestBehavior.AllowGet);
-                    }
+                        TITLE        = (string)r.title        ?? "",
+                        RESULT_OK    = ((long)r.result_ok).ToString(),
+                        RESULT_NG    = ((long)r.result_ng).ToString(),
+                        RESULT_TOTAL = ((long)r.result_total).ToString()
+                    });
+
+                    return Json(new { success = true, data }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, responseText = "Error Code " + ex.Message + " \n Please contact admin." }, JsonRequestBehavior.AllowGet);
+                Debug.WriteLine("[DashboardController.Get_Result_Dashboard_Today] " + ex.Message);
+                return Json(new { success = false, message = ErrMsg, error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-            finally
-            {
-                conn.Dispose();
-                conn.Close();
-            }
-
         }
 
         public ActionResult ListItem_Dashboard(string group_id)
         {
-            OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["htmfg2t"].ConnectionString);
-
             try
             {
-                List<DASHBOARD_SETTING> result = new List<DASHBOARD_SETTING>();
+                if (!int.TryParse(group_id, out int gid))
+                    return Json(new { success = false, message = "Invalid group_id" }, JsonRequestBehavior.AllowGet);
 
-                OracleCommand cmd = new OracleCommand();
-
-                string command = "";
-
-                command = "SELECT m.* FROM CP_DASHBOARD m " +
-                    "WHERE GROUP_ID = " + group_id +
-                    " ORDER BY PRIORITY ASC";
-
-                cmd.Connection = conn;
-                cmd.CommandText = command;
-                cmd.CommandType = CommandType.Text;
-
-                conn.Open();
-
-                using (OracleDataReader dtreader = cmd.ExecuteReader())
-                {
-                    if (dtreader.HasRows)
-                    {
-                        while (dtreader.Read())
-                        {
-                            result.Add(new DASHBOARD_SETTING
-                            {
-                                PRIORITY = dtreader["PRIORITY"].ToString(),
-                                TITLE = dtreader["TITLE"].ToString(),
-                                TIME = dtreader["TIME"].ToString(),
-                                TYPE = dtreader["TYPE"].ToString(),
-                            });
-                        }
-                        return Json(new { data = result, success = true, responseText = "" }, JsonRequestBehavior.AllowGet);
-                    }
-                    else
-                    {
-                        return Json(new { success = false, responseText = "" }, JsonRequestBehavior.AllowGet);
-                    }
-                }
+                var data = _lookupRepo.ListDashboard(gid);
+                return Json(new { success = true, data }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, responseText = "Error Code " + ex.Message + " \n Please contact admin." }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ErrMsg, error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-            finally
-            {
-                conn.Dispose();
-                conn.Close();
-            }
-
         }
-
-
-
     }
 }
