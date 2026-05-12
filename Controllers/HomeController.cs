@@ -1,308 +1,203 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-using System.Data;
-using System.Data.Common;
-using System.Data.OleDb;
-using Oracle.ManagedDataAccess.Client;
 using System.Web.Services;
-using System.Configuration;
-//using Microsoft.Extensions.Logging;
-
-using System.Globalization;
-
 using Change_Point.Models;
-using System.IO;
-
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic.FileIO;
-using System.Text;
-
-
-using System.Net.Mail;
+using Change_Point.Repositories.Implementations;
+using Change_Point.Repositories.Interfaces;
 
 namespace Change_Point.Controllers
 {
     public class HomeController : Controller
     {
-        Home ARR = new Home();
+        private readonly ILookupRepository _lookupRepo = new LookupRepository();
 
-        
+        private string EmpNo  => Session["EMP_NO"]?.ToString() ?? "";
+        private int    GroupId
+        {
+            get { int.TryParse(Session["GROUP_ID"]?.ToString(), out int g); return g; }
+        }
+
+        private const string ErrMsg = "พบปัญหา \n กรุณาติดต่อแอดมิน";
+
+        // -----------------------------------------------------------------------
         [WebMethod(EnableSession = true)]
-
         public ActionResult Index()
         {
-            ARR.IsLayout = true;
-            ARR.IsLogin = true;
-            ARR.ROLE = Session["ROLE"];
-
             if (Session["EMP_NO"] == null)
             {
-                Session["STATUS"] = "V";
-                Session["ROLE"] = "V";
-                Session["WC_CODE"] = "";
-                Session["GROUP_ID"] = "";
-
+                Session["STATUS"]    = "V";
+                Session["ROLE"]      = "V";
+                Session["WC_CODE"]   = "";
+                Session["GROUP_ID"]  = "";
                 return RedirectToAction("index", "Login");
             }
-                     
-            ViewBag.Data = ARR;
-
             return View();
         }
 
-        public ActionResult  Detail(string Id)
+        public ActionResult Detail(string Id)
         {
-            ARR.IsLayout = true;
-            ARR.IsLogin = true;
-            ARR.param_date = Id;
-            ARR.ROLE = Session["ROLE"];
-            
             if (Session["EMP_NO"] == null)
             {
-                Session["STATUS"] = "V";
-                Session["ROLE"] = "V";
-                Session["WC_CODE"] = "";
-                Session["GROUP_ID"] = "";
-
+                Session["STATUS"]    = "V";
+                Session["ROLE"]      = "V";
+                Session["WC_CODE"]   = "";
+                Session["GROUP_ID"]  = "";
                 return RedirectToAction("index", "Login");
             }
-         
-            ViewBag.Data = ARR;
-
+            ViewBag.ParamDate = Id;
             return View();
         }
 
-        public ActionResult closing(Boolean IsLogin = false)
+        public ActionResult closing(bool IsLogin = false)
         {
-            ARR.IsLayout = false;
-            ARR.IsLogin = true;
-
-            ViewBag.Data = ARR;
             return View();
         }
 
-       
         public ActionResult Dashboard(string Id)
         {
-            ARR.IsLayout = false;
-            ARR.IsLogin = true;
-
-            ARR.ROLE = "V";
-            Session["STATUS"] = "V";
-            Session["ROLE"] = "G";
-            Session["WC_CODE"] = "";
-            Session["GROUP_ID"] = Id;
-
-            ViewBag.Data = ARR;
-
+            Session["STATUS"]    = "V";
+            Session["ROLE"]      = "G";
+            Session["WC_CODE"]   = "";
+            Session["GROUP_ID"]  = Id;
             return View();
         }
 
+        // -----------------------------------------------------------------------
+        // File Upload (no DB involvement — just saves to disk)
+        // -----------------------------------------------------------------------
         [HttpPost]
         public ActionResult UploadFile(HttpPostedFileBase file)
         {
-            if (file != null && file.ContentLength > 0)
-                try
-                {
-                    string originalFileName = Path.GetFileName(file.FileName);
-                    string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-                    string newFileName = timestamp + "_" + originalFileName;
-                    string path = Path.Combine(Server.MapPath("~/src/upload"), newFileName);
-                    file.SaveAs(path);
+            if (file == null || file.ContentLength == 0)
+                return Json(new { success = false, message = "You have not specified a file." }, JsonRequestBehavior.AllowGet);
 
-                    return Json(new { success = true, responseText = "SUCCES", data = newFileName,  Message = "File Uploaded Successfully!!" }, JsonRequestBehavior.AllowGet);
-                }
-                catch (Exception ex)
-                {
-                    return Json(new { success = false, responseText = "FAILED", data = "", Message = "ERROR:" + ex.Message.ToString() }, JsonRequestBehavior.AllowGet);
-                }
-            else
+            try
             {
-                return Json(new { success = false, responseText = "FAILED", data = "", Message = "You have not specified a file." }, JsonRequestBehavior.AllowGet);
+                string originalFileName = Path.GetFileName(file.FileName);
+                string timestamp        = DateTime.Now.ToString("yyyyMMddHHmmss");
+                string newFileName      = timestamp + "_" + originalFileName;
+                string path             = Path.Combine(Server.MapPath("~/src/upload"), newFileName);
+                file.SaveAs(path);
+                return Json(new { success = true, data = newFileName, message = "File Uploaded Successfully!!" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ErrMsg, error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-        
+
+        // -----------------------------------------------------------------------
+        // CSV check (validates rows before upload — no DB)
+        // -----------------------------------------------------------------------
         public class READFILE
         {
-            public string PART_NO { get; set; }
+            public string PART_NO   { get; set; }
             public string PART_NAME { get; set; }
-            public string CHK { get; set; }
+            public string CHK       { get; set; }
         }
 
         public ActionResult checkCSV(HttpPostedFileBase file)
         {
-            List<READFILE> result = new List<READFILE>();
+            var result  = new List<READFILE>();
+            string pattern = @"^[A-Za-z\d]{3}-[A-Za-z\d]{4}-[A-Za-z\d]{3}$";
+            string isPass  = "Y";
 
-            string pattern = @"^[A-Za-z\d]{3}-[A-Za-z\d]{4}-[A-Za-z\d]{3}$"; // รูปแบบของข้อมูล: xxx-xxxx-xxx
-            string isPass = "Y";
-
-            // Upload File
             string originalFileName = Path.GetFileName(file.FileName);
-            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            string newFileName = timestamp + "_" + originalFileName;
-            //string newFileName = "Format_UploadPlan.csv";
-            string path = Path.Combine(Server.MapPath("~/src/file_temp"), newFileName);
+            string timestamp        = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string newFileName      = timestamp + "_" + originalFileName;
+            string path             = Path.Combine(Server.MapPath("~/src/file_temp"), newFileName);
             file.SaveAs(path);
 
-            DataTable csvData = new DataTable();
-
+            var csvData = new DataTable();
             try
             {
-                Util csvManage = new Util();
-                csvManage.toDatatable(csvData, path);
-                DataColumnCollection col = csvData.Columns;
+                var util = new Util();
+                util.toDatatable(csvData, path);
+                var col = csvData.Columns;
 
-                //Step 1 Check column error
-                if (!col.Contains("PART_NO") || !col.Contains("PART_NAME") )
+                if (!col.Contains("PART_NO") || !col.Contains("PART_NAME"))
+                    return Json(new { success = false, message = "Format ที่ Upload ไม่ถูกต้อง" }, JsonRequestBehavior.AllowGet);
+
+                using (var reader = csvData.CreateDataReader())
                 {
-                    return Json(new { success = false, responseText = "FAILED", data = "", Message = "Format ที่ Upload ไม่ถูกต้อง" }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    //Step 2 Check input error
-                    using (DataTableReader dtreader = csvData.CreateDataReader())
+                    while (reader.Read())
                     {
-                        if (dtreader.HasRows)
-                        {
-
-                            while (dtreader.Read())
-                            {
-
-                                string part_no = dtreader["PART_NO"].ToString();
-                                string part_nanme = dtreader["PART_NAME"].ToString();
-
-                                result.Add(new READFILE
-                                {
-                                    PART_NO = dtreader["PART_NO"].ToString(),
-                                    PART_NAME = dtreader["PART_NAME"].ToString(),
-                                    CHK = Regex.IsMatch(part_no, pattern) && part_no != "" && part_nanme != "" ? "Y" : "N",
-
-                                });
-
-                                if (!Regex.IsMatch(part_no, pattern) || part_no == "" || part_nanme == "")
-                                {
-                                    isPass = "N";
-                                }
-
-                            }
-                        }
+                        string partNo   = reader["PART_NO"].ToString();
+                        string partName = reader["PART_NAME"].ToString();
+                        bool   ok       = Regex.IsMatch(partNo, pattern) && partNo != "" && partName != "";
+                        result.Add(new READFILE { PART_NO = partNo, PART_NAME = partName, CHK = ok ? "Y" : "N" });
+                        if (!ok) isPass = "N";
                     }
-                    return Json(new { is_pass = isPass, success = true, responseText = "SUCCES", data = result, Message = "อัพโหลดไฟล์สำเร็จ" }, JsonRequestBehavior.AllowGet);
                 }
+                return Json(new { is_pass = isPass, success = true, data = result, message = "อ่านไฟล์สำเร็จ" }, JsonRequestBehavior.AllowGet);
             }
-
             catch (Exception ex)
             {
-                return Json(new { success = false, responseText = "FAILED", data = "", Message = "ERROR:" + ex.Message.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ErrMsg, error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-
             finally
             {
-                if (System.IO.File.Exists(path))
-                {
-                    System.IO.File.Delete(path);
-                }
+                if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
             }
         }
 
+        // -----------------------------------------------------------------------
+        // CSV import — replaces all parts for this group with rows from CSV
+        // -----------------------------------------------------------------------
         public ActionResult uploadCSV(HttpPostedFileBase file)
         {
-            // Upload File
             string originalFileName = Path.GetFileName(file.FileName);
-            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
-            string newFileName = timestamp + "_" + originalFileName;
-            //string newFileName = "Format_UploadPlan.csv";
-            string path = Path.Combine(Server.MapPath("~/src/file_temp"), newFileName);
+            string timestamp        = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string newFileName      = timestamp + "_" + originalFileName;
+            string path             = Path.Combine(Server.MapPath("~/src/file_temp"), newFileName);
             file.SaveAs(path);
 
-            var gT = Session["GROUP_ID"].ToString();
-            var emp_no = Session["EMP_NO"];
-
-            OracleConnection conn = new OracleConnection(ConfigurationManager.ConnectionStrings["htmfg2t"].ConnectionString);
-            OracleDataAdapter adp = new OracleDataAdapter();
-            DataTable csvData = new DataTable();
-
-            conn.Open();
-
+            var csvData = new DataTable();
             try
             {
-                Util csvManage = new Util();
-                csvManage.toDatatable(csvData, path);
-                DataColumnCollection col = csvData.Columns;
+                var util = new Util();
+                util.toDatatable(csvData, path);
+                var col = csvData.Columns;
 
-                //Step 1 Check column error
-                if (!col.Contains("PART_NO") || !col.Contains("PART_NAME") )
+                if (!col.Contains("PART_NO") || !col.Contains("PART_NAME"))
+                    return Json(new { success = false, message = "Format ที่ Upload ไม่ถูกต้อง" }, JsonRequestBehavior.AllowGet);
+
+                // Delete all existing parts for this group, then re-insert from CSV
+                using (var reader = csvData.CreateDataReader())
                 {
-                    return Json(new { success = false, responseText = "FAILED", data = "", Message = "Format ที่ Upload ไม่ถูกต้อง" }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-
-                    OracleCommand cmd = new OracleCommand();
-                    cmd = new OracleCommand("CP_SYSTEM.DELETE_PART_BY_GID", conn);
-                    cmd.Parameters.Add(new OracleParameter("pGROUP_ID", OracleDbType.Int32)).Value = gT;
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.ExecuteNonQuery();
-
-                    //Step 2 Check input error
-                    using (DataTableReader dtreader = csvData.CreateDataReader())
+                    // First pass: collect all rows
+                    var rows = new List<(string partNo, string partName)>();
+                    while (reader.Read())
                     {
-                        if (dtreader.HasRows)
-                        {
-
-                            while (dtreader.Read())
-                            {
-
-                                string PART_NO = dtreader["PART_NO"].ToString();
-                                string PART_NAME = dtreader["PART_NAME"].ToString();
-
-                                cmd = new OracleCommand("CP_SYSTEM.ADD_PART", conn);
-                                cmd.Parameters.Add(new OracleParameter("pITEM_PART", OracleDbType.Varchar2)).Value = PART_NO;
-                                cmd.Parameters.Add(new OracleParameter("pITEM_NAME", OracleDbType.Varchar2)).Value = PART_NAME;
-                                cmd.Parameters.Add(new OracleParameter("pITEM_GROUP_ID", OracleDbType.Varchar2)).Value = gT;
-                                cmd.Parameters.Add(new OracleParameter("pIS_USE", OracleDbType.Varchar2)).Value = "Y";
-                                cmd.Parameters.Add(new OracleParameter("pCREATE_BY", OracleDbType.Varchar2)).Value = emp_no;
-                                cmd.Parameters.Add(new OracleParameter("pCREATE_DATE", OracleDbType.TimeStamp)).Value = DateTime.Now;
-                                cmd.Parameters.Add(new OracleParameter("pUPDATE_BY", OracleDbType.Varchar2)).Value = emp_no;
-                                cmd.Parameters.Add(new OracleParameter("pUPDATE_DATE", OracleDbType.TimeStamp)).Value = DateTime.Now;
-                                cmd.CommandType = CommandType.StoredProcedure;
-                                cmd.ExecuteNonQuery();
-
-                            }
-                        }
+                        string partNo   = reader["PART_NO"].ToString();
+                        string partName = reader["PART_NAME"].ToString();
+                        if (!string.IsNullOrWhiteSpace(partNo))
+                            rows.Add((partNo, partName));
                     }
-                    return Json(new { success = true, responseText = "SUCCES", Message = "อัพโหลดไฟล์สำเร็จ" }, JsonRequestBehavior.AllowGet);
-                }
-            }
 
+                    // Delete existing and re-add
+                    foreach (var (partNo, _) in rows)
+                        _lookupRepo.DeletePart(partNo, GroupId);
+
+                    foreach (var (partNo, partName) in rows)
+                        _lookupRepo.AddPart(partNo, partName, GroupId, true, EmpNo);
+                }
+
+                return Json(new { success = true, message = "อัพโหลดไฟล์สำเร็จ" }, JsonRequestBehavior.AllowGet);
+            }
             catch (Exception ex)
             {
-                return Json(new { success = false, responseText = "FAILED", data = "", Message = "ERROR:" + ex.Message.ToString() }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = ErrMsg, error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-
             finally
             {
-                if (System.IO.File.Exists(path))
-                {
-                    System.IO.File.Delete(path);
-                }
-                conn.Dispose();
-                conn.Close();
+                if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
             }
         }
-
-        public class LIST_PART
-        {
-            public string PART_NO { get; set; }
-            public string PART_NAME { get; set; }
-            public string IS_USE { get; set; }
-        }
-
-
     }
 }
-
-
