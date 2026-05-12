@@ -33,77 +33,22 @@ namespace Change_Point.Controllers
 
         public ActionResult Index()
         {
-            ARR.IsLayout = true;
-            ARR.IsLogin = true;
-            ARR.ROLE = Session["ROLE"];
-
-            if (Session["EMP_NO"] == null)
-            {
-                Session["STATUS"] = "V";
-                Session["ROLE"] = "V";
-                Session["WC_CODE"] = "";
-                Session["GROUP_ID"] = "";
-
-                Response.Redirect(Url.Action("index", "Login"));
-            }
-
-         
-
-            //string FileName = "Sample";
-            //string extFile = ".xlsx";
-            //string path = Path.Combine(Server.MapPath("~/src/upload"), FileName + extFile);
-
-            ViewBag.Data = ARR;
-
-            return View();
+            return RedirectToAction("index", "home");
         }
 
-        public ActionResult  Detail(string Id)
+        public ActionResult Detail(string Id)
         {
-            ARR.IsLayout = true;
-            ARR.IsLogin = true;
-            ARR.param_date = Id;
-            ARR.ROLE = Session["ROLE"];
-            
-            if (Session["EMP_NO"] == null)
-            {
-                Session["STATUS"] = "V";
-                Session["ROLE"] = "V";
-                Session["WC_CODE"] = "";
-                Session["GROUP_ID"] = "";
-                Response.Redirect(Url.Action("index", "Login"));
-            }
-
-
-         
-            ViewBag.Data = ARR;
-
-            return View();
+            return RedirectToAction("detail", "home", new { id = Id });
         }
 
         public ActionResult closing(Boolean IsLogin = false)
         {
-            ARR.IsLayout = false;
-            ARR.IsLogin = true;
-
-            ViewBag.Data = ARR;
-            return View();
+            return RedirectToAction("closing", "home");
         }
 
         public ActionResult Dashboard(string Id)
         {
-            ARR.IsLayout = false;
-            ARR.IsLogin = true;
-
-            ARR.ROLE = "V";
-            Session["STATUS"] = "V";
-            Session["ROLE"] = "G";
-            Session["WC_CODE"] = "";
-            Session["GROUP_ID"] = Id;
-
-            ViewBag.Data = ARR;
-
-            return View();
+            return RedirectToAction("dashboard", "dashboard", new { id = Id });
         }
 
         [HttpPost]

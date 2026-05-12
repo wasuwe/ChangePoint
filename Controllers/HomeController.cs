@@ -50,21 +50,7 @@ namespace Change_Point.Controllers
                      
             ViewBag.Data = ARR;
 
-            if (Session["WC_CODE"].ToString() == "3601" ||
-                Session["WC_CODE"].ToString() == "7001" ||
-                Session["WC_CODE"].ToString() == "7090" ||
-                Session["WC_CODE"].ToString() == "7180" ||
-                Session["WC_CODE"].ToString() == "7110"
-                )
-            {
-                return View("~/Views/Home_ver1/Index.cshtml");
-            }
-            else
-            {
-                return View();
-            }
-
-            //return View();
+            return View();
         }
 
         public ActionResult  Detail(string Id)
@@ -86,21 +72,7 @@ namespace Change_Point.Controllers
          
             ViewBag.Data = ARR;
 
-            if (Session["WC_CODE"].ToString() == "3601" ||
-                    Session["WC_CODE"].ToString() == "7001" ||
-                    Session["WC_CODE"].ToString() == "7090" ||
-                    Session["WC_CODE"].ToString() == "7180" ||
-                    Session["WC_CODE"].ToString() == "7110"
-                    )
-            {
-                return View("~/Views/Home_ver1/Detail.cshtml");
-            }
-            else
-            {
-                return View();
-            }
-
-            //return View();
+            return View();
         }
 
         public ActionResult closing(Boolean IsLogin = false)
@@ -126,17 +98,7 @@ namespace Change_Point.Controllers
 
             ViewBag.Data = ARR;
 
-            if (Id == "21"
-                )
-            {
-                return View("~/Views/Home_ver1/Dashboard.cshtml");
-            }
-            else
-            {
-                return View();
-            }
-
-            //return View();
+            return View();
         }
 
         [HttpPost]

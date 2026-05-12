@@ -233,17 +233,7 @@
                             if (result.success) {
                                 await alertBoxTime("แจ้งเตือน", result.responseText, "success")
                                 await setTimeout(function () {
-                                    if (
-                                        result.wc_code == '3601' ||
-                                        result.wc_code == '7001' ||
-                                        result.wc_code == '7090' ||
-                                        result.wc_code == '7180' ||
-                                        result.wc_code == '7110'
-                                    ) {
-                                        window.open("@Url.Action("index", "home_ver1")", "_self")
-                                    } else {
-                                        window.open("@Url.Action("index", "home")", "_self")
-                                    }
+                                    window.open("@Url.Action("index", "home")", "_self")
                                 }, 1000)
                             } else {
                                 self.txt_password = '';
